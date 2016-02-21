@@ -1,0 +1,3 @@
+[submodule "dsenser/scorer"]
+	path = dsenser/scorer
+	url = git@github.com:attapol/conll16st.git

@@ -1,7 +1,7 @@
 #!/usr//bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
-"""Module containing constants of dparser package.
+"""Module containing constants for dsenser package.
 
 Attributes:
 

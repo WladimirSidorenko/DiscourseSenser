@@ -1,1 +1,3 @@
 *.pyc
+data/en.dev/
+data/en.train/

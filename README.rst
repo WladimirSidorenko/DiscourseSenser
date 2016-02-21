@@ -15,7 +15,7 @@ Description
 ===========
 
 This package provides core functionality for sense disambiguation of
-explicit and implicit discourse connectives for PDTB=like discourse
+explicit and implicit discourse connectives for PDTB-like discourse
 parsing.  It is being created for the CoNLL-2016 shared task.
 
 The main package **dsenser** currently comprises the following
@@ -64,7 +64,7 @@ Note that this script requires three mandatory arguments:
 2. path to directory contaning pre-built models and auxiliary data;
 3. path to the output directory.
 
-See official `CoNLL instructions` for complete specification of the
-input and output format.
+See the official `CoNLL instructions`_ for complete specification of
+the input and output format.
 
 .. _`CoNLL instructions`: https://github.com/attapol/conll16st/blob/master/README.md

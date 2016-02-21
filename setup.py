@@ -12,14 +12,14 @@ import glob
 # Variables and Constants
 ENCODING = "utf-8"
 pwd = path.abspath(path.dirname(__file__))
-with codecs.open(path.join(pwd, "README.rst"), encoding="ENCODING") as ifile:
+with codecs.open(path.join(pwd, "README.rst"), encoding=ENCODING) as ifile:
     long_description = ifile.read()
 
 ##################################################################
 # setup()
 setup(
     name="dsenser",
-    version="0.0.1-alpha.1",
+    version="0.0.1",
     description=("sense disambiguation for PDTB-style discourse parsing"),
     long_description=long_description,
     author="Wladimir Sidorenko (Uladzimir Sidarenka)",
@@ -31,9 +31,10 @@ setup(
     package_data={
         "dsenser": [path.join("data", fname) for fname in ()]
     },
-    requires=["theano (>=0.7.0)",
-              "lasagne (>=0.1)"],
-    provides=["dsenser (0.0.1-alpha.1)"],
+    requires=["lasagne (>=0.1)",
+              "theano (>=0.7.0)",
+              "pip (>=8.0.2)"],
+    provides=["dsenser (0.0.1)"],
     scripts=[path.join("scripts", "discourse_senser")],
     classifiers=["Development Status :: 2 - Pre-Alpha",
                  "Environment :: Console",

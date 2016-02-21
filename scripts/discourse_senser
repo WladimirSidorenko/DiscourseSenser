@@ -1,0 +1,218 @@
+#!/usr/bin/env python
+# -*- coding: utf-8; mode: python; -*-
+
+"""Script for doing sense disambiguation of discourse connectives.
+
+"""
+
+##################################################################
+# Imports
+from __future__ import print_function, unicode_literals
+
+from dsenser import DiscourseSenser, DFLT_MODEL, FFNN
+
+import argparse
+import codecs
+import glob
+import json
+import os
+import sys
+
+
+##################################################################
+# Variables and Constants
+M_TRAIN = "train"
+M_TEST = "test"
+ENCODING = "iso-8859-1"
+
+ARGS_FNAME = "relations-no-senses.json"
+GOLD_FNAME = "relations.json"
+PARSE_FNAME = "parses.json"
+RAW_DIR = "raw"
+WSJ_GLOB="wsj_*"
+
+
+##################################################################
+# Methods
+def _add_cmn_options(a_parser):
+    """Add common options to option subparser
+
+    Args:
+    a_parser (argparse.ArgumentParser):
+      option subparser to which new options should be added
+
+    Returns:
+    :void
+
+    """
+    a_parser.add_argument("-m", "--model",
+                          help="path to the model (if different from default)",
+                          type=str, default=DFLT_MODEL)
+    a_parser.add_argument("input_dir", help="directory containing input data",
+                          type=str)
+
+
+def _read_json(a_dir, a_fname, a_opt=True, a_enc=ENCODING):
+    """Read JSON data from file.
+
+    Args:
+    a_dir: str
+      dirname to the input file
+    a_fname: str
+      basename of the input file
+    a_opt: bool
+      input file might not exist
+    a_enc: str
+      input file encoding
+
+    Returns:
+    : dict
+    input data as dictionary
+
+    """
+    fname = os.path.join(a_dir, a_fname or "")
+    if a_fname is None or not (os.path.exists(fname) and
+                               os.access(fname, os.R_OK)):
+        if a_opt:
+            return None
+        raise RuntimeError("Can't open file '{:s}'.".format(a_fname))
+    print("Loading file '{:s}'... ".format(fname), end="", file=sys.stderr)
+    ret = []
+    with codecs.open(fname, 'r', encoding=a_enc) as ifile:
+        for iline in ifile:
+            iline = iline.strip()
+            if iline:
+                ret.append(json.loads(iline))
+    print("done", file=sys.stderr)
+    return ret
+
+
+def _read_raw(a_dir, a_enc=ENCODING):
+    """Read raw data from directory.
+
+    Args:
+    a_dir (str):
+     path to directory containing raw data
+    a_enc (str):
+     encoding of the input files
+
+    Returns:
+    dict(str, tuple(int, int, str)):
+      dictionary with file names as keys and 3-tuple (paragraph number,
+      sentence numberm, and sentence string) as values
+
+    """
+    ret = dict()
+    bfname = ""
+    snt_cnt = 0
+    prgrph_cnt = -1
+    prev_empty = False
+    sentences = None
+    for fname in glob.iglob(os.path.join(a_dir, WSJ_GLOB)):
+        snt_cnt = 0
+        prgrph_cnt = -1
+        bfname = os.path.basename(bfname)
+        sentences = ret[bfname] = []
+        print("Loading file '{:s}'... ".format(fname), end="", file=sys.stderr)
+        with codecs.open(fname, 'r', ENCODING) as ifile:
+            for iline in ifile:
+                iline = iline.strip()
+                if not iline:
+                    if prev_empty:
+                        continue
+                    prev_empty = True
+                    prgrph_cnt += 1
+                elif iline == ".START":
+                    continue
+                else:
+                    prev_empty = False
+                    sentences.append((prgrph_cnt, snt_cnt, iline))
+                    snt_cnt += 1
+        print("done", file=sys.stderr)
+    return ret
+
+
+def _join_rels_parses_raw(a_rels, a_parses, a_raw):
+    """
+
+    """
+    raise NotImplementedError
+
+
+def _read_dataset(a_dir):
+    """Read data from directory.
+
+    Args:
+    a_dir: str
+      path to directory containing input data
+
+    Returns:
+    dict: traiining set
+
+    """
+    if a_dir is None:
+        return (None, None, None)
+    # read relations
+    rels = _read_json(a_dir, GOLD_FNAME, a_opt=True)
+    if rels is None:
+        rels = _read_json(a_dir, ARGS_FNAME)
+    # read parses
+    parses = _read_json(a_dir, PARSE_FNAME)
+    raw = _read_raw(os.path.join(a_dir, RAW_DIR))
+    return _join_rels_parses_raw(rels, parses, raw)
+
+
+def main():
+    """Main method for doing discourse parsing of CoNLL JSON data.
+
+    Args:
+    :void
+      sys.argv are parsed in place
+
+    Returns:
+    :int
+    0 on success, non-0 otherwise
+
+    """
+    # parse arguments
+    argparser = argparse.ArgumentParser(description="""
+    Determine senses of discourse connectives.""")
+
+    subparsers = argparser.add_subparsers(help="type of operation to perform",
+                                          dest="mode")
+    # training parser
+    parser_train = subparsers.add_parser(M_TRAIN, help=
+                                         "train new model on provided data")
+    parser_train.add_argument("-d", "--dev", help=
+                              "development directory with JSON data",
+                              type=str)
+    parser_train.add_argument("--type", help="type of the model to train",
+                              type=str, choices=(FFNN,), default=FFNN)
+    _add_cmn_options(parser_train)
+
+    # testing parser
+    parser_test = subparsers.add_parser(M_TEST, help="""determine senses
+    using pre-trained models""")
+    _add_cmn_options(parser_test)
+    parser_test.add_argument("output_dir", help=
+                              "directory for storing output files", type=str)
+    args = argparser.parse_args()
+
+    # instantiate objects required for processing
+    dsenser = None
+
+    if args.mode == M_TRAIN:
+        # read the data
+        dev_set = _read_dataset(args.dev)
+        input_set = _read_dataset(args.input_dir)
+        # train the model
+        dsenser = DiscourseSenser(None)
+        dsenser.train(input_set, args.model, args.type, dev_set)
+    else:
+        raise NotImplementedError
+
+
+##################################################################
+# Main
+if __name__ == "__main__":
+    main()

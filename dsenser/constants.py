@@ -15,9 +15,25 @@ import os
 
 ##################################################################
 # Variables and Constants
-DFLT_MODEL = os.path.join(os.path.dirname(__name__), "data", "models",
-                          "pdtb.sense.model")
+DFLT_MODEL_PATH = os.path.join(os.path.dirname(__file__), "data", "models",
+                               "pdtb.sense.model")
 
-FFNN = "FFNN"
-LSTM = "LSTM"
-SVM = "SVM"
+FFNN = 0
+LSTM = 1
+MJR = 2
+SVM = 4
+WANG = 8
+DFLT_MODEL_TYPE = MJR
+
+# JSON field names
+ARG1 = "Arg1"
+ARG2 = "Arg2"
+CHAR_SPAN = "CharacterSpanList"
+CONNECTIVE = "Connective"
+EXPLICIT = "Explicit"
+IMPLICIT = "Implicit"
+RAW_TEXT = "RawText"
+SENSE = "Sense"
+TOK_LIST = "TokenList"
+TYPE = "Type"
+TOK_OFFS_IDX = 2

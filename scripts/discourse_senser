@@ -9,7 +9,9 @@
 # Imports
 from __future__ import print_function, unicode_literals
 
-from dsenser import DiscourseSenser, DFLT_MODEL, FFNN
+from dsenser import DiscourseSenser, \
+    DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
+    FFNN, LSTM, MJR, SVM, WANG
 
 import argparse
 import codecs
@@ -22,12 +24,13 @@ import sys
 ##################################################################
 # Variables and Constants
 M_TRAIN = "train"
-M_TEST = "test"
-ENCODING = "iso-8859-1"
+M_PREDICT = "predict"
+ENCODING = "utf-8"
 
 ARGS_FNAME = "relations-no-senses.json"
 GOLD_FNAME = "relations.json"
 PARSE_FNAME = "parses.json"
+OUT_FNAME = "output.json"
 RAW_DIR = "raw"
 WSJ_GLOB="wsj_*"
 
@@ -47,34 +50,30 @@ def _add_cmn_options(a_parser):
     """
     a_parser.add_argument("-m", "--model",
                           help="path to the model (if different from default)",
-                          type=str, default=DFLT_MODEL)
+                          type=str, default=DFLT_MODEL_PATH)
     a_parser.add_argument("input_dir", help="directory containing input data",
                           type=str)
 
 
-def _read_json(a_dir, a_fname, a_opt=True, a_enc=ENCODING):
+def _read_json(a_dir, a_fname, a_enc=ENCODING):
     """Read JSON data from file.
 
     Args:
-    a_dir: str
+    a_dir (str):
       dirname to the input file
-    a_fname: str
+    a_fname (str):
       basename of the input file
-    a_opt: bool
-      input file might not exist
-    a_enc: str
+    a_enc (str):
       input file encoding
 
     Returns:
-    : dict
+    (dict):
     input data as dictionary
 
     """
     fname = os.path.join(a_dir, a_fname or "")
     if a_fname is None or not (os.path.exists(fname) and
                                os.access(fname, os.R_OK)):
-        if a_opt:
-            return None
         raise RuntimeError("Can't open file '{:s}'.".format(a_fname))
     print("Loading file '{:s}'... ".format(fname), end="", file=sys.stderr)
     ret = []
@@ -139,39 +138,45 @@ def _join_rels_parses_raw(a_rels, a_parses, a_raw):
     raise NotImplementedError
 
 
-def _read_dataset(a_dir):
+def _read_dataset(a_dir, a_train=False):
     """Read data from directory.
 
     Args:
-    a_dir: str
+    a_dir (str):
+      path to directory containing input data
+    a_train (bool):
       path to directory containing input data
 
     Returns:
-    dict: traiining set
+    2-tuple(dict, dict): training rel set and parses
 
     """
     if a_dir is None:
         return (None, None, None)
     # read relations
-    rels = _read_json(a_dir, GOLD_FNAME, a_opt=True)
-    if rels is None:
+    if a_train:
+        rels = _read_json(a_dir, GOLD_FNAME)
+    else:
         rels = _read_json(a_dir, ARGS_FNAME)
     # read parses
-    parses = _read_json(a_dir, PARSE_FNAME)
-    raw = _read_raw(os.path.join(a_dir, RAW_DIR))
-    return _join_rels_parses_raw(rels, parses, raw)
+    with codecs.open(os.path.join(a_dir, PARSE_FNAME), 'r', ENCODING) as ifile:
+        print("Loading file '{:s}'... ".format(ifile.name), end="",
+              file=sys.stderr)
+        parses = json.load(ifile)
+        print("done", file=sys.stderr)
+    return (rels, parses)
 
 
 def main():
     """Main method for doing discourse parsing of CoNLL JSON data.
 
     Args:
-    :void
+    (void)
       sys.argv are parsed in place
 
     Returns:
-    :int
-    0 on success, non-0 otherwise
+    (int)
+      0 on success, non-0 otherwise
 
     """
     # parse arguments
@@ -186,12 +191,18 @@ def main():
     parser_train.add_argument("-d", "--dev", help=
                               "development directory with JSON data",
                               type=str)
-    parser_train.add_argument("--type", help="type of the model to train",
-                              type=str, choices=(FFNN,), default=FFNN)
+    parser_train.add_argument("--type", help=("type of the model to train"
+                               "({:d} - feed-forward, {:d} - LSTM, {:d} - majority,"
+                               " {:d} - SVM, {:d} - Wang), ".format(FFNN, LSTM, MJR,
+                                                                   SVM, WANG) +
+                               "default = {:d}".format(DFLT_MODEL_TYPE)),
+                              type=str, action="append", choices=(FFNN, LSTM, MJR,
+                                                                  SVM, WANG),
+                              default=[DFLT_MODEL_TYPE])
     _add_cmn_options(parser_train)
 
     # testing parser
-    parser_test = subparsers.add_parser(M_TEST, help="""determine senses
+    parser_test = subparsers.add_parser(M_PREDICT, help="""determine senses
     using pre-trained models""")
     _add_cmn_options(parser_test)
     parser_test.add_argument("output_dir", help=
@@ -202,14 +213,32 @@ def main():
     dsenser = None
 
     if args.mode == M_TRAIN:
-        # read the data
-        dev_set = _read_dataset(args.dev)
-        input_set = _read_dataset(args.input_dir)
+        # read data
+        dev_set = _read_dataset(args.dev, True)
+        input_set = _read_dataset(args.input_dir, True)
         # train the model
-        dsenser = DiscourseSenser(None)
-        dsenser.train(input_set, args.model, args.type, dev_set)
+        # determine model type
+        mtype = 0
+        for itype in args.type:
+            mtype |= itype
+        dsenser =  DiscourseSenser(None)
+        dsenser.train(input_set, mtype, args.model, dev_set)
     else:
-        raise NotImplementedError
+        if not os.path.exists(args.output_dir):
+            os.makedirs(args.output_dir)
+        elif not os.path.isdir(args.output_dir) or not \
+             os.access(args.output_dir, os.W_OK):
+                raise RuntimeError("Cannot write to directory '{:s}'.".format(
+                    args.output_dir))
+        # read test data
+        dsenser =  DiscourseSenser(args.model)
+        test_set = _read_dataset(args.input_dir)
+        dsenser.predict(test_set)
+        # write results to file
+        ofname = os.path.join(args.output_dir, OUT_FNAME)
+        with codecs.open(ofname, 'w', ENCODING) as ofile:
+            for irel in test_set[0]:
+                print(json.dumps(irel), file=ofile)
 
 
 ##################################################################

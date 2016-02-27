@@ -14,7 +14,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from cPickle import dump, load
 
-from dsenser.constants import DFLT_MODEL, FFNN
+from dsenser.constants import DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
+    FFNN, LSTM, MJR, SVM, WANG
 
 ##################################################################
 # Variables and Constants
@@ -39,16 +40,17 @@ class DiscourseSenser(object):
         self.model = None
         # load serialized model
         if a_model is not None:
-            self.model = load(a_model)
+            with open(a_model, "rb") as ifile:
+                self.model = load(ifile)
 
-    def train(self, a_train_data, a_model=DFLT_MODEL, a_type=FFNN,
-              a_dev_data=None):
+    def train(self, a_train_data, a_type=DFLT_MODEL_TYPE,
+              a_path=DFLT_MODEL_PATH, a_dev_data=None):
         """Train specified model on the provided data.
 
         Args:
         a_dev_data (list or None):
           development set
-        a_model (str):
+        a_path (str):
           path for storing the model
         a_type (str):
           type of the model to be trained
@@ -59,7 +61,12 @@ class DiscourseSenser(object):
           (void)
 
         """
-        pass
+        if a_type & MJR:
+            from dsenser.major import MajorSenser
+            self.model = MajorSenser()
+        else:
+            raise NotImplementedError
+        self.model.train(a_train_data, a_path, a_dev_data)
 
     def predict(self, a_data):
         """Determine senses of discourse connectives.
@@ -76,4 +83,4 @@ class DiscourseSenser(object):
         if self.model is None:
             raise RuntimeError(
                 "No trained model is provided to make predictions.")
-        raise NotImplementedError
+        self.model.predict(a_data)

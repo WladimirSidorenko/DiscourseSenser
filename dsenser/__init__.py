@@ -16,9 +16,11 @@ senser (module): module containing methods for sense disambiguation
 # Imports
 from __future__ import absolute_import, unicode_literals
 
-from dsenser.constants import DFLT_MODEL, FFNN
+from dsenser.constants import DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
+    FFNN, LSTM, MJR, SVM, WANG
 from dsenser.dsenser import DiscourseSenser
 
 ##################################################################
 # Variables and Constants
-__all__ = ["DiscourseSenser", "DFLT_MODEL", "FFNN"]
+__all__ = ["DiscourseSenser", "DFLT_MODEL_PATH", "DFLT_MODEL_TYPE",
+           "FFNN", "LSTM", "MJR", "SVM", "WANG"]

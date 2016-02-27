@@ -62,3 +62,4 @@ MANIFEST
 data/en.dev/
 data/en.train/
 venv/
+data/en.out/

@@ -189,7 +189,7 @@ def main():
                                " {:d} - SVM, {:d} - Wang), ".format(FFNN, LSTM, MJR,
                                                                    SVM, WANG) +
                                "default = {:d}".format(DFLT_MODEL_TYPE)),
-                              type=str, action="append", choices=(FFNN, LSTM, MJR,
+                              type=int, action="append", choices=(FFNN, LSTM, MJR,
                                                                   SVM, WANG),
                               default=[DFLT_MODEL_TYPE])
     _add_cmn_options(parser_train)

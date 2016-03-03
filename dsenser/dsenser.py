@@ -95,6 +95,9 @@ class DiscourseSenser(object):
         if a_type & MJR:
             from dsenser.major import MajorSenser
             self.models.append(MajorSenser())
+        if a_type & WANG:
+            from dsenser.wang import WangSenser
+            self.models.append(WangSenser())
         # convert classes to indices
         n_senses = 0
         isense = isenses = None

@@ -24,7 +24,7 @@ import sys
 ##################################################################
 # Variables and Constants
 M_TRAIN = "train"
-M_PREDICT = "predict"
+M_TEST = "test"
 ENCODING = "utf-8"
 
 ARGS_FNAME = "relations-no-senses.json"
@@ -49,7 +49,7 @@ def _add_cmn_options(a_parser):
 
     """
     a_parser.add_argument("-m", "--model",
-                          help="path to the model (if different from default)",
+                          help="path to the main model (if different from default)",
                           type=str, default=DFLT_MODEL_PATH)
     a_parser.add_argument("input_dir", help="directory containing input data",
                           type=str)
@@ -131,13 +131,6 @@ def _read_raw(a_dir, a_enc=ENCODING):
     return ret
 
 
-def _join_rels_parses_raw(a_rels, a_parses, a_raw):
-    """
-
-    """
-    raise NotImplementedError
-
-
 def _read_dataset(a_dir, a_train=False):
     """Read data from directory.
 
@@ -202,7 +195,7 @@ def main():
     _add_cmn_options(parser_train)
 
     # testing parser
-    parser_test = subparsers.add_parser(M_PREDICT, help="""determine senses
+    parser_test = subparsers.add_parser(M_TEST, help="""determine senses
     using pre-trained models""")
     _add_cmn_options(parser_test)
     parser_test.add_argument("output_dir", help=

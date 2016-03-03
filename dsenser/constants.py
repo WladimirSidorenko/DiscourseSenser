@@ -26,6 +26,7 @@ WANG = 8
 DFLT_MODEL_TYPE = MJR
 
 # JSON field names
+ALT_LEX = "AltLex"
 ARG1 = "Arg1"
 ARG2 = "Arg2"
 CHAR_SPAN = "CharacterSpanList"

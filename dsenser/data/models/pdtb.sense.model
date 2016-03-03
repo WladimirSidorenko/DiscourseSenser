@@ -1,2533 +1,2360 @@
 ccopy_reg
 _reconstructor
 p1
-(cdsenser.major
-MajorSenser
+(cdsenser.dsenser
+DiscourseSenser
 p2
 c__builtin__
 object
 p3
 NtRp4
 (dp5
-S'conn2sense'
+S'models'
 p6
-(dp7
-V
-VEntRel
+(lp7
+g1
+(cdsenser.major
+MajorSenser
 p8
-sVthis caused
-p9
-VContingency.Cause.Result
-p10
-sVreportedly after
+g3
+NtRp9
+(dp10
+S'conn2sense'
 p11
-VContingency.Cause.Reason
-p12
-sVthe move comes a week after
+(dp12
+V
+I1
+sVthis caused
 p13
-VTemporal.Asynchronous.Succession
+I6
+sVreportedly after
 p14
-sVprimarily because
+I12
+sVthe move comes a week after
 p15
-VContingency.Cause.Reason
+I12
+sVprimarily because
 p16
+I4
 sVto avoid this problem
 p17
-VContingency.Cause.Result
-p18
+I6
 sVstabilizing the derivative markets would tend to stabilize
-p19
-VContingency.Cause.Result
-p20
+p18
+I6
 sVthat obviously means
-p21
-VContingency.Cause.Result
-p22
+p19
+I6
 sVthe plunge followed
-p23
-VTemporal.Asynchronous.Succession
-p24
+p20
+I12
 sVthe rub is that
-p25
-VExpansion.Conjunction
-p26
+p21
+I2
 sVthree months after
-p27
-VTemporal.Asynchronous.Succession
-p28
+p22
+I12
 sVby comparison
-p29
-VComparison.Contrast
-p30
+p23
+I0
 sVa consequence of their departure could be
-p31
-VContingency.Cause.Result
-p32
+p24
+I6
 sVless than a month after
-p33
-VTemporal.Asynchronous.Succession
-p34
+p25
+I12
 sVparticularly since
-p35
-VContingency.Cause.Reason
-p36
+p26
+I4
 sVone of these is
-p37
-VExpansion.Instantiation
-p38
+p27
+I5
 sVthe bottom line is
-p39
-VExpansion.Restatement
-p40
+p28
+I7
 sVwithin minutes after
-p41
-VTemporal.Asynchronous.Succession
-p42
+p29
+I12
 sVamong them were
-p43
-VExpansion.Instantiation
-p44
+p30
+I5
 sVone way to make the ruble into a major international currency
-p45
-VExpansion.Conjunction
-p46
+p31
+I2
 sVthe expansion will expand
-p47
-VContingency.Cause.Result
-p48
+p32
+I6
 sVin case you have forgotten
-p49
-VExpansion.Restatement
-p50
+p33
+I7
 sVthe major reason
-p51
-VContingency.Cause.Reason
-p52
+p34
+I4
 sVworse
-p53
-VExpansion.Conjunction
-p54
+p35
+I2
 sVas examples
-p55
-VExpansion.Instantiation
-p56
+p36
+I5
 sVonly two weeks after
-p57
-VTemporal.Asynchronous.Succession
-p58
+p37
+I12
 sVas long as
-p59
-VContingency.Condition
-p60
+p38
+I3
 sVinasmuch as
-p61
-VContingency.Cause.Reason
-p62
+p39
+I4
 sVthe move is partly aimed at
-p63
-VContingency.Cause.Result
-p64
+p40
+I6
 sVthat the conquest of falconbridge could vault
-p65
-VContingency.Cause.Result
-p66
+p41
+I6
 sVall told
-p67
-VExpansion.Conjunction
-p68
+p42
+I2
 sVin the end
-p69
-VExpansion.Restatement
-p70
+p43
+I7
 sVa problem is that
-p71
-VContingency.Cause.Reason
-p72
+p44
+I4
 sVonly until
-p73
-VTemporal.Asynchronous.Precedence
-p74
+p45
+I9
 sVthe sharp rise in otc short interest compares with
-p75
-VComparison.Contrast
-p76
+p46
+I0
 sVjust a day after
-p77
-VTemporal.Asynchronous.Succession
-p78
+p47
+I12
 sVthe tip-off came
-p79
-VExpansion.Conjunction
-p80
+p48
+I2
 sVthat would make
-p81
-VContingency.Cause.Result
-p82
+p49
+I6
 sVanother approach
-p83
-VExpansion.Conjunction
-p84
+p50
+I2
 sVamong the souped-up indexing strategies
-p85
-VExpansion.Instantiation
-p86
+p51
+I5
 sVthe result
-p87
-VContingency.Cause.Result
-p88
+p52
+I6
 sVat the other end of the spectrum
-p89
-VComparison.Contrast
-p90
+p53
+I0
 sVin this way
-p91
-VContingency.Cause.Result
-p92
+p54
+I6
 sVeven while
-p93
-VTemporal.Synchrony
-p94
+p55
+I13
 sVso too
-p95
-VExpansion.Conjunction
-p96
+p56
+I2
 sVmost important
-p97
-VExpansion.Instantiation
-p98
+p57
+I5
 sVsecond
-p99
-VExpansion.Conjunction
-p100
+p58
+I2
 sVon the whole
-p101
-VExpansion.Restatement
-p102
+p59
+I7
 sVincidentally
-p103
-VExpansion.Conjunction
-p104
+p60
+I2
 sVfurther
-p105
-VExpansion.Conjunction
-p106
+p61
+I2
 sVattributed the decline to
-p107
-VContingency.Cause.Reason
-p108
+p62
+I4
 sVeven
-p109
-VExpansion.Conjunction
-p110
+p63
+I2
 sVis a good example
-p111
-VExpansion.Instantiation
-p112
+p64
+I5
 sVsince then
-p113
-VTemporal.Asynchronous.Precedence
-p114
+p65
+I9
 sVjust as soon as
-p115
-VTemporal.Synchrony
-p116
+p66
+I13
 sVat least until
-p117
-VTemporal.Asynchronous.Precedence
-p118
+p67
+I9
 sVin the meanwhile
-p119
-VTemporal.Synchrony
-p120
+p68
+I13
 sVthe decline primarily reflected
-p121
-VContingency.Cause.Reason
-p122
+p69
+I4
 sVsoon afterward
-p123
-VTemporal.Asynchronous.Precedence
-p124
+p70
+I9
 sVsimultaneously
-p125
-VTemporal.Synchrony
-p126
+p71
+I13
 sVabout a week after
-p127
-VTemporal.Asynchronous.Succession
-p128
+p72
+I12
 sVafter then
-p129
-VTemporal.Asynchronous.Precedence
-p130
+p73
+I9
 sVthat compares with
-p131
-VComparison.Contrast
-p132
+p74
+I0
 sV25 years after
-p133
-VTemporal.Asynchronous.Succession
-p134
+p75
+I12
 sVeven then
-p135
-VComparison.Concession
-p136
+p76
+I8
 sVat first
-p137
-VTemporal.Asynchronous.Precedence
-p138
+p77
+I9
 sVneither nor
-p139
-VExpansion.Alternative
-p140
+p78
+I0
 sVresulting
-p141
-VContingency.Cause.Result
-p142
+p79
+I6
 sVeither or
-p143
-VExpansion.Alternative
-p144
+p80
+I11
 sVthis portends
-p145
-VContingency.Cause.Result
-p146
+p81
+I6
 sVbefore and after
-p147
-VTemporal.Asynchronous
-p148
+p82
+I15
 sVregardless
-p149
-VComparison.Concession
-p150
+p83
+I8
 sVuntil then
-p151
-VTemporal.Asynchronous.Succession
-p152
+p84
+I12
 sVwhen they did
-p153
-VTemporal.Asynchronous.Precedence
-p154
+p85
+I9
 sVthe resulting stockpiling
-p155
-VContingency.Cause.Result
-p156
+p86
+I6
 sVthe rise came as
-p157
-VTemporal.Synchrony
-p158
+p87
+I13
 sVso far
-p159
-VTemporal.Asynchronous.Precedence
-p160
+p88
+I9
 sVtotal
-p161
-VExpansion.Restatement
-p162
+p89
+I7
 sVa day or two before
-p163
-VTemporal.Asynchronous.Precedence
-p164
+p90
+I9
 sVat least when
-p165
-VContingency.Condition
-p166
+p91
+I3
 sVfinally
-p167
-VTemporal.Asynchronous.Precedence
-p168
+p92
+I9
 sVin effect
-p169
-VExpansion.Restatement
-p170
+p93
+I7
 sVtherefore
-p171
-VContingency.Cause.Result
-p172
+p94
+I6
 sVnearly two months after
-p173
-VTemporal.Asynchronous.Succession
-p174
+p95
+I12
 sVonly as long as
-p175
-VContingency.Condition
-p176
+p96
+I3
 sVuntil
-p177
-VTemporal.Asynchronous.Precedence
-p178
+p97
+I9
 sVis an example
-p179
-VExpansion.Instantiation
-p180
+p98
+I5
 sVthe coincidence might lead to
-p181
-VContingency.Cause.Result
-p182
+p99
+I6
 sVthat largely reflects
-p183
-VContingency.Cause.Reason
-p184
+p100
+I4
 sVthe big reason
-p185
-VContingency.Cause.Reason
-p186
+p101
+I4
 sVthat's why
-p187
-VContingency.Cause.Result
-p188
+p102
+I6
 sVthat's the path of reasoning
-p189
-VContingency.Cause.Result
-p190
+p103
+I6
 sVthat's a big change
-p191
-VComparison.Contrast
-p192
+p104
+I0
 sVthe appointment increased
-p193
-VContingency.Cause.Result
-p194
+p105
+I6
 sVwith all that going for them
-p195
-VContingency.Cause.Result
-p196
+p106
+I6
 sVthis left
-p197
-VContingency.Cause.Result
-p198
+p107
+I6
 sVthe result is that
-p199
-VContingency.Cause.Result
-p200
+p108
+I6
 sVoriginally
-p201
-VTemporal.Asynchronous.Succession
-p202
+p109
+I12
 sVhis point
-p203
-VExpansion.Restatement
-p204
+p110
+I7
 sVboth reflect
-p205
-VContingency.Cause.Reason
-p206
+p111
+I4
 sVby the way
-p207
-VExpansion.Conjunction
-p208
+p112
+I2
 sVto begin with
-p209
-VExpansion.Instantiation
-p210
+p113
+I5
 sVthis is
-p211
-VExpansion.Conjunction
-p212
+p114
+I2
 sVits popularity was due to
-p213
-VContingency.Cause.Reason
-p214
+p115
+I4
 sVthe result was
-p215
-VContingency.Cause.Result
-p216
+p116
+I6
 sVthe move was necessary
-p217
-VContingency.Cause.Reason
-p218
+p117
+I4
 sVonly if
-p219
-VContingency.Condition
-p220
+p118
+I3
 sVtwo days after
-p221
-VTemporal.Asynchronous.Succession
-p222
+p119
+I12
 sVso much as
-p223
-VExpansion.Alternative.Chosen alternative
-p224
+p120
+I16
 sVparticularly because
-p225
-VContingency.Cause.Reason
-p226
+p121
+I4
 sVamong other things
-p227
-VExpansion.Restatement
-p228
+p122
+I7
 sVthe resulting scandal led to
-p229
-VContingency.Cause.Result
-p230
+p123
+I6
 sVconversely
-p231
-VComparison.Contrast
-p232
+p124
+I0
 sVnearly a year and a half after
-p233
-VTemporal.Asynchronous.Succession
-p234
+p125
+I12
 sVthis compares with
-p235
-VComparison.Contrast
-p236
+p126
+I0
 sVthe abrupt termination was due to
-p237
-VContingency.Cause.Reason
-p238
+p127
+I4
 sVthe volume resulted in
-p239
-VContingency.Cause.Result
-p240
+p128
+I6
 sVrather
-p241
-VExpansion.Alternative.Chosen alternative
-p242
+p129
+I16
 sVthat compared with
-p243
-VComparison.Contrast
-p244
+p130
+I0
 sV18 months after
-p245
-VTemporal.Asynchronous.Succession
-p246
+p131
+I12
 sVtill
-p247
-VTemporal.Asynchronous.Precedence
-p248
+p132
+I9
 sVthe rise resulted from
-p249
-VContingency.Cause.Reason
-p250
+p133
+I4
 sVthat purchase doubled
-p251
-VContingency.Cause.Result
-p252
+p134
+I6
 sVinstead
-p253
-VExpansion.Alternative.Chosen alternative
-p254
+p135
+I16
 sVthis means
-p255
-VContingency.Cause.Result
-p256
+p136
+I6
 sVthat brought in
-p257
-VContingency.Cause.Result
-p258
+p137
+I6
 sVthe tragedy galvanized
-p259
-VContingency.Cause.Result
-p260
+p138
+I6
 sVthree reasons were pinpointed
-p261
-VContingency.Cause.Reason
-p262
+p139
+I4
 sVthe reason is that
-p263
-VContingency.Cause.Reason
-p264
+p140
+I4
 sVearlier
-p265
-VTemporal.Asynchronous.Succession
-p266
+p141
+I12
 sVparticularly when
-p267
-VContingency.Cause.Reason
-p268
+p142
+I4
 sVthe drop indicates
-p269
-VContingency.Cause.Result
-p270
+p143
+I6
 sVthat pace is causing
-p271
-VContingency.Cause.Result
-p272
+p144
+I6
 sVthis activity produced
-p273
-VContingency.Cause.Result
-p274
+p145
+I6
 sVthese include
-p275
-VExpansion.Instantiation
-p276
+p146
+I5
 sVso that
-p277
-VContingency.Cause.Result
-p278
+p147
+I6
 sVto do so
-p279
-VContingency.Cause.Result
-p280
+p148
+I6
 sVthird
-p281
-VExpansion.Conjunction
-p282
+p149
+I2
 sVbecause of this and the huge trade gap
-p283
-VContingency.Cause.Result
-p284
+p150
+I6
 sVconsequently
-p285
-VContingency.Cause.Result
-p286
+p151
+I6
 sVyears before
-p287
-VTemporal.Asynchronous.Precedence
-p288
+p152
+I9
 sVsoon after
-p289
-VTemporal.Asynchronous.Succession
-p290
+p153
+I12
 sVto do that
-p291
-VContingency.Cause.Result
-p292
+p154
+I6
 sVso
-p293
-VContingency.Cause.Result
-p294
+p155
+I6
 sVthat, coupled with lower semiconductor prices and higher semiconductor-depreciation expense, contributed to
-p295
-VContingency.Cause.Result
-p296
+p156
+I6
 sVon top of all this
-p297
-VExpansion.Conjunction
-p298
+p157
+I2
 sVa week after
-p299
-VTemporal.Asynchronous.Succession
-p300
+p158
+I12
 sVthis helps explain
-p301
-VContingency.Cause.Result
-p302
+p159
+I6
 sVputting it all together
-p303
-VExpansion.Restatement
-p304
+p160
+I7
 sVthere is a simple reason for this
-p305
-VContingency.Cause.Reason
-p306
+p161
+I4
 sVmainly
-p307
-VExpansion.Restatement
-p308
+p162
+I7
 sVsoon
-p309
-VTemporal.Asynchronous.Precedence
-p310
+p163
+I9
 sVabout the same time
-p311
-VTemporal.Synchrony
-p312
+p164
+I13
 sVstill
-p313
-VComparison.Contrast
-p314
+p165
+I0
 sVtwo days before
-p315
-VTemporal.Asynchronous.Precedence
-p316
+p166
+I9
 sVthe result has been
-p317
-VContingency.Cause.Result
-p318
+p167
+I6
 sVwhen that happened
-p319
-VTemporal.Asynchronous.Precedence
-p320
+p168
+I9
 sVthe high ratio reflects the fact
-p321
-VExpansion.Restatement
-p322
+p169
+I7
 sVthat spurs allows and increases
-p323
-VContingency.Cause.Result
-p324
+p170
+I6
 sVthat would leave
-p325
-VContingency.Cause.Result
-p326
+p171
+I6
 sVwill help provide for
-p327
-VContingency.Cause.Result
-p328
+p172
+I6
 sVactually
-p329
-VExpansion.Restatement
-p330
+p173
+I7
 sVas it turns out
-p331
-VContingency.Cause.Result
-p332
+p174
+I2
 sVthat came when
-p333
-VExpansion.Restatement
-p334
+p175
+I7
 sVthen
-p335
-VTemporal.Asynchronous.Precedence
-p336
+p176
+I9
 sVto tackle the problem
-p337
-VContingency.Cause.Result
-p338
+p177
+I6
 sVthereby
-p339
-VContingency.Cause.Result
-p340
+p178
+I6
 sVan average of six months before
-p341
-VTemporal.Asynchronous.Precedence
-p342
+p179
+I9
 sVthe two developments leave
-p343
-VContingency.Cause.Result
-p344
+p180
+I6
 sVthe reactions stem from the fact that
-p345
-VContingency.Cause.Reason
-p346
+p181
+I4
 sVthis forecast was based on
-p347
-VContingency.Cause.Reason
-p348
+p182
+I4
 sVthat's because
-p349
-VContingency.Cause.Reason
-p350
+p183
+I4
 sVthat leaves
-p351
-VExpansion.Conjunction
-p352
+p184
+I2
 sVone big problem
-p353
-VContingency.Cause.Reason
-p354
+p185
+I4
 sVattributed the improvement to
-p355
-VContingency.Cause.Reason
-p356
+p186
+I4
 sVnow
-p357
-VExpansion.Conjunction
-p358
+p187
+I2
 sVadding to that speculation
-p359
-VExpansion.Conjunction
-p360
+p188
+I2
 sVthat may be because
-p361
-VContingency.Cause.Reason
-p362
+p189
+I4
 sVespecially if
-p363
-VContingency.Condition
-p364
+p190
+I3
 sVthat puts
-p365
-VContingency.Cause.Result
-p366
+p191
+I6
 sVindeed
-p367
-VExpansion.Restatement
-p368
+p192
+I7
 sVjust 15 days after
-p369
-VTemporal.Asynchronous.Succession
-p370
+p193
+I12
 sVas a consequence
-p371
-VContingency.Cause.Result
-p372
+p194
+I6
 sVexcept when
-p373
-VExpansion.Alternative
-p374
+p195
+I11
 sVone simple approach is
-p375
-VExpansion.Instantiation
-p376
+p196
+I5
 sVin the process
-p377
-VTemporal.Synchrony
-p378
+p197
+I13
 sVwhat this means is
-p379
-VExpansion.Restatement
-p380
+p198
+I7
 sVin short
-p381
-VExpansion.Restatement
-p382
+p199
+I7
 sVanother factor was that
-p383
-VExpansion.Conjunction
-p384
+p200
+I2
 sVthis program would reduce
-p385
-VContingency.Cause.Result
-p386
+p201
+I6
 sVthe difference is that
-p387
-VComparison.Contrast
-p388
+p202
+I0
 sVa day after
-p389
-VTemporal.Asynchronous.Succession
-p390
+p203
+I12
 sVthe bottom line is that
-p391
-VExpansion.Restatement
-p392
+p204
+I7
 sVthis may help explain why
-p393
-VContingency.Cause.Result
-p394
+p205
+I6
 sVjust when
-p395
-VTemporal.Synchrony
-p396
+p206
+I13
 sVthese efforts wind up creating
-p397
-VContingency.Cause.Result
-p398
+p207
+I6
 sVonly when
-p399
-VContingency.Condition
-p400
+p208
+I3
 sVthe move by the convention on trade in endangered species, meeting in switzerland, places
-p401
-VContingency.Cause.Result
-p402
+p209
+I6
 sVthe next to be cloned
-p403
-VTemporal.Asynchronous.Precedence
-p404
+p210
+I9
 sVultimately
-p405
-VTemporal.Asynchronous.Precedence
-p406
+p211
+I9
 sVthe main effect of the ceiling boost
-p407
-VContingency.Cause.Result
-p408
+p212
+I6
 sVespecially since
-p409
-VContingency.Cause.Reason
-p410
+p213
+I4
 sVcomparably equipped
-p411
-VComparison.Contrast
-p412
+p214
+I0
 sVfurthermore
-p413
-VExpansion.Conjunction
-p414
+p215
+I2
 sVsince
-p415
-VContingency.Cause.Reason
-p416
+p216
+I4
 sVthe only difference is
-p417
-VComparison.Contrast
-p418
+p217
+I0
 sVpressure came from
-p419
-VContingency.Cause.Reason
-p420
+p218
+I4
 sVthrough" the bank pact
-p421
-VContingency.Cause.Result
-p422
+p219
+I6
 sVfour days after
-p423
-VTemporal.Asynchronous.Succession
-p424
+p220
+I12
 sVone step is
-p425
-VExpansion.Instantiation
-p426
+p221
+I5
 sVthat paradox is
-p427
-VExpansion.Restatement
-p428
+p222
+I7
 sVto make matters worse
-p429
-VExpansion.Conjunction
-p430
+p223
+I2
 sVthis will give
-p431
-VContingency.Cause.Result
-p432
+p224
+I6
 sVhis point was
-p433
-VExpansion.Restatement
-p434
+p225
+I7
 sVbesides
-p435
-VExpansion.Conjunction
-p436
+p226
+I2
 sVthat hurts
-p437
-VContingency.Cause.Result
-p438
+p227
+I6
 sVafterward
-p439
-VTemporal.Asynchronous.Precedence
-p440
+p228
+I9
 sVthat could make
-p441
-VContingency.Cause.Result
-p442
+p229
+I6
 sVthe improvement was a result of
-p443
-VContingency.Cause.Reason
-p444
+p230
+I4
 sVthe additional liquidity should tend
-p445
-VContingency.Cause.Result
-p446
+p231
+I6
 sVthat includes
-p447
-VExpansion.Restatement
-p448
+p232
+I7
 sVonce triggered
-p449
-VContingency.Cause.Result
-p450
+p233
+I6
 sVfive minutes before
-p451
-VTemporal.Asynchronous.Precedence
-p452
+p234
+I9
 sVhence
-p453
-VContingency.Cause.Result
-p454
+p235
+I6
 sVjust minutes after
-p455
-VTemporal.Asynchronous.Succession
-p456
+p236
+I12
 sVhelp explain why
-p457
-VContingency.Cause.Reason
-p458
+p237
+I4
 sVfirst
-p459
-VExpansion.Conjunction
-p460
+p238
+I2
 sVthat is
-p461
-VExpansion.Restatement
-p462
+p239
+I7
 sVthis is that
-p463
-VExpansion.Restatement
-p464
+p240
+I7
 sVnot only because
-p465
-VContingency.Cause.Reason
-p466
+p241
+I4
 sVthereafter
-p467
-VTemporal.Asynchronous.Precedence
-p468
+p242
+I9
 sVfor instance
-p469
-VExpansion.Instantiation
-p470
+p243
+I5
 sVone is
-p471
-VExpansion.Instantiation
-p472
+p244
+I5
 sVamong the suggestions
-p473
-VExpansion.Instantiation
-p474
+p245
+I5
 sVmainly because
-p475
-VContingency.Cause.Reason
-p476
+p246
+I4
 sVeven when
-p477
-VComparison.Concession
-p478
+p247
+I8
 sVsimilarly
-p479
-VExpansion.Conjunction
-p480
+p248
+I2
 sVon balance
-p481
-VExpansion
-p482
+p249
+I10
 sVneedless to say
-p483
-VExpansion.Restatement
-p484
+p250
+I7
 sVwithin a year after
-p485
-VTemporal.Asynchronous.Succession
-p486
+p251
+I12
 sVin any event
-p487
-VExpansion.Conjunction
-p488
+p252
+I2
 sVanother major factor in this positive trend was
-p489
-VExpansion.Conjunction
-p490
+p253
+I2
 sVtoo
-p491
-VExpansion.Conjunction
-p492
+p254
+I2
 sVthis had to produce
-p493
-VContingency.Cause.Result
-p494
+p255
+I6
 sVshe specifies
-p495
-VExpansion.Restatement
-p496
+p256
+I7
 sVthe announcement effectively removes
-p497
-VContingency.Cause.Result
-p498
+p257
+I6
 sVas evidence
-p499
-VContingency.Cause.Reason
-p500
+p258
+I4
 sVthat is because
-p501
-VContingency.Cause.Reason
-p502
+p259
+I4
 sVthe increase was due mainly to
-p503
-VContingency.Cause.Reason
-p504
+p260
+I4
 sVabout three weeks after
-p505
-VTemporal.Asynchronous.Succession
-p506
+p261
+I12
 sVmayhap this metaphorical connection made
-p507
-VContingency.Cause.Result
-p508
+p262
+I6
 sVthe aim is
-p509
-VContingency.Cause.Result
-p510
+p263
+I6
 sVhas been added to the list
-p511
-VExpansion.Conjunction
-p512
+p264
+I2
 sVthe reason
-p513
-VContingency.Cause.Reason
-p514
+p265
+I4
 sVfrankly
-p515
-VExpansion.Restatement
-p516
+p266
+I7
 sVwhat this is saying is that
-p517
-VExpansion.Restatement
-p518
+p267
+I7
 sVthat this would mean
-p519
-VContingency.Cause.Result
-p520
+p268
+I6
 sVamong other possibilities
-p521
-VExpansion.Instantiation
-p522
+p269
+I5
 sVseveral months before
-p523
-VTemporal.Asynchronous.Precedence
-p524
+p270
+I9
 sVspecifications include
-p525
-VExpansion.Instantiation
-p526
+p271
+I5
 sVthe growth leads to the conclusion
-p527
-VContingency.Cause.Result
-p528
+p272
+I6
 sVthe result is
-p529
-VContingency.Cause.Result
-p530
+p273
+I6
 sVand
-p531
-VExpansion.Conjunction
-p532
+p274
+I2
 sVone was
-p533
-VExpansion.Instantiation
-p534
+p275
+I5
 sVthe stake would have given
-p535
-VContingency.Cause.Result
-p536
+p276
+I6
 sVon the contrary
-p537
-VComparison.Contrast
-p538
+p277
+I0
 sVjust five months after
-p539
-VTemporal.Asynchronous.Succession
-p540
+p278
+I12
 sVwas partly to blame
-p541
-VContingency.Cause.Reason
-p542
+p279
+I4
 sVsay
-p543
-VContingency.Condition
-p544
+p280
+I3
 sVthat trend could increase
-p545
-VContingency.Cause.Result
-p546
+p281
+I6
 sVat least not when
-p547
-VTemporal.Synchrony
-p548
+p282
+I13
 sVat the end of the exercise
-p549
-VExpansion.Conjunction
-p550
+p283
+I2
 sVas in
-p551
-VExpansion.Restatement
-p552
+p284
+I7
 sVas much as
-p553
-VExpansion.Alternative.Chosen alternative
-p554
+p285
+I8
 sVas if
-p555
-VExpansion
-p556
+p286
+I10
 sVtypical is
-p557
-VExpansion.Instantiation
-p558
+p287
+I5
 sVa few months after
-p559
-VTemporal.Asynchronous.Succession
-p560
+p288
+I12
 sValso
-p561
-VExpansion.Conjunction
-p562
+p289
+I2
 sVnow that
-p563
-VContingency.Cause.Reason
-p564
+p290
+I4
 sVin response
-p565
-VTemporal.Asynchronous.Precedence
-p566
+p291
+I9
 sVaside from the special charge
-p567
-VExpansion.Conjunction
-p568
+p292
+I2
 sVultimate
-p569
-VExpansion.Conjunction
-p570
+p293
+I2
 sVcarried even further
-p571
-VExpansion.Conjunction
-p572
+p294
+I2
 sVadded
-p573
-VExpansion.Conjunction
-p574
+p295
+I2
 sVunless
-p575
-VExpansion.Alternative
-p576
+p296
+I11
 sVthough
-p577
-VComparison.Contrast
-p578
+p297
+I0
 sVin fact
-p579
-VExpansion.Conjunction
-p580
+p298
+I2
 sVthe announcement boosted
-p581
-VContingency.Cause.Result
-p582
+p299
+I6
 sVshortly before
-p583
-VTemporal.Asynchronous.Precedence
-p584
+p300
+I9
 sVtop the list
-p585
-VExpansion.Restatement
-p586
+p301
+I7
 sV29 years and 11 months to the day after
-p587
-VTemporal.Asynchronous.Succession
-p588
+p302
+I12
 sVas though
-p589
-VComparison
-p590
+p303
+I14
 sVfully eight months before
-p591
-VTemporal.Asynchronous.Precedence
-p592
+p304
+I9
 sVsubsequently
-p593
-VTemporal.Asynchronous.Precedence
-p594
+p305
+I9
 sVmonths after
-p595
-VTemporal.Asynchronous.Succession
-p596
+p306
+I12
 sVas they conferred
-p597
-VTemporal.Synchrony
-p598
+p307
+I13
 sVespecially
-p599
-VExpansion.Restatement
-p600
+p308
+I7
 sVat this stage
-p601
-VTemporal.Synchrony
-p602
+p309
+I13
 sVlater
-p603
-VTemporal.Asynchronous.Precedence
-p604
+p310
+I9
 sVanother hurdle concerns
-p605
-VExpansion.Conjunction
-p606
+p311
+I2
 sVto be sure
-p607
-VExpansion.Conjunction
-p608
+p312
+I2
 sVall the more so when
-p609
-VExpansion.Restatement
-p610
+p313
+I7
 sVthe announcement fueled
-p611
-VContingency.Cause.Result
-p612
+p314
+I6
 sVtypically
-p613
-VExpansion.Conjunction
-p614
+p315
+I2
 sVin addition
-p615
-VExpansion.Conjunction
-p616
+p316
+I2
 sVparticularly
-p617
-VExpansion.Restatement
-p618
+p317
+I7
 sVsometimes after
-p619
-VTemporal.Asynchronous.Succession
-p620
+p318
+I12
 sVlargely because
-p621
-VContingency.Cause.Reason
-p622
+p319
+I4
 sVpartly because
-p623
-VContingency.Cause.Reason
-p624
+p320
+I4
 sVfive years after
-p625
-VTemporal.Asynchronous.Succession
-p626
+p321
+I12
 sVone reason was
-p627
-VContingency.Cause.Reason
-p628
+p322
+I4
 sVthe sale would result in
-p629
-VContingency.Cause.Result
-p630
+p323
+I6
 sVtwo years before
-p631
-VTemporal.Asynchronous.Precedence
-p632
+p324
+I9
 sVtheir "secret" is that
-p633
-VContingency.Cause.Reason
-p634
+p325
+I4
 sVa decade before
-p635
-VTemporal.Asynchronous.Precedence
-p636
+p326
+I9
 sVeven if
-p637
-VContingency.Condition
-p638
+p327
+I3
 sVamong them is
-p639
-VExpansion.Instantiation
-p640
+p328
+I5
 sVthe revision follows
-p641
-VTemporal.Asynchronous.Succession
-p642
+p329
+I12
 sVonly
-p643
-VComparison.Contrast
-p644
+p330
+I0
 sVthe gain resulted from
-p645
-VContingency.Cause.Reason
-p646
+p331
+I4
 sVthe goal would be
-p647
-VContingency.Cause.Result
-p648
+p332
+I6
 sVafter the study
-p649
-VTemporal.Asynchronous.Precedence
-p650
+p333
+I9
 sVas soon as
-p651
-VTemporal.Asynchronous.Succession
-p652
+p334
+I12
 sVeven as
-p653
-VTemporal.Synchrony
-p654
+p335
+I13
 sVattributed the increase to
-p655
-VContingency.Cause.Reason
-p656
+p336
+I4
 sVthe purchases increased
-p657
-VContingency.Cause.Result
-p658
+p337
+I6
 sVmeanwhile
-p659
-VExpansion.Conjunction
-p660
+p338
+I2
 sVafter the payment
-p661
-VTemporal.Asynchronous.Precedence
-p662
+p339
+I9
 sVlong before
-p663
-VTemporal.Asynchronous.Precedence
-p664
+p340
+I9
 sVoverall
-p665
-VExpansion.Restatement
-p666
+p341
+I7
 sVsince before
-p667
-VTemporal.Asynchronous.Succession
-p668
+p342
+I12
 sVthat would benefit
-p669
-VContingency.Cause.Result
-p670
+p343
+I6
 sVin sum
-p671
-VExpansion.Restatement
-p672
+p344
+I7
 sValtogether
-p673
-VExpansion.Restatement
-p674
+p345
+I7
 sVthis conjures up images of and suggests
-p675
-VContingency.Cause.Result
-p676
+p346
+I6
 sVshortly after
-p677
-VTemporal.Asynchronous.Succession
-p678
+p347
+I12
 sVperhaps because
-p679
-VContingency.Cause.Reason
-p680
+p348
+I4
 sVabout six months before
-p681
-VTemporal.Asynchronous.Precedence
-p682
+p349
+I9
 sVin that way
-p683
-VContingency.Cause.Result
-p684
+p350
+I6
 sVthe announcement was made because of
-p685
-VContingency.Cause.Reason
-p686
+p351
+I4
 sVespecially when
-p687
-VExpansion.Restatement
-p688
+p352
+I13
 sVtaken together
-p689
-VExpansion.Conjunction
-p690
+p353
+I2
 sVthe updated forecast, published aug. 25, compares
-p691
-VComparison.Contrast
-p692
+p354
+I0
 sVamong these
-p693
-VExpansion.Instantiation
-p694
+p355
+I5
 sVresult
-p695
-VContingency.Cause.Result
-p696
+p356
+I6
 sVthe most likely reason for this disparity
-p697
-VContingency.Cause.Reason
-p698
+p357
+I4
 sVa reason why canada's membership in the oas hasn't been, over the years, an item high on the u.s. agenda
-p699
-VContingency.Cause.Reason
-p700
+p358
+I4
 sValong with these factors
-p701
-VExpansion.Conjunction
-p702
+p359
+I2
 sVcombined with that
-p703
-VExpansion.Conjunction
-p704
+p360
+I2
 sVtrouble is
-p705
-VComparison.Concession
-p706
+p361
+I8
 sVbest
-p707
-VExpansion.Instantiation
-p708
+p362
+I5
 sVsubsequent
-p709
-VTemporal.Asynchronous.Precedence
-p710
+p363
+I9
 sVthe increase of $1.25 a share is being made
-p711
-VContingency.Cause.Reason
-p712
+p364
+I4
 sVthis would compare with
-p713
-VComparison.Contrast
-p714
+p365
+I0
 sVby and large
-p715
-VContingency.Cause.Result
-p716
+p366
+I6
 sVeight months after
-p717
-VTemporal.Asynchronous.Succession
-p718
+p367
+I12
 sVthis put
-p719
-VContingency.Cause.Result
-p720
+p368
+I6
 sVmore importantly
-p721
-VExpansion.Conjunction
-p722
+p369
+I2
 sVthat helped persuade
-p723
-VContingency.Cause.Result
-p724
+p370
+I6
 sVas smaller and more powerful computers continue to be the focus of the industry
-p725
-VContingency.Cause.Result
-p726
+p371
+I6
 sVcites the case
-p727
-VExpansion.Instantiation
-p728
+p372
+I5
 sVcomparable
-p729
-VComparison.Contrast
-p730
+p373
+I0
 sVhowever
-p731
-VComparison.Contrast
-p732
+p374
+I0
 sVthat will cinch
-p733
-VContingency.Cause.Result
-p734
+p375
+I6
 sVin the first 25 minutes after
-p735
-VTemporal.Asynchronous.Succession
-p736
+p376
+I12
 sVhis resignation follows
-p737
-VTemporal.Asynchronous.Succession
-p738
+p377
+I12
 sVthe latest drop followed
-p739
-VContingency.Cause.Reason
-p740
+p378
+I4
 sVif only
-p741
-VContingency.Condition
-p742
+p379
+I3
 sVthe consequences are being felt
-p743
-VContingency.Cause.Result
-p744
+p380
+I6
 sVin most cases
-p745
-VExpansion.Conjunction
-p746
+p381
+I2
 sVessentially
-p747
-VExpansion.Restatement
-p748
+p382
+I7
 sVas a result
-p749
-VContingency.Cause.Result
-p750
+p383
+I6
 sVparticularly if
-p751
-VContingency.Condition
-p752
+p384
+I3
 sVin essence
-p753
-VExpansion.Restatement
-p754
+p385
+I7
 sVa month after
-p755
-VTemporal.Asynchronous.Succession
-p756
+p386
+I12
 sVthe total borrowing
-p757
-VExpansion.Restatement
-p758
+p387
+I7
 sVthis starts
-p759
-VExpansion.Restatement
-p760
+p388
+I7
 sVa year after
-p761
-VTemporal.Asynchronous.Succession
-p762
+p389
+I12
 sVhis doubts stemmed from the fact that
-p763
-VContingency.Cause.Reason
-p764
+p390
+I4
 sVprices opened higher because of
-p765
-VContingency.Cause.Reason
-p766
+p391
+I4
 sVlater on
-p767
-VTemporal.Asynchronous.Precedence
-p768
+p392
+I9
 sVthe increase in order to
-p769
-VContingency.Cause.Result
-p770
+p393
+I6
 sVminutes after
-p771
-VTemporal.Asynchronous.Succession
-p772
+p394
+I12
 sVthe ruling pushed
-p773
-VContingency.Cause.Result
-p774
+p395
+I6
 sVin large part because
-p775
-VContingency.Cause.Reason
-p776
+p396
+I4
 sVapparently because
-p777
-VContingency.Cause.Reason
-p778
+p397
+I4
 sVthis is in addition to
-p779
-VExpansion.Conjunction
-p780
+p398
+I2
 sVthe theory is
-p781
-VContingency.Cause.Reason
-p782
+p399
+I4
 sVjust after
-p783
-VTemporal.Asynchronous.Succession
-p784
+p400
+I12
 sVthe decline broke
-p785
-VContingency.Cause.Result
-p786
+p401
+I6
 sVfor example
-p787
-VExpansion.Instantiation
-p788
+p402
+I5
 sVthe declaration immediately made
-p789
-VContingency.Cause.Result
-p790
+p403
+I6
 sVthe hefty drop last month indicates
-p791
-VContingency.Cause.Result
-p792
+p404
+I6
 sVeven before
-p793
-VTemporal.Asynchronous.Precedence
-p794
+p405
+I9
 sVthis suggests
-p795
-VContingency.Cause.Result
-p796
+p406
+I6
 sVin particular
-p797
-VExpansion.Restatement
-p798
+p407
+I7
 sVin that case
-p799
-VContingency.Cause.Result
-p800
+p408
+I6
 sVthe ensuing scandal has helped renew
-p801
-VContingency.Cause.Result
-p802
+p409
+I6
 sVamong them
-p803
-VExpansion.Instantiation
-p804
+p410
+I5
 sVthat means that
-p805
-VContingency.Cause.Result
-p806
+p411
+I6
 sValong with the car
-p807
-VExpansion.Conjunction
-p808
+p412
+I2
 sVon top of that
-p809
-VExpansion.Conjunction
-p810
+p413
+I2
 sVelse
-p811
-VExpansion.Alternative
-p812
+p414
+I11
 sVthat makes it
-p813
-VContingency.Cause.Result
-p814
+p415
+I6
 sVin the meantime
-p815
-VTemporal.Synchrony
-p816
+p416
+I13
 sVthe point is that
-p817
-VExpansion.Restatement
-p818
+p417
+I7
 sVamong these crimes are
-p819
-VExpansion.Instantiation
-p820
+p418
+I5
 sVthe response rate, more than 63%, allows
-p821
-VContingency.Cause.Result
-p822
+p419
+I6
 sVit's quite a fall
-p823
-VComparison.Contrast
-p824
+p420
+I0
 sVat that time
-p825
-VTemporal.Synchrony
-p826
+p421
+I13
 sVit was the start of
-p827
-VTemporal.Asynchronous.Precedence
-p828
+p422
+I9
 sVin the past
-p829
-VTemporal.Asynchronous.Succession
-p830
+p423
+I12
 sVsuch spillover effects give
-p831
-VContingency.Cause.Result
-p832
+p424
+I6
 sVwhile
-p833
-VComparison.Contrast
-p834
+p425
+I0
 sVbest of all
-p835
-VExpansion.Conjunction
-p836
+p426
+I2
 sVas well
-p837
-VExpansion.Conjunction
-p838
+p427
+I2
 sVimmediately after the reset
-p839
-VTemporal.Asynchronous.Precedence
-p840
+p428
+I9
 sVat the end of the day
-p841
-VExpansion.Conjunction
-p842
+p429
+I2
 sVeventually
-p843
-VTemporal.Asynchronous.Precedence
-p844
+p430
+I9
 sVthe one exception to this recent trend was
-p845
-VExpansion.Exception
-p846
+p431
+I17
 sVthus
-p847
-VContingency.Cause.Result
-p848
+p432
+I6
 sVjust as
-p849
-VTemporal.Synchrony
-p850
+p433
+I13
 sVshortly before that
-p851
-VTemporal.Asynchronous.Succession
-p852
+p434
+I12
 sVeven still
-p853
-VComparison.Concession
-p854
+p435
+I8
 sVvery much {similar to
-p855
-VExpansion
-p856
+p436
+I10
 sVat that point
-p857
-VTemporal.Asynchronous.Precedence
-p858
+p437
+I9
 sVif
-p859
-VContingency.Condition
-p860
+p438
+I3
 sVin turn
-p861
-VTemporal.Asynchronous.Precedence
-p862
+p439
+I9
 sVanother problem was
-p863
-VExpansion.Conjunction
-p864
+p440
+I2
 sVback when
-p865
-VTemporal.Synchrony
-p866
+p441
+I13
 sVimmediately after
-p867
-VTemporal.Asynchronous.Succession
-p868
+p442
+I12
 sVthe flextime may cut
-p869
-VContingency.Cause.Result
-p870
+p443
+I6
 sVwhat's more
-p871
-VExpansion.Conjunction
-p872
+p444
+I2
 sVtypically, if
-p873
-VContingency.Condition
-p874
+p445
+I3
 sVsince 1987
-p875
-VTemporal.Asynchronous.Succession
-p876
+p446
+I12
 sVsince that 1976 ruling
-p877
-VTemporal.Asynchronous.Precedence
-p878
+p447
+I9
 sVever since
-p879
-VTemporal.Asynchronous.Succession
-p880
+p448
+I12
 sVyears after
-p881
-VTemporal.Asynchronous.Succession
-p882
+p449
+I12
 sVblames
-p883
-VContingency.Cause.Reason
-p884
+p450
+I4
 sVthe move was meant to keep to boost
-p885
-VContingency.Cause.Result
-p886
+p451
+I6
 sVin contrast
-p887
-VComparison.Contrast
-p888
+p452
+I0
 sVthe loss was largely due to
-p889
-VContingency.Cause.Reason
-p890
+p453
+I4
 sVif and when
-p891
-VContingency.Condition
-p892
+p454
+I3
 sVblames that on
-p893
-VContingency.Cause.Reason
-p894
+p455
+I4
 sVpart of
-p895
-VExpansion.Restatement
-p896
+p456
+I7
 sVthat cut short depressed
-p897
-VContingency.Cause.Result
-p898
+p457
+I6
 sVthat contrasts with
-p899
-VComparison.Contrast
-p900
+p458
+I0
 sVnevertheless
-p901
-VComparison.Contrast
-p902
+p459
+I0
 sVmore than a year after
-p903
-VTemporal.Asynchronous.Succession
-p904
+p460
+I12
 sVa few weeks after
-p905
-VTemporal.Asynchronous.Succession
-p906
+p461
+I12
 sVthis includes
-p907
-VExpansion.Instantiation
-p908
+p462
+I5
 sVotherwise
-p909
-VExpansion.Alternative
-p910
+p463
+I11
 sVwhereas
-p911
-VComparison.Contrast
-p912
+p464
+I0
 sVthis decision resulted in
-p913
-VContingency.Cause.Result
-p914
+p465
+I6
 sVthe latest figures compare with
-p915
-VComparison.Contrast
-p916
+p466
+I0
 sVlest
-p917
-VExpansion.Alternative
-p918
+p467
+I11
 sVnever mind that
-p919
-VComparison.Concession
-p920
+p468
+I8
 sVonly because
-p921
-VContingency.Cause.Reason
-p922
+p469
+I4
 sVjust
-p923
-VExpansion.Instantiation
-p924
+p470
+I5
 sVhead the list of reasons
-p925
-VContingency.Cause.Reason
-p926
+p471
+I4
 sVthat meant
-p927
-VExpansion.Restatement
-p928
+p472
+I7
 sVin comparison
-p929
-VComparison.Contrast
-p930
+p473
+I0
 sVat the same time
-p931
-VTemporal.Synchrony
-p932
+p474
+I13
 sVthat means
-p933
-VContingency.Cause.Result
-p934
+p475
+I6
 sVattribute the mark's surge
-p935
-VContingency.Cause.Reason
-p936
+p476
+I4
 sVsuch a policy implies
-p937
-VContingency.Cause.Result
-p938
+p477
+I6
 sVone day after
-p939
-VTemporal.Asynchronous.Succession
-p940
+p478
+I12
 sVat the time
-p941
-VTemporal.Synchrony
-p942
+p479
+I13
 sVbesides creating joint manufacturing ventures
-p943
-VExpansion.Conjunction
-p944
+p480
+I2
 sVyet
-p945
-VComparison.Contrast
-p946
+p481
+I0
 sVafterwards
-p947
-VTemporal.Asynchronous.Precedence
-p948
+p482
+I9
 sVafter such reconsideration
-p949
-VTemporal.Asynchronous.Precedence
-p950
+p483
+I9
 sVshortly thereafter
-p951
-VTemporal.Asynchronous.Precedence
-p952
+p484
+I9
 sVattributed the decrease in part to
-p953
-VContingency.Cause.Reason
-p954
+p485
+I4
 sVexcept
-p955
-VExpansion.Exception
-p956
+p486
+I17
 sVother
-p957
-VExpansion.Conjunction
-p958
+p487
+I2
 sVnor
-p959
-VExpansion.Conjunction
-p960
+p488
+I2
 sVfor one thing
-p961
-VExpansion.Instantiation
-p962
+p489
+I5
 sVthat is in part because of
-p963
-VContingency.Cause.Reason
-p964
+p490
+I4
 sVits shipments declined as a result of
-p965
-VContingency.Cause.Reason
-p966
+p491
+I4
 sVtwo weeks after
-p967
-VTemporal.Asynchronous.Succession
-p968
+p492
+I12
 sVthe answer lies both in
-p969
-VContingency.Cause.Reason
-p970
+p493
+I4
 sVsome time after
-p971
-VTemporal.Asynchronous.Succession
-p972
+p494
+I12
 sVthe continental catch
-p973
-VComparison.Concession
-p974
+p495
+I8
 sValmost simultaneously
-p975
-VTemporal.Synchrony
-p976
+p496
+I13
 sVjust because
-p977
-VContingency.Cause.Reason
-p978
+p497
+I4
 sVon the other hand
-p979
-VComparison.Contrast
-p980
+p498
+I0
 sVinsofar as
-p981
-VContingency.Cause.Reason
-p982
+p499
+I4
 sVmoreover
-p983
-VExpansion.Conjunction
-p984
+p500
+I2
 sValmost immediately after
-p985
-VTemporal.Asynchronous.Succession
-p986
+p501
+I12
 sVit is as though
-p987
-VExpansion.Restatement
-p988
+p502
+I7
 sVby contrast
-p989
-VComparison.Contrast
-p990
+p503
+I0
 sVwhich makes
-p991
-VContingency.Cause.Result
-p992
+p504
+I6
 sVfrom there
-p993
-VTemporal.Asynchronous.Precedence
-p994
+p505
+I9
 sValternatively
-p995
-VExpansion.Alternative
-p996
+p506
+I11
 sVseparately
-p997
-VExpansion.Conjunction
-p998
+p507
+I2
 sVeither
-p999
-VExpansion.Conjunction
-p1000
+p508
+I2
 sVfollows
-p1001
-VComparison.Contrast
-p1002
+p509
+I0
 sVthe question is
-p1003
-VExpansion.Conjunction
-p1004
+p510
+I2
 sVthat would help reduce
-p1005
-VContingency.Cause.Result
-p1006
+p511
+I6
 sVthis leads to
-p1007
-VContingency.Cause.Result
-p1008
+p512
+I6
 sVonly after
-p1009
-VTemporal.Asynchronous.Succession
-p1010
+p513
+I12
 sVat least partly because
-p1011
-VContingency.Cause.Reason
-p1012
+p514
+I4
 sVthe refinancing should save
-p1013
-VContingency.Cause.Result
-p1014
+p515
+I6
 sVattributed that
-p1015
-VContingency.Cause.Reason
-p1016
+p516
+I4
 sVbecause
-p1017
-VContingency.Cause.Reason
-p1018
+p517
+I4
 sVto save
-p1019
-VContingency.Cause.Result
-p1020
+p518
+I6
 sVsuch concrete analysis is likely to lead to
-p1021
-VContingency.Cause.Result
-p1022
+p519
+I6
 sVsimply because
-p1023
-VContingency.Cause.Reason
-p1024
+p520
+I4
 sVeven after
-p1025
-VTemporal.Asynchronous.Succession
-p1026
+p521
+I12
 sVone essential indicator that they are is
-p1027
-VContingency.Cause.Result
-p1028
+p522
+I6
 sVis one such investment
-p1029
-VExpansion.Restatement
-p1030
+p523
+I7
 sVfor
-p1031
-VContingency.Cause.Reason
-p1032
+p524
+I4
 sVs making proponents
-p1033
-VContingency.Cause.Result
-p1034
+p525
+I6
 sVthose changes in its condition meant
-p1035
-VContingency.Cause.Result
-p1036
+p526
+I6
 sVshortly afterward
-p1037
-VTemporal.Asynchronous.Precedence
-p1038
+p527
+I9
 sVthat prompted
-p1039
-VContingency.Cause.Result
-p1040
+p528
+I6
 sVas a result of their illness
-p1041
-VContingency.Cause.Result
-p1042
+p529
+I6
 sVjust before
-p1043
-VTemporal.Asynchronous.Precedence
-p1044
+p530
+I9
 sVthe results show
-p1045
-VContingency.Cause.Reason
-p1046
+p531
+I4
 sVquite the contrary
-p1047
-VComparison.Contrast
-p1048
+p532
+I0
 sVthat's up from
-p1049
-VComparison.Contrast
-p1050
+p533
+I0
 sVin summary
-p1051
-VExpansion.Restatement
-p1052
+p534
+I7
 sVso does
-p1053
-VExpansion.Conjunction
-p1054
+p535
+I2
 sVin addition to paying for earthquake and fire damage
-p1055
-VExpansion.Conjunction
-p1056
+p536
+I2
 sVcredits
-p1057
-VContingency.Cause.Reason
-p1058
+p537
+I4
 sValthough
-p1059
-VComparison.Contrast
-p1060
+p538
+I0
 sVafter
-p1061
-VTemporal.Asynchronous.Succession
-p1062
+p539
+I12
 sVwould result
-p1063
-VContingency.Cause.Result
-p1064
+p540
+I6
 sVit means
-p1065
-VContingency.Cause.Reason
-p1066
+p541
+I4
 sVthat caused
-p1067
-VContingency.Cause.Result
-p1068
+p542
+I6
 sVparticularly as
-p1069
-VContingency.Cause.Reason
-p1070
+p543
+I4
 sVthat indicates
-p1071
-VContingency.Cause.Result
-p1072
+p544
+I6
 sVthat's particularly
-p1073
-VExpansion.Restatement
-p1074
+p545
+I7
 sVthe collapse friday prompted
-p1075
-VContingency.Cause.Result
-p1076
+p546
+I6
 sVplus
-p1077
-VExpansion.Conjunction
-p1078
+p547
+I2
 sVthe action increases
-p1079
-VContingency.Cause.Result
-p1080
+p548
+I6
 sVto this end
-p1081
-VContingency.Cause.Result
-p1082
+p549
+I6
 sVit prompted
-p1083
-VContingency.Cause.Result
-p1084
+p550
+I6
 sVthat finding casts doubt
-p1085
-VContingency.Cause.Result
-p1086
+p551
+I6
 sVas that wanes
-p1087
-VTemporal.Synchrony
-p1088
+p552
+I13
 sVor
-p1089
-VExpansion.Alternative
-p1090
+p553
+I11
 sVthis contrasts with
-p1091
-VComparison.Contrast
-p1092
+p554
+I0
 sVequally
-p1093
-VExpansion.Conjunction
-p1094
+p555
+I2
 sVcompounded the view
-p1095
-VExpansion.Conjunction
-p1096
+p556
+I2
 sVformerly
-p1097
-VTemporal.Asynchronous.Succession
-p1098
+p557
+I12
 sVthe situation is caused by
-p1099
-VContingency.Cause.Reason
-p1100
+p558
+I4
 sVpreviously
-p1101
-VTemporal.Asynchronous.Succession
-p1102
+p559
+I12
 sVright after
-p1103
-VTemporal.Asynchronous.Succession
-p1104
+p560
+I12
 sVput more simply
-p1105
-VExpansion.Restatement
-p1106
+p561
+I7
 sVjust until
-p1107
-VExpansion.Alternative
-p1108
+p562
+I11
 sVeven though
-p1109
-VComparison.Concession
-p1110
+p563
+I8
 sVthat amounts to
-p1111
-VExpansion.Restatement
-p1112
+p564
+I7
 sVas an alternative
-p1113
-VExpansion.Alternative
-p1114
+p565
+I11
 sVnext
-p1115
-VTemporal.Asynchronous.Precedence
-p1116
+p566
+I9
 sVthose rates are up from
-p1117
-VComparison.Contrast
-p1118
+p567
+I0
 sVadditional
-p1119
-VExpansion.Conjunction
-p1120
+p568
+I2
 sVbefore
-p1121
-VTemporal.Asynchronous.Precedence
-p1122
+p569
+I9
 sVthis was in contrast with
-p1123
-VComparison.Contrast
-p1124
+p570
+I0
 sVlast year's figure was down from
-p1125
-VComparison.Contrast
-p1126
+p571
+I0
 sVspecifically
-p1127
-VExpansion.Restatement
-p1128
+p572
+I7
 sVbeyond that
-p1129
-VExpansion.Conjunction
-p1130
+p573
+I2
 sVin this case
-p1131
-VExpansion.Conjunction
-p1132
+p574
+I2
 sVaccordingly
-p1133
-VContingency.Cause.Result
-p1134
+p575
+I6
 sVcited as major factors in the slowdown
-p1135
-VContingency.Cause.Reason
-p1136
+p576
+I4
 sVonly three years after
-p1137
-VTemporal.Asynchronous.Succession
-p1138
+p577
+I12
 sVon top of this
-p1139
-VExpansion.Conjunction
-p1140
+p578
+I2
 sVin part because
-p1141
-VContingency.Cause.Reason
-p1142
+p579
+I4
 sVif then
-p1143
-VContingency.Condition
-p1144
+p580
+I3
 sVwhen and if
-p1145
-VContingency.Condition
-p1146
+p581
+I3
 sVcompared with
-p1147
-VComparison.Contrast
-p1148
+p582
+I0
 sVon the one hand
-p1149
-VExpansion.Instantiation
-p1150
+p583
+I5
 sVone reason
-p1151
-VContingency.Cause.Reason
-p1152
+p584
+I4
 sVbut
-p1153
-VComparison.Contrast
-p1154
+p585
+I0
 sVreflecting that logic
-p1155
-VContingency.Cause.Result
-p1156
+p586
+I6
 sVadd the fact that
-p1157
-VExpansion.Conjunction
-p1158
+p587
+I2
 sVlong after
-p1159
-VTemporal.Asynchronous.Succession
-p1160
+p588
+I12
 sVtrue
-p1161
-VComparison.Concession
-p1162
+p589
+I8
 sVthe trend drove up
-p1163
-VContingency.Cause.Result
-p1164
+p590
+I6
 sVthat is why
-p1165
-VContingency.Cause.Result
-p1166
+p591
+I6
 sVthe results compare with
-p1167
-VComparison.Contrast
-p1168
+p592
+I0
 sVjust days before
-p1169
-VTemporal.Asynchronous.Precedence
-p1170
+p593
+I9
 sVof recent note are
-p1171
-VExpansion.Restatement
-p1172
+p594
+I7
 sVthe shift will mean
-p1173
-VContingency.Cause.Result
-p1174
+p595
+I6
 sVsimilar
-p1175
-VExpansion.Conjunction
-p1176
+p596
+I2
 sVthat would increase
-p1177
-VContingency.Cause.Result
-p1178
+p597
+I6
 sVthe competition gives
-p1179
-VContingency.Cause.Result
-p1180
+p598
+I6
 sVseven years after
-p1181
-VTemporal.Asynchronous.Succession
-p1182
+p599
+I12
 sVin this case, that's
-p1183
-VExpansion.Restatement
-p1184
+p600
+I7
 sVlikewise
-p1185
-VExpansion.Conjunction
-p1186
+p601
+I2
 sVespecially as
-p1187
-VContingency.Cause.Reason
-p1188
+p602
+I4
 sVas
-p1189
-VContingency.Cause.Reason
-p1190
+p603
+I4
 sVthe reason is simple
-p1191
-VContingency.Cause.Reason
-p1192
+p604
+I4
 sVthe idea
-p1193
-VContingency.Cause.Result
-p1194
+p605
+I6
 sVthat makes them
-p1195
-VContingency.Cause.Result
-p1196
+p606
+I6
 sVat this point
-p1197
-VTemporal.Synchrony
-p1198
+p607
+I13
 sVthe change was related to
-p1199
-VContingency.Cause.Reason
-p1200
+p608
+I4
 sVagain
-p1201
-VExpansion.Conjunction
-p1202
+p609
+I2
 sVthis is partly due to
-p1203
-VContingency.Cause.Reason
-p1204
+p610
+I4
 sVthat was followed by
-p1205
-VTemporal.Asynchronous.Precedence
-p1206
+p611
+I9
 sVare following suit
-p1207
-VExpansion.Conjunction
-p1208
+p612
+I2
 sVnonetheless
-p1209
-VComparison.Concession
-p1210
+p613
+I8
 sVthat would follow
-p1211
-VTemporal.Asynchronous.Succession
-p1212
+p614
+I12
 sVwhen
-p1213
-VTemporal.Synchrony
-p1214
+p615
+I13
 sVone such company is
-p1215
-VExpansion.Instantiation
-p1216
+p616
+I5
 sVin other words
-p1217
-VExpansion.Restatement
-p1218
+p617
+I7
 sVthe funds are in addition to
-p1219
-VExpansion.Conjunction
-p1220
+p618
+I2
 sVmuch as
-p1221
-VComparison
-p1222
+p619
+I14
 sVthe change will result in
-p1223
-VContingency.Cause.Result
-p1224
+p620
+I6
 sVthe main reason
-p1225
-VContingency.Cause.Reason
-p1226
+p621
+I4
 sVmuch of the price decline has been blamed on
-p1227
-VContingency.Cause.Reason
-p1228
+p622
+I4
 sVin the 3 1/2 years before
-p1229
-VTemporal.Asynchronous.Precedence
-p1230
+p623
+I9
 sVamong the results
-p1231
-VContingency.Cause.Result
-p1232
+p624
+I6
 sVadditionally
-p1233
-VExpansion.Conjunction
-p1234
+p625
+I2
 sVafter that
-p1235
-VTemporal.Asynchronous.Precedence
-p1236
+p626
+I9
 sVprevious
-p1237
-VTemporal.Asynchronous.Succession
-p1238
+p627
+I12
 sVwill make the dru
-p1239
-VContingency.Cause.Result
-p1240
+p628
+I6
 sVits purpose is
-p1241
-VContingency.Cause.Reason
-p1242
+p629
+I4
 sVthat brought
-p1243
-VContingency.Cause.Result
-p1244
+p630
+I6
 sVby then
-p1245
-VTemporal.Asynchronous.Precedence
-p1246
+p631
+I9
 sVlinked the gain essentially
-p1247
-VContingency.Cause.Reason
-p1248
+p632
+I4
 sVthe move largely consigns
-p1249
-VContingency.Cause.Result
-p1250
+p633
+I6
 sVnot because
-p1251
-VContingency.Cause.Reason
-p1252
+p634
+I4
 sVa week before
-p1253
-VTemporal.Asynchronous.Precedence
-p1254
+p635
+I9
 sVthis could mean
-p1255
-VContingency.Cause.Result
-p1256
+p636
+I6
 sVlargely as a result
-p1257
-VContingency.Cause.Result
-p1258
+p637
+I6
 sVso long as
-p1259
-VContingency.Condition
-p1260
+p638
+I3
 sVa full five minutes before
-p1261
-VTemporal.Asynchronous.Precedence
-p1262
+p639
+I9
 sVonce
-p1263
-VTemporal.Asynchronous.Succession
-p1264
-ssS'dflt_sense'
-p1265
-g8
+p640
+I12
+ssS'n_y'
+p641
+I21
+sS'dflt_sense'
+p642
+I1
+sbasS'judge'
+p643
+g1
+(cdsenser.judge
+Judge
+p644
+g3
+NtRp645
+(dp646
+S'n_x'
+p647
+I1
+sg641
+I21
+sbsS'cls2idx'
+p648
+(dp649
+VComparison
+p650
+I14
+sVContingency.Cause
+p651
+I20
+sVExpansion.Conjunction
+p652
+I2
+sVExpansion.Instantiation
+p653
+I5
+sVContingency
+p654
+I19
+sVExpansion.Alternative
+p655
+I11
+sVEntRel
+p656
+I1
+sVContingency.Cause.Result
+p657
+I6
+sVContingency.Cause.Reason
+p658
+I4
+sVExpansion
+p659
+I10
+sVExpansion.Exception
+p660
+I17
+sVTemporal
+p661
+I18
+sVTemporal.Asynchronous
+p662
+I15
+sVTemporal.Asynchronous.Succession
+p663
+I12
+sVTemporal.Asynchronous.Precedence
+p664
+I9
+sVExpansion.Alternative.Chosen alternative
+p665
+I16
+sVComparison.Contrast
+p666
+I0
+sVTemporal.Synchrony
+p667
+I13
+sVComparison.Concession
+p668
+I8
+sVExpansion.Restatement
+p669
+I7
+sVContingency.Condition
+p670
+I3
+ssS'idx2cls'
+p671
+(dp672
+I0
+g666
+sI1
+g656
+sI2
+g652
+sI3
+g670
+sI4
+g658
+sI5
+g653
+sI6
+g657
+sI7
+g669
+sI8
+g668
+sI9
+g664
+sI10
+g659
+sI11
+g655
+sI12
+g663
+sI13
+g667
+sI14
+g650
+sI15
+g662
+sI16
+g665
+sI17
+g660
+sI18
+g661
+sI19
+g654
+sI20
+g651
+ssS'econn'
+p673
+c__builtin__
+set
+p674
+((lp675
+Vin addition
+p676
+ag467
+ag14
+aVafterwards
+p677
+ag327
+ag318
+aVindeed
+p678
+ag319
+ag320
+ag321
+ag478
+ag66
+ag324
+aVstill
+p679
+aVyet
+p680
+ag569
+ag25
+ag26
+aVprimarily because
+p681
+ag394
+ag132
+ag484
+ag486
+ag92
+aVwithin minutes after
+p682
+ag501
+ag166
+ag334
+ag335
+ag397
+aVthen
+p683
+ag469
+ag494
+ag178
+aVmeanwhile
+p684
+ag340
+ag179
+aVoverall
+p685
+ag497
+ag342
+ag142
+aVon the other hand
+p686
+ag37
+aVin sum
+p687
+ag38
+aVtwo weeks after
+p688
+ag347
+aVeight months after
+p689
+ag488
+aVby contrast
+p690
+aVin the end
+p691
+aVinsofar as
+p692
+ag75
+ag45
+aValternatively
+p693
+aVas an alternative
+p694
+ag195
+aVseparately
+p695
+ag131
+ag47
+ag190
+ag513
+ag514
+ag517
+ag386
+ag352
+aVin short
+p696
+aVeven while
+p697
+aVby comparison
+p698
+ag203
+aVabout six months before
+p699
+ag599
+aVjust when
+p700
+aVfurther
+p701
+ag208
+ag520
+aVeven after
+p702
+ag211
+ag213
+aVfor
+p703
+aVfurthermore
+p704
+aVsince
+p705
+ag530
+ag67
+aVin the meanwhile
+p706
+aVnearly two months after
+p707
+ag220
+ag80
+ag539
+aVsimultaneously
+p708
+ag288
+aVhowever
+p709
+aVin the first 25 minutes after
+p710
+aVlater on
+p711
+aVbesides
+p712
+ag228
+ag96
+ag76
+aVas a result
+p713
+ag543
+ag602
+ag118
+ag300
+ag78
+aVplus
+p714
+aVfive minutes before
+p715
+aVhence
+p716
+ag236
+ag389
+ag82
+aVor
+p717
+aVotherwise
+p718
+aVregardless
+p719
+aValthough
+p720
+ag241
+aVpreviously
+p721
+ag242
+ag396
+ag560
+aVfor instance
+p722
+ag562
+aVspecifically
+p723
+ag563
+aVmoreover
+p724
+ag91
+ag90
+ag251
+ag400
+ag246
+ag247
+aVsimilarly
+p725
+aVfor example
+p726
+ag405
+aVnext
+p727
+aVaccordingly
+p728
+ag577
+aVtherefore
+p729
+aVon the contrary
+p730
+aVin particular
+p731
+ag97
+aVif then
+p732
+aVwhen and if
+p733
+aVat least not when
+p734
+ag261
+aVthus
+p735
+aVif only
+p736
+aVbut
+p737
+ag120
+aVin the meantime
+p738
+aVthree months after
+p739
+ag588
+aVas well
+p740
+ag193
+ag593
+aVwhile
+p741
+ag270
+ag72
+aVperhaps because
+p742
+ag384
+aVand
+p743
+ag152
+aVlikewise
+p744
+ag119
+aVever since
+p745
+ag433
+aVjust five months after
+p746
+ag603
+ag121
+aVconversely
+p747
+ag125
+ag438
+ag439
+aVas much as
+p748
+aVback when
+p749
+aVnonetheless
+p750
+ag286
+ag442
+aVwhereas
+p751
+ag615
+ag445
+aValso
+p752
+aVnow that
+p753
+aVin other words
+p754
+aValmost simultaneously
+p755
+aVinstead
+p756
+ag449
+ag619
+ag527
+ag635
+ag296
+aVmonths after
+p757
+ag297
+ag326
+aVin fact
+p758
+aVearlier
+p759
+ag623
+aVin contrast
+p760
+ag454
+aVadditionally
+p761
+ag302
+ag303
+ag304
+ag414
+ag579
+aVeven still
+p762
+ag147
+aVlargely as a result
+p763
+aVnevertheless
+p764
+aVconsequently
+p765
+ag310
+ag460
+ag153
+ag634
+aVrather
+p766
+ag461
+ag155
+ag631
+ag158
+ag639
+ag640
+atRp767
 sb.

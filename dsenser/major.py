@@ -18,6 +18,7 @@ from collections import defaultdict, Counter
 from dsenser.base import BaseSenser
 from dsenser.constants import CONNECTIVE, RAW_TEXT, SENSE
 
+import numpy as np
 
 ##################################################################
 # Variables and Constants
@@ -31,6 +32,7 @@ class MajorSenser(BaseSenser):
     Attrs:
     dflt_sense (str or None): most frequent sense in corpus
     conn2sense (dict): mapping from connective to its most frequent sense
+    n_y (int): number of distinct classes
 
     Methods:
 
@@ -40,32 +42,35 @@ class MajorSenser(BaseSenser):
         """Class constructor.
 
         Args:
-        (void)
-
 
         """
         self.dflt_sense = None
         self.conn2sense = {}
+        self.n_y = -1
 
-    def train(self, a_train_data, a_path=None, a_dev_data=None):
+    def train(self, a_train_data, a_dev_data=None, a_n_y=-1):
         """Method for training the model.
 
         Args:
         a_train_data (2-tuple(dict, dict)):
           list of training JSON data
-        a_path (str or None):
-          path for model to be stored
         a_dev_data (2-tuple(dict, dict) or None):
           list of development JSON data
+        a_n_y (int):
+          number of distinct classes
 
         Returns:
         (void)
 
         """
+        self.n_y = a_n_y
+        iconn = ""
         conn2sense = defaultdict(Counter)
         for irel in a_train_data[0]:
-            conn2sense[irel[CONNECTIVE][RAW_TEXT].lower()].update(
-                irel[SENSE])
+            iconn = self._normalize_conn(irel[CONNECTIVE][RAW_TEXT])
+            for i, j in enumerate(irel[SENSE]):
+                if j:
+                    conn2sense[iconn][i] += 1
         # compute the most frequent sense and assign it to the default
         # connective
         all_senses = defaultdict(Counter)
@@ -76,10 +81,8 @@ class MajorSenser(BaseSenser):
         # for other connectives use their the respective most frequent sense
         for iconn, istat in conn2sense.iteritems():
             self.conn2sense[iconn] = self._get_most_frequent_sense(istat)
-        # store model
-        self._dump(a_path)
 
-    def _predict(self, a_rel, a_test_data):
+    def predict(self, a_rel, a_test_data):
         """Method for predicting sense of single relation.
 
         Args:
@@ -93,8 +96,12 @@ class MajorSenser(BaseSenser):
           most probable sense of discourse relation
 
         """
-        return self.conn2sense.get(
-            a_rel[CONNECTIVE][RAW_TEXT].lower(), self.dflt_sense)
+        iconn = self._normalize_conn(a_rel[CONNECTIVE][RAW_TEXT])
+        isense = self.conn2sense.get(iconn, self.dflt_sense)
+        ret = np.zeros(self.n_y)
+        ret[isense] = 1.
+        # print("major ret =", repr(ret))
+        return ret
 
     def _get_most_frequent_sense(self, a_stat):
         """Obtain most frequent sense from statistcs.
@@ -117,3 +124,16 @@ class MajorSenser(BaseSenser):
                 max_cnt = icnt
                 dflt_sense = isense
         return dflt_sense
+
+    def _free(self):
+        """Free resources used by the model.
+
+        Args:
+        (void):
+
+        Returns:
+        (void):
+
+        """
+        del self.dflt_sense
+        del self.conn2sense

@@ -15,8 +15,10 @@ import os
 
 ##################################################################
 # Variables and Constants
-DFLT_MODEL_PATH = os.path.join(os.path.dirname(__file__), "data", "models",
-                               "pdtb.sense.model")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+MODEL_DIR = os.path.join(DATA_DIR, "models")
+DFLT_MODEL_PATH = os.path.join(MODEL_DIR, "pdtb.sense.model")
+DFLT_ECONN_PATH = os.path.join(DATA_DIR, "ExpConn.txt")
 
 FFNN = 0
 LSTM = 1

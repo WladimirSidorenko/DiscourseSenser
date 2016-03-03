@@ -4,7 +4,7 @@
 """Module providing class for majority class sense disambiguation.
 
 Attributes:
-Major (class):
+MajorSenser (class):
   class that always chooses majority category  for sense disambiguation
 
 """

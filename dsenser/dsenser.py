@@ -14,39 +14,26 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from dsenser.constants import ARG1, ARG2, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
     SENSE, TOK_LIST, TOK_OFFS_IDX, TYPE, DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
-    ALT_LEX, EXPLICIT, IMPLICIT, FFNN, LSTM, MJR, SVM, WANG
+    DFLT_ECONN_PATH, ALT_LEX, EXPLICIT, IMPLICIT, FFNN, LSTM, MJR, SVM, WANG
 from dsenser.judge import Judge
 
 from collections import Iterable
 from cPickle import dump, load
 
+import codecs
 import numpy as np
 import os
 
 ##################################################################
 # Variables and Constants
-
-
-##################################################################
-# Methods
-def _flatten(a_list):
-    """Flatten nested list.
-
-    Args:
-    a_list (list):
-      possible nested list
-
-    Returns:
-    list:
-     flat variant of the input list
-
-    """
-    for el in a_list:
-        if isinstance(el, Iterable) and not isinstance(el, basestring):
-            for sub in _flatten(el):
-                yield sub
-        else:
-            yield el
+ENCODING = "utf-8"
+# load default explicit discourse connectives
+DFLT_CONN = set(["upon"])
+with codecs.open(DFLT_ECONN_PATH, 'r', ENCODING) as ifile:
+    for iline in ifile:
+        iline = iline.strip()
+        if iline:
+            DFLT_CONN.add(iline)
 
 
 ##################################################################
@@ -79,7 +66,7 @@ class DiscourseSenser(object):
         self.judge = None
         self.cls2idx = {}
         self.idx2cls = {}
-        self.econn = set()
+        self.econn = set([self._normalize_conn(iconn) for iconn in DFLT_CONN])
         # load serialized model
         if a_model is not None:
             self._load(a_model)
@@ -121,6 +108,8 @@ class DiscourseSenser(object):
             if irel[TYPE] == EXPLICIT:
                 self.econn.add(self._normalize_conn(
                     irel[CONNECTIVE][RAW_TEXT]))
+            else:
+                irel[CONNECTIVE][RAW_TEXT] = ""
         vsense = None
         for irel in a_train_data[0]:
             isenses = irel[SENSE]
@@ -164,6 +153,8 @@ class DiscourseSenser(object):
             arg2.pop(RAW_TEXT, None)
             arg2[TOK_LIST] = self._normalize_tok_list(arg2[TOK_LIST])
 
+            if len(irel[CONNECTIVE][TOK_LIST]) == 0:
+                irel[CONNECTIVE][RAW_TEXT] = ""
             if not SENSE in irel:
                 irel[SENSE] = []
             irel[SENSE].append(self._predict(irel, a_data))

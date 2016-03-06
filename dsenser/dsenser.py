@@ -93,10 +93,10 @@ class DiscourseSenser(object):
             raise RuntimeError("No model type specified.")
         # initialize
         if a_type & MJR:
-            from dsenser.major import MajorSenser
+            from dsenser import MajorSenser
             self.models.append(MajorSenser())
         if a_type & WANG:
-            from dsenser.wang import WangSenser
+            from dsenser import WangSenser
             self.models.append(WangSenser())
         # convert classes to indices
         n_senses = 0

@@ -137,3 +137,4 @@ class MajorSenser(BaseSenser):
         """
         del self.dflt_sense
         del self.conn2sense
+        self.n_y = -1

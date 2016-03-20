@@ -11,9 +11,28 @@ import glob
 ##################################################################
 # Variables and Constants
 ENCODING = "utf-8"
-pwd = path.abspath(path.dirname(__file__))
-with codecs.open(path.join(pwd, "README.rst"), encoding=ENCODING) as ifile:
-    long_description = ifile.read()
+
+PWD = path.abspath(path.dirname(__file__))
+
+LONG_DESCRIPTION = ""
+with codecs.open(path.join(PWD, "README.rst"), encoding=ENCODING) as ifile:
+    LONG_DESCRIPTION = ifile.read()
+
+INSTALL_REQUIRES = []
+with codecs.open(path.join(PWD, "requirements.txt"),
+                 encoding=ENCODING) as ifile:
+    for iline in ifile:
+        iline = iline.strip()
+        if iline:
+            INSTALL_REQUIRES.append(iline)
+
+TEST_REQUIRES = []
+with codecs.open(path.join(PWD, "test-requirements.txt"),
+                 encoding=ENCODING) as ifile:
+    for iline in ifile:
+        iline = iline.strip()
+        if iline:
+            TEST_REQUIRES.append(iline)
 
 ##################################################################
 # setup()
@@ -21,7 +40,7 @@ setup(
     name="dsenser",
     version="0.0.1",
     description=("sense disambiguation for PDTB-style discourse parsing"),
-    long_description=long_description,
+    long_description=LONG_DESCRIPTION,
     author="Wladimir Sidorenko (Uladzimir Sidarenka)",
     author_email="sidarenk@uni-potsdam.de",
     license="MIT",
@@ -31,10 +50,7 @@ setup(
     package_data={
         "dsenser": [path.join("data", fname) for fname in ()]
     },
-    requires=["lasagne (>=0.1)",
-              "theano (>=0.7.0)",
-              "pip (>=8.0.2)"],
-    provides=["dsenser (0.0.1)"],
+    install_requires=INSTALL_REQUIRES,
     scripts=[path.join("scripts", "discourse_senser")],
     classifiers=["Development Status :: 2 - Pre-Alpha",
                  "Environment :: Console",
@@ -49,4 +65,5 @@ setup(
                  "Programming Language :: Python :: 2.7",
                  # "Programming Language :: Python :: 3",
                  "Topic :: Text Processing :: Linguistic"],
-    keywords="discourse disambiguation NLP linguistics")
+    keywords="discourse disambiguation NLP linguistics"
+)

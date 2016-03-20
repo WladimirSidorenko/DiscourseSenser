@@ -15,9 +15,11 @@ from __future__ import absolute_import, print_function
 
 from dsenser.base import BaseSenser
 from dsenser.constants import CONNECTIVE, DOC_ID, TOK_LIST, \
-    SENTENCES, TOK_IDX
+    SENTENCES, WORDS, POS, TOK_IDX, SNT_ID, PARSE_TREE
 
+from nltk import Tree
 import numpy as np
+import sys
 
 ##################################################################
 # Variables and Constants
@@ -64,6 +66,9 @@ class WangExplicitSenser(BaseSenser):
 
         """
         self.n_y = a_n_y
+        x_train = [self._extract_features(irel, a_train_data[1])
+                   for irel in a_train_data[0]]
+        print("a_train_data =", repr(a_train_data), file=sys.stderr)
 
     def predict(self, a_rel, a_test_data):
         """Method for predicting sense of single relation.
@@ -75,7 +80,7 @@ class WangExplicitSenser(BaseSenser):
           list of input JSON data
 
         Returns:
-        str:
+        (str):
           most probable sense of discourse relation
 
         """
@@ -108,20 +113,33 @@ class WangExplicitSenser(BaseSenser):
         """
         feats = []
         doc_id = a_rel[DOC_ID]
+        snt_id = a_rel[CONNECTIVE][TOK_LIST][-1][SNT_ID]
+
+        # connective token features
         # obtain raw connective string
-        conn_str = self._get_conn_txt(doc_id, a_rel, a_parses)
+        conn_str = "ConStr-" + self._get_conn_txt(doc_id, a_rel, a_parses)
         feats.append(conn_str)
         feats.append(conn_str.lower())
+        # obtain POS of the connective
+        conn_pos = "conpos-" + self._get_conn_pos(doc_id, a_rel, a_parses)
+        feats.append(conn_pos)
         # obtain token preceding the connective
-        prev_tok = self._get_conn_prev(doc_id, a_rel, a_parses)
+        prev_tok = "prevtok-" + self._get_conn_prev(doc_id, a_rel, a_parses)
         feats.append("{:s}|{:s}".format(conn_str, prev_tok))
+
+        # syntactic features
+        # print(a_rel[CONNECTIVE])
+        tree_str = a_parses[doc_id][SENTENCES][snt_id][PARSE_TREE].strip()
+        parse_tree = Tree.fromstring(tree_str)
+        raise NotImplementedError
+        sys.exit(66)
         # pitler's syntactic features
         prnt_cat = None
         lft_sib_cat = None
         rght_sib_cat = None
         return feats
 
-    def _get_conn_text(self, a_doc_id, a_rel, a_parses):
+    def _get_conn_txt(self, a_doc_id, a_rel, a_parses):
         """Obtain raw text of the connective.
 
         Args:
@@ -137,10 +155,30 @@ class WangExplicitSenser(BaseSenser):
 
         """
         return ' '.join([
-            a_parses[a_doc_id][SENTENCES][snt_id][tok_id][TOK_IDX]
+            a_parses[a_doc_id][SENTENCES][snt_id][WORDS][tok_id][TOK_IDX]
             for _, _, _, snt_id, tok_id in a_rel[CONNECTIVE][TOK_LIST]])
 
-    def _get_conn_prev(self, doc_id, a_rel, a_parses):
+    def _get_conn_pos(self, a_doc_id, a_rel, a_parses):
+        """Obtain part-of-speech tags of the connective.
+
+        Args:
+        a_doc_id (str):
+          id of the document containing the connectiv
+        a_rel (dict):
+          discourse relation to extract features for
+        a_parses (dict):
+          parsed data
+
+        Returns:
+        (str):
+        connective's part-of-speech tags
+
+        """
+        return '_'.join([
+            a_parses[a_doc_id][SENTENCES][snt_id][WORDS][tok_id][1][POS]
+            for _, _, _, snt_id, tok_id in a_rel[CONNECTIVE][TOK_LIST]])
+
+    def _get_conn_prev(self, a_doc_id, a_rel, a_parses):
         """Obtain raw text of the connective.
 
         Args:
@@ -159,8 +197,8 @@ class WangExplicitSenser(BaseSenser):
         if tok_id > 0:
             tok_id -= 1
         elif snt_id > 0:
-            snt_id == 1
-            tok_id = 1
+            snt_id -= 1
+            tok_id = -1
         else:
             return PREV_NONE
-        return a_parses[a_doc_id][SENTENCES][snt_id][tok_id][TOK_IDX]
+        return a_parses[a_doc_id][SENTENCES][snt_id][WORDS][tok_id][TOK_IDX]

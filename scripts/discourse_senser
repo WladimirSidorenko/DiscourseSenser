@@ -138,14 +138,14 @@ def _read_dataset(a_dir, a_train=False):
     a_dir (str):
       path to directory containing input data
     a_train (bool):
-      path to directory containing input data
+      flag indicating whether the dataset is used for training
 
     Returns:
     2-tuple(dict, dict): training rel set and parses
 
     """
     if a_dir is None:
-        return (None, None, None)
+        return a_dir
     # read relations
     if a_train:
         rels = _read_json(a_dir, GOLD_FNAME)
@@ -208,14 +208,14 @@ def main():
     if args.mode == M_TRAIN:
         # read data
         dev_set = _read_dataset(args.dev, True)
-        input_set = _read_dataset(args.input_dir, True)
+        train_set = _read_dataset(args.input_dir, True)
         # train the model
         # determine model type
         mtype = 0
         for itype in args.type:
             mtype |= itype
         dsenser =  DiscourseSenser(None)
-        dsenser.train(input_set, mtype, args.model, dev_set)
+        dsenser.train(train_set, mtype, args.model, dev_set)
     else:
         if not os.path.exists(args.output_dir):
             os.makedirs(args.output_dir)

@@ -15,6 +15,8 @@ from __future__ import absolute_import, print_function
 
 from dsenser.base import BaseSenser
 from dsenser.constants import CONNECTIVE, RAW_TEXT, TOK_LIST
+from dsenser.wang.explicit import WangExplicitSenser
+from dsenser.wang.implicit import WangImplicitSenser
 
 import numpy as np
 
@@ -51,9 +53,9 @@ class WangSenser(BaseSenser):
 
         Args:
         a_train_data (2-tuple(list, dict)):
-          list of training JSON data
+          list of gold relations and dict with parses
         a_dev_data (2-tuple(list, dict) or None):
-          list of development JSON data
+          list of development relations and dict with parses
         a_n_y (int):
           number of distinct classes
 
@@ -104,13 +106,15 @@ class WangSenser(BaseSenser):
 
         Args:
         a_ds (2-tuple(dict, dict)):
-          list of training JSON data
+          list of gold relations and dict with parses
 
         Returns:
         (((list, dict), (list, dict))):
           trainings set with explicit and implicit connectives
 
         """
+        if a_ds is None:
+            return (([], {}), ([], {}))
         explicit_instances = []
         implicit_instances = []
         for irel in a_ds[0]:
@@ -118,8 +122,8 @@ class WangSenser(BaseSenser):
                 explicit_instances.append(irel)
             else:
                 implicit_instances.append(irel)
-        ret = ((explicit_instances, a_ds[1:]),
-               (implicit_instances, a_ds[1:]))
+        ret = ((explicit_instances, a_ds[1]),
+               (implicit_instances, a_ds[1]))
         return ret
 
     def _is_explicit(self, a_rel):

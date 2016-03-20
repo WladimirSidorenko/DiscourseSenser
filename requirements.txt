@@ -1,3 +1,4 @@
 lasagne>=0.1
+nltk>=3.2
 pip>=8.0.2
 theano>=0.7.0

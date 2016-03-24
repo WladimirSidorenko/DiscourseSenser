@@ -176,7 +176,7 @@ class DiscourseSenser(object):
         a_rel (dict):
           JSON instance representing discourse relation
         a_data (list):
-          input data to be analyzed
+          2-tuple(dict, dict): input rels and parses
 
         Returns:
         (void):

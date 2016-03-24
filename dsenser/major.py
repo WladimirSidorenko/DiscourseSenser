@@ -19,6 +19,7 @@ from dsenser.base import BaseSenser
 from dsenser.constants import CONNECTIVE, RAW_TEXT, SENSE
 
 import numpy as np
+import sys
 
 ##################################################################
 # Variables and Constants
@@ -63,6 +64,8 @@ class MajorSenser(BaseSenser):
         (void)
 
         """
+        print("Training majority class classifier ...", end="",
+              file=sys.stderr)
         self.n_y = a_n_y
         iconn = ""
         conn2sense = defaultdict(Counter)
@@ -81,6 +84,7 @@ class MajorSenser(BaseSenser):
         # for other connectives use their the respective most frequent sense
         for iconn, istat in conn2sense.iteritems():
             self.conn2sense[iconn] = self._get_most_frequent_sense(istat)
+        print(" done", file=sys.stderr)
 
     def predict(self, a_rel, a_test_data):
         """Method for predicting sense of single relation.
@@ -100,7 +104,6 @@ class MajorSenser(BaseSenser):
         isense = self.conn2sense.get(iconn, self.dflt_sense)
         ret = np.zeros(self.n_y)
         ret[isense] = 1.
-        # print("major ret =", repr(ret))
         return ret
 
     def _get_most_frequent_sense(self, a_stat):

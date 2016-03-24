@@ -73,7 +73,7 @@ class WangImplicitSenser(BaseSenser):
           most probable sense of discourse relation
 
         """
-        pass
+        return np.zeros(self.n_y)
 
     def _free(self):
         """Free resources used by the model.

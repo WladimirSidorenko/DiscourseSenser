@@ -84,8 +84,8 @@ class WangSenser(BaseSenser):
 
         """
         if self._is_explicit(a_rel):
-            return self.explicit.predict(a_rel)
-        return self.implicit.predict(a_rel)
+            return self.explicit.predict(a_rel, a_test_data)
+        return self.implicit.predict(a_rel, a_test_data)
 
     def _free(self):
         """Free resources used by the model.

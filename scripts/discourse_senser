@@ -190,8 +190,7 @@ def main():
                                                                    SVM, WANG) +
                                "default = {:d}".format(DFLT_MODEL_TYPE)),
                               type=int, action="append", choices=(FFNN, LSTM, MJR,
-                                                                  SVM, WANG),
-                              default=[DFLT_MODEL_TYPE])
+                                                                  SVM, WANG))
     _add_cmn_options(parser_train)
 
     # testing parser
@@ -201,6 +200,8 @@ def main():
     parser_test.add_argument("output_dir", help=
                               "directory for storing output files", type=str)
     args = argparser.parse_args()
+    if hasattr(args, "type") and not args.type:
+        args.type=[DFLT_MODEL_TYPE]
 
     # instantiate objects required for processing
     dsenser = None

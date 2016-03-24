@@ -15,10 +15,18 @@ from __future__ import absolute_import, print_function
 
 from dsenser.base import BaseSenser
 from dsenser.constants import CONNECTIVE, DFLT_ECONN_PATH, DOC_ID, \
-    TOK_LIST, SENTENCES, WORDS, POS, TOK_IDX, SNT_ID, TOK_ID, PARSE_TREE
+    TOK_LIST, SENSE, SENTENCES, WORDS, POS, TOK_IDX, SNT_ID, TOK_ID, \
+    PARSE_TREE
 
 from collections import defaultdict
 from nltk import Tree
+from sklearn.feature_extraction import DictVectorizer
+from sklearn.feature_selection import VarianceThreshold
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.pipeline import Pipeline
+from sklearn.svm import LinearSVC
+
 import codecs
 import numpy as np
 import re
@@ -29,6 +37,8 @@ import sys
 ENCODING = "utf-8"
 PREV_NONE = "prev1_NONE"
 SPACE_RE = re.compile(r"\s+")
+MULTISPACE_RE = re.compile(r"\s\s+")
+EQ_RE = re.compile(r"=+")
 ELLIPSIS_RE = re.compile(r"[.][.]+")
 LEFT = 1
 RIGHT = 2
@@ -38,6 +48,7 @@ WHEN = "when"
 CONNS = None
 CONNTOKS = None
 CONNTOK2CONN = defaultdict(list)
+DFLT_C = 0.3
 
 
 ##################################################################
@@ -76,7 +87,7 @@ def _conn2str(a_conn):
     (str): connective string
 
     """
-    pass
+    return '_'.join(itok for ipart in a_conn for itok in ipart)
 
 
 ##################################################################
@@ -114,6 +125,11 @@ class WangExplicitSenser(BaseSenser):
 
         """
         self.n_y = -1
+        classifier = OneVsRestClassifier(
+            LinearSVC(C=DFLT_C, multi_class="crammer_singer"))
+        self._model = Pipeline([('vectorizer', DictVectorizer()),
+                                ('var_filter', VarianceThreshold()),
+                                ('LinearSVC', classifier)])
 
     def train(self, a_train_data, a_dev_data=None, a_n_y=-1):
         """Method for training the model.
@@ -130,10 +146,23 @@ class WangExplicitSenser(BaseSenser):
         (void)
 
         """
+        print("Training Wang explicit classifier ...", file=sys.stderr)
         self.n_y = a_n_y
-        x_train = [self._extract_features(irel, a_train_data[1])
-                   for irel in a_train_data[0]]
-        print("a_train_data =", repr(a_train_data), file=sys.stderr)
+        x_train = []
+        y_train = []
+        x_i = y_i = None
+        # generate features
+        for irel in a_train_data[0]:
+            x_i = self._extract_features(irel, a_train_data[1])
+            if not x_i:
+                continue
+            x_train.append(x_i)
+            y_i = [i for i, val in enumerate(irel[SENSE]) if val]
+            y_train.append(y_i)
+        # fit the model
+        y_train = MultiLabelBinarizer().fit_transform(y_train)
+        self._model.fit(x_train, y_train)
+        print(" done", file=sys.stderr)
 
     def predict(self, a_rel, a_test_data):
         """Method for predicting sense of single relation.
@@ -149,7 +178,8 @@ class WangExplicitSenser(BaseSenser):
           most probable sense of discourse relation
 
         """
-        pass
+        feats = self._extract_features(a_rel, a_test_data[-1])
+        return self._model.predict(feats)
 
     def _free(self):
         """Free resources used by the model.
@@ -200,6 +230,10 @@ class WangExplicitSenser(BaseSenser):
         # syntactic features
         tree_str = a_parses[doc_id][SENTENCES][snt_id][PARSE_TREE].strip()
         parse_tree = Tree.fromstring(tree_str)
+        if not parse_tree.leaves():
+            print("Invalid parse tree for sentence {:d}".format(snt_id),
+                  file=sys.stderr)
+            return {x: 1 for x in feats}
         conn_t_ids = [t[-1] for t in a_rel[CONNECTIVE][TOK_LIST]]
         scat = "SyntCat-" + self._get_cat(conn_t_ids, parse_tree)
         feats.append(scat)
@@ -231,22 +265,14 @@ class WangExplicitSenser(BaseSenser):
         if conn_ltok == AS or conn_ltok == WHEN:
             prev_conn = self._get_prev_conn(conn_t_ids[0], parse_tree)
             if prev_conn:
-                feats.append(conn_ltok + '-' + _conn2str(prev_conn))
-            print("prev_conn =", repr(prev_conn))
-            print("feats =", repr(feats))
-            # raise NotImplementedError
-            # sys.exit(66)
+                feats.append(conn_ltok + '-' + _conn2str(prev_conn[0]))
         if conn_ltok != AS:
             feats.append("NotAs")
         if conn_ltok != WHEN:
             feats.append("NotWhen")
-
-        ###################
-        # Digitize features
-        # pitler's syntactic features
-        prnt_cat = None
-        lft_sib_cat = None
-        rght_sib_cat = None
+        ################################
+        # Convert features to dictionary
+        feats = {self._escape_feat(f): 1 for f in feats}
         return feats
 
     def _get_conn_txt(self, a_doc_id, a_rel, a_parses):
@@ -423,14 +449,12 @@ class WangExplicitSenser(BaseSenser):
         # obtain tokens of the sentence in question
         toks = [(i, t.lower()) for i, t in
                 enumerate(a_tree.leaves()[:a_tok_id])]
-        print("toks =", repr(toks))
         tokset = set(t[-1] for t in toks)
         sent_len = len(toks)
         # find matches of the first connective tokens
         matches = tokset & CONNTOKS
         if not matches:
             return ret
-        print("matches =", repr(matches))
         # generate mapping from sentence tokens to their indices
         snt_tok2pos = defaultdict(list)
         for i, t in toks:
@@ -480,9 +504,7 @@ class WangExplicitSenser(BaseSenser):
                 if found:
                     ret.append((start, iconn))
         ret.sort(key=lambda el: el[0])
-        print("ret =", repr(ret))
-        if len(matches) > 1:
-            sys.exit(66)
+        return [el[-1] for el in ret]
 
     def _get_path(self, a_toks, a_tree):
         """Obtain path to the syntactic node covering all tokens.
@@ -508,3 +530,17 @@ class WangExplicitSenser(BaseSenser):
             elif len(path) > 1:
                 path = path[:-1]
             return path
+
+    def _escape_feat(self, a_feat):
+        """Replace characters that might confuse dict vectorize.
+
+        Args:
+        a_feat (str): feature to be escaped
+
+        Return:
+        (str):
+        escaped feature
+
+        """
+        a_feat = MULTISPACE_RE.sub(' ', a_feat)
+        return EQ_RE.sub('_', a_feat)

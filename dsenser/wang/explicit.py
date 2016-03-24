@@ -125,8 +125,7 @@ class WangExplicitSenser(BaseSenser):
 
         """
         self.n_y = -1
-        classifier = OneVsRestClassifier(
-            LinearSVC(C=DFLT_C, multi_class="crammer_singer"))
+        classifier = OneVsRestClassifier(LinearSVC(C=DFLT_C))
         self._model = Pipeline([('vectorizer', DictVectorizer()),
                                 ('var_filter', VarianceThreshold()),
                                 ('LinearSVC', classifier)])
@@ -157,10 +156,10 @@ class WangExplicitSenser(BaseSenser):
             if not x_i:
                 continue
             x_train.append(x_i)
-            y_i = [i for i, val in enumerate(irel[SENSE]) if val]
+            y_i = np.argmax(irel[SENSE])
             y_train.append(y_i)
         # fit the model
-        y_train = MultiLabelBinarizer().fit_transform(y_train)
+        # y_train = MultiLabelBinarizer().fit_transform(y_train)
         self._model.fit(x_train, y_train)
         print(" done", file=sys.stderr)
 
@@ -178,8 +177,11 @@ class WangExplicitSenser(BaseSenser):
           most probable sense of discourse relation
 
         """
+        ret = np.zeros(self.n_y)
         feats = self._extract_features(a_rel, a_test_data[-1])
-        return self._model.predict(feats)
+        ret_i = self._model.predict(feats)
+        ret[ret_i] = 1.
+        return ret
 
     def _free(self):
         """Free resources used by the model.

@@ -79,6 +79,8 @@ class Judge(object):
           most probable sense of discourse relation
 
         """
+        # preds = [imodel.predict(a_rel, a_test_data) for imodel in a_models]
+        # avg = np.average(preds, axis=0)
         return np.argmax(np.average([imodel.predict(a_rel,
                                                     a_test_data)
                                      for imodel in a_models], axis=0))

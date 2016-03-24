@@ -3,7 +3,7 @@
 
 ##################################################################
 # Libraries
-from distutils.core import setup
+from setuptools import setup
 from os import path
 import codecs
 import glob
@@ -26,13 +26,13 @@ with codecs.open(path.join(PWD, "requirements.txt"),
         if iline:
             INSTALL_REQUIRES.append(iline)
 
-TEST_REQUIRES = []
+TESTS_REQUIRE = []
 with codecs.open(path.join(PWD, "test-requirements.txt"),
                  encoding=ENCODING) as ifile:
     for iline in ifile:
         iline = iline.strip()
         if iline:
-            TEST_REQUIRES.append(iline)
+            TESTS_REQUIRE.append(iline)
 
 ##################################################################
 # setup()
@@ -51,6 +51,8 @@ setup(
         "dsenser": [path.join("data", fname) for fname in ()]
     },
     install_requires=INSTALL_REQUIRES,
+    setup_requires=["pytest-runner"],
+    tests_require=TESTS_REQUIRE,
     scripts=[path.join("scripts", "discourse_senser")],
     classifiers=["Development Status :: 2 - Pre-Alpha",
                  "Environment :: Console",

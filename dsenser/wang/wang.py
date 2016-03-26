@@ -66,16 +66,16 @@ class WangSenser(BaseSenser):
         self.n_y = a_n_y
         explicit_train, implicit_train = self._divide_ds(a_train_data)
         explicit_dev, implicit_dev = self._divide_ds(a_dev_data)
-        self.explicit.train(explicit_train, explicit_dev, a_n_y)
         self.implicit.train(implicit_train, implicit_dev, a_n_y)
+        self.explicit.train(explicit_train, explicit_dev, a_n_y)
 
-    def predict(self, a_rel, a_test_data):
+    def predict(self, a_rel, a_data):
         """Method for predicting sense of single relation.
 
         Args:
         a_rel (dict):
           discourse relation whose sense should be predicted
-        a_test_data (2-tuple(dict, dict)):
+        a_data (2-tuple(dict, dict)):
           list of input JSON data
 
         Returns:
@@ -84,8 +84,8 @@ class WangSenser(BaseSenser):
 
         """
         if self._is_explicit(a_rel):
-            return self.explicit.predict(a_rel, a_test_data)
-        return self.implicit.predict(a_rel, a_test_data)
+            return self.explicit.predict(a_rel, a_data)
+        return self.implicit.predict(a_rel, a_data)
 
     def _free(self):
         """Free resources used by the model.

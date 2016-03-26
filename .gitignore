@@ -63,3 +63,4 @@ data/en.dev/
 data/en.train/
 venv/
 data/en.out/
+dsenser/data/models/pdtb.sense.model

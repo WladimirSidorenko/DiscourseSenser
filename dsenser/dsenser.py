@@ -15,7 +15,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 from dsenser.constants import ARG1, ARG2, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
     SENSE, TOK_LIST, TOK_OFFS_IDX, TYPE, DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
     DFLT_ECONN_PATH, ALT_LEX, EXPLICIT, IMPLICIT, FFNN, LSTM, MJR, SVM, WANG
-from dsenser.judge import Judge
 
 from collections import Iterable
 from cPickle import dump, load
@@ -23,6 +22,7 @@ from cPickle import dump, load
 import codecs
 import numpy as np
 import os
+import sys
 
 ##################################################################
 # Variables and Constants
@@ -77,7 +77,7 @@ class DiscourseSenser(object):
 
         Args:
         a_train_data (list or None):
-          development set
+          training set
         a_path (str):
           path for storing the model
         a_type (str):
@@ -123,9 +123,14 @@ class DiscourseSenser(object):
         # train models
         for imodel in self.models:
             imodel.train(a_train_data, a_dev_data, len(self.cls2idx))
-        # train judge
+        # train the judge (defer the import due to slow theano loading)
+        from dsenser.judge import Judge
         self.judge = Judge(len(self.models), len(self.cls2idx))
-        self.judge.train(self.models, a_train_data, a_dev_data)
+        x_train = [(self._prejudge(irel, a_train_data), irel[SENSE])
+                   for irel in a_train_data[0]]
+        x_dev = [(self._prejudge(irel, a_dev_data), irel[SENSE])
+                 for irel in ((a_dev_data and a_dev_data[0]) or [])]
+        self.judge.train(x_train, x_dev)
         # dump model
         self._dump(a_path)
 
@@ -149,12 +154,10 @@ class DiscourseSenser(object):
             arg1 = irel[ARG1]
             arg1.pop(CHAR_SPAN, None)
             arg1.pop(RAW_TEXT, None)
-            arg1[TOK_LIST] = self._normalize_tok_list(arg1[TOK_LIST])
 
             arg2 = irel[ARG2]
             arg2.pop(CHAR_SPAN, None)
             arg2.pop(RAW_TEXT, None)
-            arg2[TOK_LIST] = self._normalize_tok_list(arg2[TOK_LIST])
 
             if len(irel[CONNECTIVE][TOK_LIST]) == 0:
                 irel[CONNECTIVE][RAW_TEXT] = ""
@@ -166,10 +169,12 @@ class DiscourseSenser(object):
             irel[CONNECTIVE].pop(CHAR_SPAN, None)
             if irel[TYPE] != EXPLICIT:
                 irel[CONNECTIVE].pop(RAW_TEXT, None)
+            arg1[TOK_LIST] = self._normalize_tok_list(arg1[TOK_LIST])
+            arg2[TOK_LIST] = self._normalize_tok_list(arg2[TOK_LIST])
             irel[CONNECTIVE][TOK_LIST] = self._normalize_tok_list(
                 irel[CONNECTIVE][TOK_LIST])
 
-    def _predict(self, a_rel, a_data):
+    def _predict(self, a_rel, a_data, a_verbose=False):
         """Determine sense of discourse relation.
 
         Args:
@@ -177,13 +182,21 @@ class DiscourseSenser(object):
           JSON instance representing discourse relation
         a_data (list):
           2-tuple(dict, dict): input rels and parses
+        a_verbose (bool):
+          output label along with the probability
 
         Returns:
         (void):
           updates input set in place
 
         """
-        return self.idx2cls[self.judge.predict(self.models, a_rel, a_data)]
+        idx, iprob = self.judge.predict(self._prejudge(a_rel, a_data))
+        # print("idx =", repr(idx), file=sys.stderr)
+        # print("iprob =", repr(iprob), file=sys.stderr)
+        lbl = self.idx2cls[int(idx)]
+        if a_verbose:
+            return (lbl, iprob)
+        return lbl
 
     def _get_type(self, a_rel):
         """Determine type of discourse relation.
@@ -327,3 +340,22 @@ class DiscourseSenser(object):
         del self.cls2idx
         del self.idx2cls
         del self.econn
+
+    def _prejudge(self, a_rel, a_data):
+        """Collect judgments of single classifiers.
+
+        Args:
+        a_rel (dict):
+          discourse relation whose sense should be predicted
+        a_data (2-tuple(dict, dict)):
+          list of input JSON data
+
+        Returns:
+        (np.array):
+          (n x m) matrix of n classifiers' judgments
+
+        """
+        ret = np.zeros((len(self.models), len(self.cls2idx)))
+        for i, imodel in enumerate(self.models):
+            ret[i] = imodel.predict(a_rel, a_data)
+        return ret

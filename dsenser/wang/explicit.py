@@ -15,15 +15,13 @@ from __future__ import absolute_import, print_function
 
 from dsenser.base import BaseSenser
 from dsenser.constants import CONNECTIVE, DFLT_ECONN_PATH, DOC_ID, \
-    TOK_LIST, SENSE, SENTENCES, WORDS, POS, TOK_IDX, SNT_ID, TOK_ID, \
+    TOK_LIST, SENSE, SENTENCES, WORDS, POS, TOK_IDX, SNT_ID, \
     PARSE_TREE
 
 from collections import defaultdict
 from nltk import Tree
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_selection import VarianceThreshold
-from sklearn.multiclass import OneVsRestClassifier
-from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
@@ -125,10 +123,11 @@ class WangExplicitSenser(BaseSenser):
 
         """
         self.n_y = -1
-        classifier = OneVsRestClassifier(LinearSVC(C=DFLT_C))
+        # classifier = OneVsRestClassifier(LinearSVC(C=DFLT_C, dual=False))
+        classifier = LinearSVC(C=DFLT_C, dual=False)
         self._model = Pipeline([('vectorizer', DictVectorizer()),
                                 ('var_filter', VarianceThreshold()),
-                                ('LinearSVC', classifier)])
+                                ('classifier', classifier)])
 
     def train(self, a_train_data, a_dev_data=None, a_n_y=-1):
         """Method for training the model.
@@ -157,31 +156,34 @@ class WangExplicitSenser(BaseSenser):
                 continue
             x_train.append(x_i)
             y_i = np.argmax(irel[SENSE])
+            # y_i = [i for i, val in enumerate(irel[SENSE]) if val]
             y_train.append(y_i)
         # fit the model
         # y_train = MultiLabelBinarizer().fit_transform(y_train)
         self._model.fit(x_train, y_train)
         print(" done", file=sys.stderr)
 
-    def predict(self, a_rel, a_test_data):
+    def predict(self, a_rel, a_data):
         """Method for predicting sense of single relation.
 
         Args:
         a_rel (dict):
           discourse relation whose sense should be predicted
-        a_test_data (2-tuple(dict, dict)):
+        a_data (2-tuple(dict, dict)):
           list of input JSON data
 
         Returns:
-        (str):
-          most probable sense of discourse relation
+        (np.array):
+          probabilities of senses
 
         """
         ret = np.zeros(self.n_y)
-        feats = self._extract_features(a_rel, a_test_data[-1])
-        ret_i = self._model.predict(feats)
-        ret[ret_i] = 1.
-        return ret
+        feats = self._extract_features(a_rel, a_data[-1])
+        # map model's classes to original indices
+        for i, ival in enumerate(self._model.decision_function(feats)[0]):
+            ret[self._model.classes_[i]] = ival
+        # normalize using softmax
+        return np.exp(ret) / (np.sum(np.exp(ret)) or 1e10)
 
     def _free(self):
         """Free resources used by the model.
@@ -196,19 +198,19 @@ class WangExplicitSenser(BaseSenser):
         self.n_y = -1
 
     def _extract_features(self, a_rel, a_parses):
-        """Free resources used by the model.
+        """Extract classification features for a given relation.
 
         Args:
         a_rel (dict):
           discourse relation to extract features for
         a_parses (dict):
-          parsed data
+          parsed sentences
 
         Returns:
         (void):
 
         """
-        feats = []
+        feats = {}
         doc_id = a_rel[DOC_ID]
         snt_id = a_rel[CONNECTIVE][TOK_LIST][-1][SNT_ID]
 
@@ -219,63 +221,67 @@ class WangExplicitSenser(BaseSenser):
         assert conn_tok, \
             "Connective string cannot be empty for explicit classifier."
         conn_str = "ConStr-" + conn_tok
-        feats.append(conn_str)
+        feats[conn_str] = 1
         conn_lstr = conn_str.lower()
-        feats.append(conn_lstr)
+        feats[conn_lstr] = 1
         # obtain POS of the connective
         conn_pos = "conpos-" + self._get_conn_pos(doc_id, a_rel, a_parses)
-        feats.append(conn_pos)
+        feats[conn_pos] = 1
         # obtain token preceding the connective
         prev_tok = "prevtok-" + self._get_conn_prev(doc_id, a_rel, a_parses)
-        feats.append("Tok1Tok2-{:s}|{:s}".format(conn_str, prev_tok))
+        feats["Tok1Tok2-{:s}|{:s}".format(conn_str, prev_tok)] = 1
         ####################
         # syntactic features
-        tree_str = a_parses[doc_id][SENTENCES][snt_id][PARSE_TREE].strip()
+        tree_str = a_parses[doc_id][SENTENCES][snt_id][PARSE_TREE]
         parse_tree = Tree.fromstring(tree_str)
         if not parse_tree.leaves():
             print("Invalid parse tree for sentence {:d}".format(snt_id),
                   file=sys.stderr)
-            return {x: 1 for x in feats}
+            return {self._escape_feat(k): v for k, v in feats.iteritems()}
         conn_t_ids = [t[-1] for t in a_rel[CONNECTIVE][TOK_LIST]]
         scat = "SyntCat-" + self._get_cat(conn_t_ids, parse_tree)
-        feats.append(scat)
+        feats[scat] = 1
         prnt_cat = "PrntCat-" + self._get_prnt_cat(conn_t_ids, parse_tree)
-        feats.append(prnt_cat)
+        feats[prnt_cat] = 1
         left_sib = "LeftSib-" + self._get_sib(conn_t_ids, parse_tree, LEFT)
-        feats.append(left_sib)
+        feats[left_sib] = 1
         right_sib = "RightSib-" + self._get_sib(conn_t_ids, parse_tree, RIGHT)
-        feats.append(right_sib)
+        feats[right_sib] = 1
 
         ################
         # joint features
-        feats.append(conn_lstr + '|' + scat)
-        feats.append(conn_lstr + '|' + prnt_cat)
-        feats.append(conn_lstr + '|' + left_sib)
-        feats.append(conn_lstr + '|' + right_sib)
+        feats[conn_lstr + '|' + scat] = 1
+        feats[conn_lstr + '|' + prnt_cat] = 1
+        feats[conn_lstr + '|' + left_sib] = 1
+        feats[conn_lstr + '|' + right_sib] = 1
 
-        feats.append(scat + '|' + prnt_cat)
-        feats.append(scat + '|' + left_sib)
-        feats.append(scat + '|' + right_sib)
-        feats.append(prnt_cat + '|' + left_sib)
-        feats.append(prnt_cat + '|' + right_sib)
-        feats.append(left_sib + '|' + right_sib)
+        feats[scat + '|' + prnt_cat] = 1
+        feats[scat + '|' + left_sib] = 1
+        feats[scat + '|' + right_sib] = 1
+        feats[prnt_cat + '|' + left_sib] = 1
+        feats[prnt_cat + '|' + right_sib] = 1
+        feats[left_sib + '|' + right_sib] = 1
         #################
         # Wang's features
         ctx_nodes = "CtxNodes-" + '-'.join(self._get_ctx_nodes(conn_t_ids,
                                                                parse_tree))
+        feats[ctx_nodes] = 1
 
         if conn_ltok == AS or conn_ltok == WHEN:
-            prev_conn = self._get_prev_conn(conn_t_ids[0], parse_tree)
+            toks = a_parses[doc_id][SENTENCES][snt_id][WORDS]
+            prev_conn, prev_pos = self._get_prev_conn(conn_t_ids[0],
+                                                      parse_tree,
+                                                      toks)
             if prev_conn:
-                feats.append(conn_ltok + '-' + _conn2str(prev_conn[0]))
+                feats[conn_ltok + '-' + _conn2str(prev_conn[0])] = 1
+                feats[conn_ltok + "PoS-" + ','.join(prev_pos[0])] = 1
         if conn_ltok != AS:
-            feats.append("NotAs")
+            feats["NotAs"] = 1
         if conn_ltok != WHEN:
-            feats.append("NotWhen")
-        ################################
-        # Convert features to dictionary
-        feats = {self._escape_feat(f): 1 for f in feats}
-        return feats
+            feats["NotWhen"] = 1
+        ##########################
+        # Normalize feaatire names
+        return {self._escape_feat(k): v for k, v in feats.iteritems()}
 
     def _get_conn_txt(self, a_doc_id, a_rel, a_parses):
         """Obtain raw text of the connective.
@@ -433,7 +439,7 @@ class WangExplicitSenser(BaseSenser):
             ret.append(inode.label())
         return ret
 
-    def _get_prev_conn(self, a_tok_id, a_tree):
+    def _get_prev_conn(self, a_tok_id, a_tree, a_toks):
         """Obtain  of the connective.
 
         Args:
@@ -441,13 +447,16 @@ class WangExplicitSenser(BaseSenser):
           index of the first token of the connective
         a_tree (dict):
           syntactic tree
+        a_toks (list):
+          list of sentence tokens
 
         Returns:
-        (list):
-        list of context node labels
+        (2-tupe(list, list)):
+          list of previous connective tokens and their PoS tags
 
         """
-        ret = []
+        ret_conn = []
+        ret_pos = []
         # obtain tokens of the sentence in question
         toks = [(i, t.lower()) for i, t in
                 enumerate(a_tree.leaves()[:a_tok_id])]
@@ -456,24 +465,29 @@ class WangExplicitSenser(BaseSenser):
         # find matches of the first connective tokens
         matches = tokset & CONNTOKS
         if not matches:
-            return ret
+            return (ret_conn, ret_pos)
         # generate mapping from sentence tokens to their indices
         snt_tok2pos = defaultdict(list)
         for i, t in toks:
             snt_tok2pos[t].append(i)
+        matches = [(ipos, imatch) for imatch in matches
+                   for ipos in snt_tok2pos[imatch]]
+        matches.sort(key=lambda el: el[0])
         # generate mapping from connective parts to sentence indices
-        conn_pos2snt_pos = defaultdict(list)
         found = False
+        pos_tags = None
         start_tok = None
         start = prev_start_pos = start_pos = -1
         # check each matched first token
-        for imatch in matches:
+        for istart, imatch in matches:
             # iterate over each connective which starts with that token
             for i, iconn in CONNTOK2CONN[imatch]:
                 if i != 0:
                     continue
                 found = True
-                start = prev_start_pos = -1
+                pos_tags = []
+                start = -1
+                prev_start_pos = istart
                 # iterate over each separate part of that connective
                 for jpart in iconn:
                     start_tok = jpart[0]
@@ -496,6 +510,9 @@ class WangExplicitSenser(BaseSenser):
                                 found = False
                                 break
                         if found:
+                            pos_tags.extend(a_toks[t_id][1][POS] for t_id in
+                                            xrange(start_pos,
+                                                   start_pos + len(jpart)))
                             break
                     if found:
                         if start == -1:
@@ -504,9 +521,14 @@ class WangExplicitSenser(BaseSenser):
                     else:
                         break
                 if found:
-                    ret.append((start, iconn))
-        ret.sort(key=lambda el: el[0])
-        return [el[-1] for el in ret]
+                    ret_conn.append((start, iconn))
+                    ret_pos.append((start, pos_tags))
+        # sort connectives and their pos tags according to the starting
+        # position
+        ret_conn.sort(key=lambda el: el[0])
+        ret_pos.sort(key=lambda el: el[0])
+        # return only connectives and their pos tags
+        return ([el[-1] for el in ret_conn], [el[-1] for el in ret_pos])
 
     def _get_path(self, a_toks, a_tree):
         """Obtain path to the syntactic node covering all tokens.

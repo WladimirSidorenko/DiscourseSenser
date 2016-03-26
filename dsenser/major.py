@@ -80,10 +80,10 @@ class MajorSenser(BaseSenser):
         for istat in conn2sense.itervalues():
             all_senses.update(istat)
         # obtain the most frequent sense and use it for missing connectives
-        self.dflt_sense = self._get_most_frequent_sense(all_senses)
+        self.dflt_sense = self._get_sense_stat(all_senses)
         # for other connectives use their the respective most frequent sense
         for iconn, istat in conn2sense.iteritems():
-            self.conn2sense[iconn] = self._get_most_frequent_sense(istat)
+            self.conn2sense[iconn] = self._get_sense_stat(istat)
         print(" done", file=sys.stderr)
 
     def predict(self, a_rel, a_test_data):
@@ -96,37 +96,30 @@ class MajorSenser(BaseSenser):
           list of input JSON data
 
         Returns:
-        str:
-          most probable sense of discourse relation
+        (np.array):
+          prior probabilities of senses
 
         """
         iconn = self._normalize_conn(a_rel[CONNECTIVE][RAW_TEXT])
-        isense = self.conn2sense.get(iconn, self.dflt_sense)
-        ret = np.zeros(self.n_y)
-        ret[isense] = 1.
-        return ret
+        return self.conn2sense.get(iconn, self.dflt_sense)
 
-    def _get_most_frequent_sense(self, a_stat):
-        """Obtain most frequent sense from statistcs.
+    def _get_sense_stat(self, a_stat):
+        """Generate sense statistcs.
 
         Args:
         a_stat (dict(str -> int)):
           statistics on senses
 
         Returns:
-        str:
-          most frequent sense in statistics
+        (np.array):
+          prior probabilities of senses
 
         """
-        if not a_stat:
-            raise RuntimeError("Empty statistics passed as argument.")
-        max_cnt = -1
-        dflt_sense = None
-        for isense, icnt in a_stat.iteritems():
-            if icnt > max_cnt:
-                max_cnt = icnt
-                dflt_sense = isense
-        return dflt_sense
+        ret = np.zeros(self.n_y)
+        for i, j in a_stat.iteritems():
+            ret[i] = j
+        ret /= float(sum(ret))
+        return ret
 
     def _free(self):
         """Free resources used by the model.

@@ -33,6 +33,11 @@ import sys
 DFLT_C = 0.3
 DASH_RE = re.compile("-+")
 LARROW = "<--"
+MODALITY = {"can": 0, "may": 1, "must": 2, "need": 3, "shall": 4,
+            "will": 5, "could": 0, "would": 5, "might": 1,
+            "should": 4, "'ll": 4, "wo": 5, "sha": 4, "ca": 0,
+            "have to": 6, "had to": 6, "'d to": 6, "'ve to": 6
+            }
 
 
 ##################################################################
@@ -142,9 +147,21 @@ class WangImplicitSenser(BaseSenser):
         """
         feats = {}
         doc_id = a_rel[DOC_ID]
+        toks1 = [
+            a_parses[doc_id][SENTENCES][s_id][WORDS][w_id][TOK_IDX].lower()
+            for s_id, w_ids in
+            self._get_snt2tok(a_rel[ARG1][TOK_LIST]).iteritems()
+            for w_id in w_ids]
+        toks2 = [
+            a_parses[doc_id][SENTENCES][s_id][WORDS][w_id][TOK_IDX].lower()
+            for s_id, w_ids in
+            self._get_snt2tok(a_rel[ARG1][TOK_LIST]).iteritems()
+            for w_id in w_ids]
+
         self._get_product_rules(feats, doc_id, a_rel, a_parses)
         self._get_dep_rules(feats, doc_id, a_rel, a_parses)
-        self._get_first_last_toks(feats, doc_id, a_rel, a_parses)
+        self._get_first_last_toks(feats, toks1, toks2)
+        self._get_modality(feats, toks1, toks2)
         return feats
 
     def _get_product_rules(self, a_feats, a_doc_id, a_rel, a_parses):
@@ -292,18 +309,16 @@ class WangImplicitSenser(BaseSenser):
         for head, ideps in deps.iteritems():
             yield head + LARROW + ' '.join(ideps)
 
-    def _get_first_last_toks(self, a_feats, a_doc_id, a_rel, a_parses):
+    def _get_first_last_toks(self, a_feats, a_toks1, a_toks2):
         """Extract first and last tokens of the given relation.
 
         Args:
         a_feats (dict):
           target feature dictionary
-        a_doc_id (str):
-          id of the document
-        a_rel (dict):
-          discourse relation to extract features for
-        a_parses (dict):
-          parsed sentences
+        a_toks1 (list(str)):
+          list of tokens from the 1-st argument
+        a_toks2 (list(str)):
+          list of tokens from the 2-nd argument
 
         Returns:
         (void):
@@ -313,21 +328,13 @@ class WangImplicitSenser(BaseSenser):
         a1_first3 = a2_first3 = "NULL" * 3
         first1 = last1 = first2 = last2 = first1_first2 = last1_last2 = "NULL"
         # obtain tokens for the first argument
-        toks1 = [a_parses[a_doc_id][SENTENCES][s_id][WORDS][w_id][TOK_IDX]
-                 for s_id, w_ids in
-                 self._get_snt2tok(a_rel[ARG1][TOK_LIST]).iteritems()
-                 for w_id in w_ids]
-        if toks1:
-            first1, last1 = toks1[0], toks1[-1]
-            a1_first3 = '_'.join(toks1[:3])
+        if a_toks1:
+            first1, last1 = a_toks1[0], a_toks1[-1]
+            a1_first3 = '_'.join(a_toks1[:3])
         # obtain tokens for the second argument
-        toks2 = [a_parses[a_doc_id][SENTENCES][s_id][WORDS][w_id][TOK_IDX]
-                 for s_id, w_ids in
-                 self._get_snt2tok(a_rel[ARG2][TOK_LIST]).iteritems()
-                 for w_id in w_ids]
-        if toks1:
-            first2, last2 = toks2[0], toks2[-1]
-            a2_first3 = '_'.join(toks2[:3])
+        if a_toks2:
+            first2, last2 = a_toks2[0], a_toks2[-1]
+            a2_first3 = '_'.join(a_toks2[:3])
         # add obtained tokens to dictionary
         a_feats["Arg1Tok1-" + first1] = 1.
         a_feats["Arg1Tok-1-" + last1] = 1.
@@ -338,6 +345,53 @@ class WangImplicitSenser(BaseSenser):
         # add token combinations
         a_feats["Arg1Tok1Arg2Tok1-" + first1 + '|' + first2] = 1.
         a_feats["Arg1Tok1Arg2Tok-1-" + last1 + '|' + last2] = 1.
+
+    def _get_modality(self, a_feats, a_toks1, a_toks2):
+        """Estimate modality of the given relation.
+
+        Args:
+        a_feats (dict):
+          target feature dictionary
+        a_toks1 (list(str)):
+          list of tokens from the 1-st argument
+        a_toks2 (list(str)):
+          list of tokens from the 2-nd argument
+
+        Returns:
+        (void):
+          updates `a_feats` dictionary in place
+
+        """
+        mod1 = self._get_arg_modality(a_toks1)
+        mod2 = self._get_arg_modality(a_toks2)
+        joint_mod = [i * j for i in mod1 for j in mod2]
+        # add modality features
+        a_feats["Mod1-" + ''.join(str(i) for i in mod1)] = 1.
+        a_feats["Mod2-" + ''.join(str(i) for i in mod2)] = 1.
+        a_feats["JointMod-" + ''.join(str(i) for i in joint_mod)] = 1.
+
+    def _get_arg_modality(self, a_toks):
+        """Estimate modality of the given relation argument.
+
+        Args:
+        a_toks (list(str)):
+          argument's tokens
+
+        Returns:
+        (list(int)):
+
+        """
+        ret = [0] * 7
+        bigram = None
+        max_i = len(a_toks) - 1
+        for i, itok in enumerate(a_toks):
+            if itok in MODALITY:
+                ret[MODALITY[itok]] = 1.
+            if i < max_i:
+                bigram = itok + ' ' + a_toks[i + 1]
+                if bigram in MODALITY:
+                    ret[MODALITY[bigram]] = 1.
+        return ret
 
     def _get_snt2tok(self, a_tok_list):
         """Generate mapping from sentence indices to token lists.

@@ -46,9 +46,9 @@ setup(
     license="MIT",
     url="https://github.com/WladimirSidorenko/DiscourseSenser",
     include_package_data=True,
-    packages=["dsenser", "dsenser.scorer"],
+    packages=["dsenser", "dsenser.scorer", "dsenser.wang"],
     package_data={
-        "dsenser": [path.join("data", fname) for fname in ()]
+        "dsenser": [path.join("data", "econnectives", "ExpConn.txt")]
     },
     install_requires=INSTALL_REQUIRES,
     setup_requires=["pytest-runner"],

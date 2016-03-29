@@ -15,12 +15,14 @@ import os
 
 ##################################################################
 # Variables and Constants
+ENCODING = "utf-8"
+
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 MODEL_DIR = os.path.join(DATA_DIR, "models")
 ECONN_DIR = os.path.join(DATA_DIR, "econnectives")
 DFLT_MODEL_PATH = os.path.join(MODEL_DIR, "pdtb.sense.model")
 DFLT_ECONN_PATH = os.path.join(ECONN_DIR, "ExpConn.txt")
-DFLT_ECONN_CSTR_PATH = os.path.join(ECONN_DIR, "cstring.txt")
+DFLT_LCSI_PATH = os.path.join(DATA_DIR, "LCSInfomerge.txt")
 
 FFNN = 0
 LSTM = 1

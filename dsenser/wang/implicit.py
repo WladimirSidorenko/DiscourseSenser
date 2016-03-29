@@ -14,16 +14,18 @@ WangSenser (class):
 from __future__ import absolute_import, print_function
 
 from dsenser.base import BaseSenser
-from dsenser.constants import ARG1, ARG2, DEPS, DOC_ID, PARSE_TREE, \
-    SENTENCES, SENSE, SNT_ID, TOK_ID, TOK_IDX, TOK_LIST, WORDS
+from dsenser.constants import ARG1, ARG2, DFLT_LCSI_PATH, DEPS, \
+    DOC_ID, ENCODING, PARSE_TREE, POS, SENTENCES, SENSE, SNT_ID, \
+    TOK_ID, TOK_IDX, TOK_LIST, WORDS
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from nltk import Tree
 from nltk.grammar import is_nonterminal
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.feature_selection import VarianceThreshold
+# from sklearn.feature_selection import VarianceThreshold
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
+import codecs
 import numpy as np
 import re
 import sys
@@ -32,12 +34,47 @@ import sys
 # Variables and Constants
 DFLT_C = 0.3
 DASH_RE = re.compile("-+")
+SPACE_RE = re.compile("\s+")
+HASH_RE = re.compile("\s*#\s*")
 LARROW = "<--"
 MODALITY = {"can": 0, "may": 1, "must": 2, "need": 3, "shall": 4,
             "will": 5, "could": 0, "would": 5, "might": 1,
             "should": 4, "'ll": 4, "wo": 5, "sha": 4, "ca": 0,
             "have to": 6, "had to": 6, "'d to": 6, "'ve to": 6
             }
+VB_TAG2POS = {"MD": 0, "VB": 1, "VBD": 2, "VBG": 3, "VBN": 4, "VBP": 5,
+              "VBZ": 6}
+VB_TAGS = set(["VB", "VBD", "VBG", "VBN", "VBP", "VBZ"])
+
+
+##################################################################
+# Methods
+def load_LCSI(a_fname):
+    """Load LCSI verb classes from file.
+
+    Args:
+    a_fname (str): file containing connectives
+
+    Returns:
+    (dict(str: ste(str))):
+    mapping from verb to a set of classes
+
+    """
+    ret = dict()
+    iword = iclasses = iclass_str = None
+    with codecs.open(a_fname, 'r', ENCODING) as ifile:
+        for iline in ifile:
+            iline = iline.strip()
+            if not iline:
+                continue
+            iword, iclass_str = SPACE_RE.split(iline, 1)
+            iword = iword.lower()
+            iclasses = set(HASH_RE.split(iclass_str))
+            ret[iword] = iclasses
+    return ret
+
+
+LCSI = load_LCSI(DFLT_LCSI_PATH)
 
 
 ##################################################################
@@ -61,7 +98,7 @@ class WangImplicitSenser(BaseSenser):
         self.n_y = -1
         classifier = LinearSVC(C=DFLT_C, dual=False)
         self._model = Pipeline([('vectorizer', DictVectorizer()),
-                                ('var_filter', VarianceThreshold()),
+                                # ('var_filter', VarianceThreshold()),
                                 ('classifier', classifier)])
 
     def train(self, a_train_data, a_dev_data=None, a_n_y=-1):
@@ -147,21 +184,16 @@ class WangImplicitSenser(BaseSenser):
         """
         feats = {}
         doc_id = a_rel[DOC_ID]
-        toks1 = [
-            a_parses[doc_id][SENTENCES][s_id][WORDS][w_id][TOK_IDX].lower()
-            for s_id, w_ids in
-            self._get_snt2tok(a_rel[ARG1][TOK_LIST]).iteritems()
-            for w_id in w_ids]
-        toks2 = [
-            a_parses[doc_id][SENTENCES][s_id][WORDS][w_id][TOK_IDX].lower()
-            for s_id, w_ids in
-            self._get_snt2tok(a_rel[ARG1][TOK_LIST]).iteritems()
-            for w_id in w_ids]
+        toks_pos1 = self._get_toks_pos(a_parses[doc_id][SENTENCES],
+                                       a_rel, ARG1)
+        toks_pos2 = self._get_toks_pos(a_parses[doc_id][SENTENCES],
+                                       a_rel, ARG2)
 
         self._get_product_rules(feats, doc_id, a_rel, a_parses)
         self._get_dep_rules(feats, doc_id, a_rel, a_parses)
-        self._get_first_last_toks(feats, toks1, toks2)
-        self._get_modality(feats, toks1, toks2)
+        self._get_first_last_toks(feats, toks_pos1, toks_pos2)
+        self._get_modality(feats, toks_pos1, toks_pos2)
+        self._get_vb_class(feats, toks_pos1, toks_pos2)
         return feats
 
     def _get_product_rules(self, a_feats, a_doc_id, a_rel, a_parses):
@@ -326,15 +358,15 @@ class WangImplicitSenser(BaseSenser):
 
         """
         a1_first3 = a2_first3 = "NULL" * 3
-        first1 = last1 = first2 = last2 = first1_first2 = last1_last2 = "NULL"
+        first1 = last1 = first2 = last2 = "NULL"
         # obtain tokens for the first argument
         if a_toks1:
-            first1, last1 = a_toks1[0], a_toks1[-1]
-            a1_first3 = '_'.join(a_toks1[:3])
+            first1, last1 = a_toks1[0][0], a_toks1[-1][0]
+            a1_first3 = '_'.join(t[0] for t in a_toks1[:3])
         # obtain tokens for the second argument
         if a_toks2:
-            first2, last2 = a_toks2[0], a_toks2[-1]
-            a2_first3 = '_'.join(a_toks2[:3])
+            first2, last2 = a_toks2[0][0], a_toks2[-1][0]
+            a2_first3 = '_'.join(t[0] for t in a_toks2[:3])
         # add obtained tokens to dictionary
         a_feats["Arg1Tok1-" + first1] = 1.
         a_feats["Arg1Tok-1-" + last1] = 1.
@@ -385,13 +417,66 @@ class WangImplicitSenser(BaseSenser):
         bigram = None
         max_i = len(a_toks) - 1
         for i, itok in enumerate(a_toks):
+            itok = itok[0]
             if itok in MODALITY:
                 ret[MODALITY[itok]] = 1.
             if i < max_i:
-                bigram = itok + ' ' + a_toks[i + 1]
+                bigram = itok + ' ' + a_toks[i + 1][0]
                 if bigram in MODALITY:
                     ret[MODALITY[bigram]] = 1.
         return ret
+
+    def _get_vb_class(self, a_feats, a_toks1, a_toks2):
+        """Obtain verb classes of the given relation.
+
+        Args:
+        a_feats (dict):
+          target feature dictionary
+        a_toks1 (list(str)):
+          list of tokens from the 1-st argument
+        a_toks2 (list(str)):
+          list of tokens from the 2-nd argument
+
+        Returns:
+        (void):
+          updates `a_feats` dictionary in place
+
+        """
+        # find intersecting verb classes
+        vb_classes = Counter()
+        vb_cls1 = vb_cls2 = None
+        for w1, p1 in a_toks1:
+            if w1 not in LCSI or p1 not in VB_TAGS:
+                continue
+            vb_cls1 = LCSI[w1]
+            for w2, p2 in a_toks2:
+                if w2 not in LCSI or p2 not in VB_TAGS:
+                    continue
+                vb_cls2 = LCSI[w2]
+                vb_classes.update(vb_cls1 & vb_cls2)
+        for vbc, cnt in vb_classes.iteritems():
+            a_feats["LCSI-" + vbc] = cnt
+        # obtain VB tag vectors
+        a_feats["VBTags1-" + self._get_arg_vb_class(a_toks1)] = 1.
+        a_feats["VBTags2-" + self._get_arg_vb_class(a_toks2)] = 1.
+
+    def _get_arg_vb_class(self, a_toks):
+        """Obtain verb classes of single argument.
+
+        Args:
+        a_toks (list(str)):
+          list of tokens from the 1-st argument
+
+        Returns:
+        (str):
+          binary mask of activated PoS tags
+
+        """
+        ret = [0] * 7
+        for _, p in a_toks:
+            if p in VB_TAG2POS:
+                ret[VB_TAG2POS[p]] = 1.
+        return ''.join(str(t) for t in ret)
 
     def _get_snt2tok(self, a_tok_list):
         """Generate mapping from sentence indices to token lists.
@@ -405,8 +490,34 @@ class WangImplicitSenser(BaseSenser):
           mapping from sentence indices to token lists
 
         """
-        snt2tok = defaultdict(set)
+        snt2tok_pos = defaultdict(set)
         for el in a_tok_list:
             snt_id = el[SNT_ID]
-            snt2tok[snt_id].add(el[TOK_ID])
-        return snt2tok
+            snt2tok_pos[snt_id].add(el[TOK_ID])
+        return snt2tok_pos
+
+    def _get_toks_pos(self, a_parses, a_rel, a_arg):
+        """Method for getting raw tokens with their parts of speech.
+
+        Args:
+        a_parses (dict):
+          parsed sentences
+        a_rel (dict):
+          discourse relation whose tokens should be obtained
+        a_arg (str):
+          relation argument to obtain senses for
+
+        Returns:
+        (list(tuple(str, str))):
+          list of tokens and their parts of speech
+
+        """
+        ret = []
+        snt = wrd = None
+        for s_id, w_ids in \
+                self._get_snt2tok(a_rel[a_arg][TOK_LIST]).iteritems():
+            snt = a_parses[s_id][WORDS]
+            for w_id in w_ids:
+                wrd = snt[w_id]
+                ret.append((wrd[TOK_IDX].lower(), wrd[1][POS]))
+        return ret

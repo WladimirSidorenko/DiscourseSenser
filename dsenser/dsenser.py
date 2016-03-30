@@ -191,8 +191,6 @@ class DiscourseSenser(object):
 
         """
         idx, iprob = self.judge.predict(self._prejudge(a_rel, a_data))
-        # print("idx =", repr(idx), file=sys.stderr)
-        # print("iprob =", repr(iprob), file=sys.stderr)
         lbl = self.idx2cls[int(idx)]
         if a_verbose:
             return (lbl, iprob)

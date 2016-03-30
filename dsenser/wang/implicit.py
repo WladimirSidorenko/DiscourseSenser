@@ -22,7 +22,7 @@ from collections import Counter, defaultdict
 from nltk import Tree
 from nltk.grammar import is_nonterminal
 from sklearn.feature_extraction import DictVectorizer
-# from sklearn.feature_selection import VarianceThreshold
+from sklearn.feature_selection import VarianceThreshold
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 import codecs
@@ -98,7 +98,7 @@ class WangImplicitSenser(BaseSenser):
         self.n_y = -1
         classifier = LinearSVC(C=DFLT_C, dual=False)
         self._model = Pipeline([('vectorizer', DictVectorizer()),
-                                # ('var_filter', VarianceThreshold()),
+                                ('var_filter', VarianceThreshold()),
                                 ('classifier', classifier)])
 
     def train(self, a_train_data, a_dev_data=None, a_n_y=-1):
@@ -194,6 +194,9 @@ class WangImplicitSenser(BaseSenser):
         self._get_first_last_toks(feats, toks_pos1, toks_pos2)
         self._get_modality(feats, toks_pos1, toks_pos2)
         self._get_vb_class(feats, toks_pos1, toks_pos2)
+        self._get_bclusters(feats, toks_pos1, toks_pos2)
+        self._get_inquirer(feats, toks_pos1, toks_pos2)
+        self._get_MPQA(feats, toks_pos1, toks_pos2)
         return feats
 
     def _get_product_rules(self, a_feats, a_doc_id, a_rel, a_parses):
@@ -477,6 +480,60 @@ class WangImplicitSenser(BaseSenser):
             if p in VB_TAG2POS:
                 ret[VB_TAG2POS[p]] = 1.
         return ''.join(str(t) for t in ret)
+
+    def _get_bclusters(self, a_feats, a_toks1, a_toks2):
+        """Obtain Brown cluster pairs for the given relation.
+
+        Args:
+        a_feats (dict):
+          target feature dictionary
+        a_toks1 (list(str)):
+          list of tokens from the 1-st argument
+        a_toks2 (list(str)):
+          list of tokens from the 2-nd argument
+
+        Returns:
+        (void):
+          updates `a_feats` dictionary in place
+
+        """
+        pass
+
+    def _get_inquirer(self, a_feats, a_toks1, a_toks2):
+        """Obtain General Inquirer scores for the given relation.
+
+        Args:
+        a_feats (dict):
+          target feature dictionary
+        a_toks1 (list(str)):
+          list of tokens from the 1-st argument
+        a_toks2 (list(str)):
+          list of tokens from the 2-nd argument
+
+        Returns:
+        (void):
+          updates `a_feats` dictionary in place
+
+        """
+        pass
+
+    def _get_MPQA(self, a_feats, a_toks1, a_toks2):
+        """Obtain MPQA scores for the given relation.
+
+        Args:
+        a_feats (dict):
+          target feature dictionary
+        a_toks1 (list(str)):
+          list of tokens from the 1-st argument
+        a_toks2 (list(str)):
+          list of tokens from the 2-nd argument
+
+        Returns:
+        (void):
+          updates `a_feats` dictionary in place
+
+        """
+        pass
 
     def _get_snt2tok(self, a_tok_list):
         """Generate mapping from sentence indices to token lists.

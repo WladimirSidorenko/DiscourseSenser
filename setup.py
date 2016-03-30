@@ -4,7 +4,7 @@
 ##################################################################
 # Libraries
 from setuptools import setup
-from os import path
+from os import path, walk
 import codecs
 import glob
 
@@ -34,6 +34,12 @@ with codecs.open(path.join(PWD, "test-requirements.txt"),
         if iline:
             TESTS_REQUIRE.append(iline)
 
+DSENSER_DATA = [path.join(path.basename(path.basename(iroot)), ifname)
+                for iroot, _, ifnames in
+                walk(path.join(path.dirname(__file__), "dsenser", "data"))
+                for ifname in ifnames
+                if not ifname.startswith('.')]
+
 ##################################################################
 # setup()
 setup(
@@ -48,7 +54,7 @@ setup(
     include_package_data=True,
     packages=["dsenser", "dsenser.scorer", "dsenser.wang"],
     package_data={
-        "dsenser": [path.join("data", "econnectives", "ExpConn.txt")]
+        "dsenser": DSENSER_DATA
     },
     install_requires=INSTALL_REQUIRES,
     setup_requires=["pytest-runner"],

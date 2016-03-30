@@ -21,7 +21,7 @@ from dsenser.constants import CONNECTIVE, DFLT_ECONN_PATH, DOC_ID, \
 from collections import defaultdict
 from nltk import Tree
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.feature_selection import VarianceThreshold
+from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
@@ -126,7 +126,8 @@ class WangExplicitSenser(BaseSenser):
         # classifier = OneVsRestClassifier(LinearSVC(C=DFLT_C, dual=False))
         classifier = LinearSVC(C=DFLT_C, dual=False)
         self._model = Pipeline([('vectorizer', DictVectorizer()),
-                                ('var_filter', VarianceThreshold()),
+                                ('var_filter', SelectKBest(chi2,
+                                                           k=1500)),
                                 ('classifier', classifier)])
 
     def train(self, a_train_data, a_dev_data=None, a_n_y=-1):

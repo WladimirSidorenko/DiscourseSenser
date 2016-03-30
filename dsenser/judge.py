@@ -25,7 +25,8 @@ import theano
 HE_UNIFORM = HeUniform()
 EPS = 1e-3
 CONV_EPS = 1e-5
-MAX_ITERS = 60
+MAX_ITERS = 120
+INF = float("inf")
 
 
 ##################################################################
@@ -170,6 +171,8 @@ class Judge(object):
         f_grad_shared, f_update, _ = rmsprop(self._params, gradients,
                                              self.x, y_gold, cost)
         # perform actual training
+        min_cost = INF
+        best_values = []
         start_time = end_time = None
         time_delta = prev_icost = icost = 0.
         a_ts = [(_floatX(x), _floatX(y)) for x, y in a_ts]
@@ -183,6 +186,9 @@ class Judge(object):
                     f_update()
                 except Exception as e:
                     raise e
+            if icost < min_cost:
+                best_values = [p.get_value() for p in self._params]
+                min_cost = icost
             end_time = datetime.utcnow()
             time_delta = (end_time - start_time).seconds
             print(
@@ -193,6 +199,10 @@ class Judge(object):
             if abs(prev_icost - icost) < CONV_EPS:
                 break
             prev_icost = icost
+        # set best values seen during training
+        if best_values:
+            for p, val in zip(self._params, best_values):
+                p.set_value(val)
         print("done", file=sys.stderr)
 
     def predict(self, a_x):

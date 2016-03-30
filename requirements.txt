@@ -1,5 +1,7 @@
-lasagne>=0.1
-nltk>=3.2
 pip>=8.0.2
+nltk>=3.2
+numpy>=1.11
+scipy>=1.11
 scikit-learn>=0.17.1
 theano>=0.8.0
+lasagne>=0.1

@@ -1,3 +1,5 @@
 include README.rst
 include requirements.txt
-recursive-include dsenser/data/ *
+include test-requirements.txt
+recursive-include dsenser/data *
+global-exclude */.*

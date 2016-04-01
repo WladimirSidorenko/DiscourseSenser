@@ -18,11 +18,16 @@ import os
 ENCODING = "utf-8"
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+
 MODEL_DIR = os.path.join(DATA_DIR, "models")
-ECONN_DIR = os.path.join(DATA_DIR, "econnectives")
 DFLT_MODEL_PATH = os.path.join(MODEL_DIR, "pdtb.sense.model")
+
+ECONN_DIR = os.path.join(DATA_DIR, "econnectives")
 DFLT_ECONN_PATH = os.path.join(ECONN_DIR, "ExpConn.txt")
+DFLT_BROWN_PATH = os.path.join(DATA_DIR, "brown_cluster_3200.txt")
+DFLT_INQUIRER_PATH = os.path.join(DATA_DIR, "inquirer_word")
 DFLT_LCSI_PATH = os.path.join(DATA_DIR, "LCSInfomerge.txt")
+DFLT_MPQA_PATH = os.path.join(DATA_DIR, "MPQA_Subjectivity_Lexicon.txt")
 
 FFNN = 0
 LSTM = 1

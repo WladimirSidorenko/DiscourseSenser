@@ -14,9 +14,10 @@ WangSenser (class):
 from __future__ import absolute_import, print_function
 
 from dsenser.base import BaseSenser
-from dsenser.constants import CONNECTIVE, DFLT_ECONN_PATH, DOC_ID, \
+from dsenser.constants import CONNECTIVE, DOC_ID, \
     TOK_LIST, SENSE, SENTENCES, WORDS, POS, TOK_IDX, SNT_ID, \
     PARSE_TREE
+from dsenser.resources import CONNTOK2CONN, CONNTOKS, conn2str
 
 from collections import defaultdict
 from nltk import Tree
@@ -25,7 +26,6 @@ from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
-import codecs
 import numpy as np
 import re
 import sys
@@ -37,71 +37,12 @@ PREV_NONE = "prev1_NONE"
 SPACE_RE = re.compile(r"\s+")
 MULTISPACE_RE = re.compile(r"\s\s+")
 EQ_RE = re.compile(r"=+")
-ELLIPSIS_RE = re.compile(r"[.][.]+")
 LEFT = 1
 RIGHT = 2
 DFLT_PRNT = "SBAR"
 AS = "as"
 WHEN = "when"
-CONNS = None
-CONNTOKS = None
-CONNTOK2CONN = defaultdict(list)
 DFLT_C = 0.3
-
-
-##################################################################
-# Methods
-def load_conns(a_fname):
-    """Load explicit connectives from file.
-
-    Args:
-    a_fname (str): file containing connectives
-
-    Returns:
-    (set(str)): set of loaded connectives
-
-    """
-    ret = set()
-    iconn = None
-    with codecs.open(a_fname, 'r', ENCODING) as ifile:
-        for iline in ifile:
-            iline = iline.strip().lower()
-            if not iline:
-                continue
-            iconn = tuple(tuple(itok.split()) for itok
-                          in ELLIPSIS_RE.split(iline))
-            ret.add(iconn,)
-    return ret
-
-
-def _conn2str(a_conn):
-    """Convert connective tuple to string.
-
-    Args:
-    a_conn (tuple):
-    tuple of connective tokens
-
-    Returns:
-    (str): connective string
-
-    """
-    return '_'.join(itok for ipart in a_conn for itok in ipart)
-
-
-##################################################################
-# Load resources
-CONNS = load_conns(DFLT_ECONN_PATH)
-
-itok = None
-for iconn in CONNS:
-    for i, ipart in enumerate(iconn):
-        itok = ipart[0]
-        CONNTOK2CONN[itok].append((i, iconn))
-
-for iconns in CONNTOK2CONN.itervalues():
-    iconns.sort(key=lambda el: el[0])
-
-CONNTOKS = set(CONNTOK2CONN.keys())
 
 
 ##################################################################
@@ -274,7 +215,7 @@ class WangExplicitSenser(BaseSenser):
                                                       parse_tree,
                                                       toks)
             if prev_conn:
-                feats[conn_ltok + '-' + _conn2str(prev_conn[0])] = 1
+                feats[conn_ltok + '-' + conn2str(prev_conn[0])] = 1
                 feats[conn_ltok + "PoS-" + ','.join(prev_pos[0])] = 1
         if conn_ltok != AS:
             feats["NotAs"] = 1

@@ -14,28 +14,30 @@ WangSenser (class):
 from __future__ import absolute_import, print_function
 
 from dsenser.base import BaseSenser
-from dsenser.constants import ARG1, ARG2, DFLT_LCSI_PATH, DEPS, \
-    DOC_ID, ENCODING, PARSE_TREE, POS, SENTENCES, SENSE, SNT_ID, \
+from dsenser.constants import ARG1, ARG2, DEPS, \
+    DOC_ID, PARSE_TREE, POS, SENTENCES, SENSE, SNT_ID, \
     TOK_ID, TOK_IDX, TOK_LIST, WORDS
+from dsenser.resources import LCSI, BROWN_CLUSTERS, \
+    INQUIRER, MPQA, STEMMED_INQUIRER, PSTEMMER, \
+    POL_IDX, INTENS_IDX, POS_IDX, NEGATIONS
+
 
 from collections import Counter, defaultdict
 from nltk import Tree
 from nltk.grammar import is_nonterminal
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.feature_selection import VarianceThreshold
+from sklearn.feature_selection import SelectKBest, chi2
+# from sklearn.feature_selection import VarianceThreshold
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
-import codecs
 import numpy as np
 import re
 import sys
 
 ##################################################################
 # Variables and Constants
-DFLT_C = 0.3
 DASH_RE = re.compile("-+")
-SPACE_RE = re.compile("\s+")
-HASH_RE = re.compile("\s*#\s*")
+DFLT_C = 0.3
 LARROW = "<--"
 MODALITY = {"can": 0, "may": 1, "must": 2, "need": 3, "shall": 4,
             "will": 5, "could": 0, "would": 5, "might": 1,
@@ -44,37 +46,8 @@ MODALITY = {"can": 0, "may": 1, "must": 2, "need": 3, "shall": 4,
             }
 VB_TAG2POS = {"MD": 0, "VB": 1, "VBD": 2, "VBG": 3, "VBN": 4, "VBP": 5,
               "VBZ": 6}
-VB_TAGS = set(["VB", "VBD", "VBG", "VBN", "VBP", "VBZ"])
-
-
-##################################################################
-# Methods
-def load_LCSI(a_fname):
-    """Load LCSI verb classes from file.
-
-    Args:
-    a_fname (str): file containing connectives
-
-    Returns:
-    (dict(str: ste(str))):
-    mapping from verb to a set of classes
-
-    """
-    ret = dict()
-    iword = iclasses = iclass_str = None
-    with codecs.open(a_fname, 'r', ENCODING) as ifile:
-        for iline in ifile:
-            iline = iline.strip()
-            if not iline:
-                continue
-            iword, iclass_str = SPACE_RE.split(iline, 1)
-            iword = iword.lower()
-            iclasses = set(HASH_RE.split(iclass_str))
-            ret[iword] = iclasses
-    return ret
-
-
-LCSI = load_LCSI(DFLT_LCSI_PATH)
+VB_TAGS = set(VB_TAG2POS.iterkeys())
+BOTH = "both"
 
 
 ##################################################################
@@ -98,7 +71,9 @@ class WangImplicitSenser(BaseSenser):
         self.n_y = -1
         classifier = LinearSVC(C=DFLT_C, dual=False)
         self._model = Pipeline([('vectorizer', DictVectorizer()),
-                                ('var_filter', VarianceThreshold()),
+                                ('var_filter', SelectKBest(chi2,
+                                                           k=1500)),
+                                # ('var_filter', VarianceThreshold()),
                                 ('classifier', classifier)])
 
     def train(self, a_train_data, a_dev_data=None, a_n_y=-1):
@@ -194,7 +169,7 @@ class WangImplicitSenser(BaseSenser):
         self._get_first_last_toks(feats, toks_pos1, toks_pos2)
         self._get_modality(feats, toks_pos1, toks_pos2)
         self._get_vb_class(feats, toks_pos1, toks_pos2)
-        self._get_bclusters(feats, toks_pos1, toks_pos2)
+        self._get_brown_clusters(feats, toks_pos1, toks_pos2)
         self._get_inquirer(feats, toks_pos1, toks_pos2)
         self._get_MPQA(feats, toks_pos1, toks_pos2)
         return feats
@@ -481,7 +456,7 @@ class WangImplicitSenser(BaseSenser):
                 ret[VB_TAG2POS[p]] = 1.
         return ''.join(str(t) for t in ret)
 
-    def _get_bclusters(self, a_feats, a_toks1, a_toks2):
+    def _get_brown_clusters(self, a_feats, a_toks1, a_toks2):
         """Obtain Brown cluster pairs for the given relation.
 
         Args:
@@ -497,7 +472,16 @@ class WangImplicitSenser(BaseSenser):
           updates `a_feats` dictionary in place
 
         """
-        pass
+        bcluster_str = ""
+        for w1, _ in a_toks1:
+            if w1 not in BROWN_CLUSTERS:
+                continue
+            for w2, _ in a_toks2:
+                if w2 not in BROWN_CLUSTERS:
+                    continue
+                bcluster_str = "BrownCluster-" + BROWN_CLUSTERS[w1] + '%' + \
+                               BROWN_CLUSTERS[w2]
+                a_feats[bcluster_str] = 1.
 
     def _get_inquirer(self, a_feats, a_toks1, a_toks2):
         """Obtain General Inquirer scores for the given relation.
@@ -515,7 +499,48 @@ class WangImplicitSenser(BaseSenser):
           updates `a_feats` dictionary in place
 
         """
-        pass
+        inq1 = self._get_arg_inquirer(a_toks1)
+        for i, val in enumerate(inq1):
+            if val:
+                a_feats["inq1-" + str(i)] = 1.
+        inq2 = self._get_arg_inquirer(a_toks2)
+        for i, val in enumerate(inq2):
+            if val:
+                a_feats["inq2-" + str(i)] = 1.
+        inq = [i1 and i2 for i1 in inq1 for i2 in inq2]
+        for i, val in enumerate(inq2):
+            if val:
+                a_feats["cmnInq-" + str(i)] = 1.
+
+    def _get_arg_inquirer(self, a_toks):
+        """Obtain General Inquirer scores for the given relation.
+
+        Args:
+        a_toks (list(str)):
+          list of tokens from the 1-st argument
+
+        Returns:
+        (list(bool)):
+          updates `a_feats` dictionary in place
+
+        """
+        ret = [False] * 42
+        inq = None
+        for w, pos in a_toks:
+            if pos not in VB_TAGS:
+                continue
+            if w in INQUIRER:
+                inq = INQUIRER[w]
+            else:
+                w = PSTEMMER.stem(w)
+                if w in INQUIRER:
+                    inq = INQUIRER[w]
+                elif w in STEMMED_INQUIRER:
+                    inq = STEMMED_INQUIRER[w]
+            if inq is not None:
+                ret = [el1 or el2 for el1, el2 in zip(ret, inq)]
+                inq = None
+        return ret
 
     def _get_MPQA(self, a_feats, a_toks1, a_toks2):
         """Obtain MPQA scores for the given relation.
@@ -533,7 +558,40 @@ class WangImplicitSenser(BaseSenser):
           updates `a_feats` dictionary in place
 
         """
-        pass
+        mpqa1 = self._get_arg_MPQA(a_toks1)
+        mpqa2 = self._get_arg_MPQA(a_toks2)
+        a_feats.update(("MPQA1-" + k, v) for k, v in mpqa1.iteritems())
+        a_feats.update(("MPQA2-" + k, v) for k, v in mpqa2.iteritems())
+        a_feats.update(("MPQA-CMN-" + k, v) for k, v in mpqa1.iteritems()
+                       if k in mpqa2)
+
+    def _get_arg_MPQA(self, a_toks):
+        """Obtain MPQA scores for single argument.
+
+        Args:
+        a_toks (list((str, str))):
+          list of argument's tokens and tags
+
+        Returns:
+        (dict):
+          polarit-intensity values
+
+        """
+        ret = {}
+        j = 0
+        entry = ipol = iint = None
+        for i, (tok, pos) in enumerate(a_toks):
+            if tok in MPQA:
+                ipol, iint, _ = MPQA[tok]
+                if ipol == BOTH:
+                    continue
+                elif ipol == POS:
+                    j = max(0, i - 3)
+                    prev_toks = set(el[0] for el in a_toks[j:i])
+                    if prev_toks & NEGATIONS:
+                        ipol = "negatedpos"
+                ret[ipol + '|' + iint] = 1.
+        return ret
 
     def _get_snt2tok(self, a_tok_list):
         """Generate mapping from sentence indices to token lists.

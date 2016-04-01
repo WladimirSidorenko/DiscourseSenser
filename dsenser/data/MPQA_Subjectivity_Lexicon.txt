@@ -5546,8 +5546,8 @@ type=strongsubj len=1 word1=pertinacity pos1=noun stemmed1=n priorpolarity=negat
 type=weaksubj len=1 word1=pertinent pos1=adj stemmed1=n priorpolarity=positive
 type=strongsubj len=1 word1=perturb pos1=verb stemmed1=y priorpolarity=negative
 type=strongsubj len=1 word1=perturbed pos1=adj stemmed1=n priorpolarity=negative
-type=strongsubj len=1 word1=pervasive pos1=adj stemmed1=n m priorpolarity=negative
-type=strongsubj len=1 word1=pervasive pos1=noun stemmed1=n m priorpolarity=negative
+type=strongsubj len=1 word1=pervasive pos1=adj stemmed1=n priorpolarity=negative
+type=strongsubj len=1 word1=pervasive pos1=noun stemmed1=n priorpolarity=negative
 type=strongsubj len=1 word1=perverse pos1=adj stemmed1=n priorpolarity=negative
 type=strongsubj len=1 word1=perversely pos1=anypos stemmed1=n priorpolarity=negative
 type=strongsubj len=1 word1=perversion pos1=noun stemmed1=n priorpolarity=negative

@@ -33,7 +33,8 @@ class BaseSenser(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def train(self, a_train_data, a_dev_data=None, a_n_y=-1):
+    def train(self, a_train_data, a_dev_data=None, a_n_y=-1,
+              a_i=-1, a_train_out=None, a_dev_out=None):
         """Abstract method defining interface for model training.
 
         Args:
@@ -43,6 +44,12 @@ class BaseSenser(object):
           list of development JSON data
         a_n_y (int):
           number of distinct classes
+        a_i (int):
+          row index for the output predictions
+        a_train_out (np.array or None):
+          predictions for the training set
+        a_dev_out (np.array or None):
+          predictions for the training set
 
         Returns:
         (void)
@@ -51,7 +58,7 @@ class BaseSenser(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def predict(self, a_rel, a_test_data):
+    def predict(self, a_rel, a_test_data, a_ret, a_i):
         """Abstract method defining interface for model usage.
 
         Args:
@@ -59,6 +66,10 @@ class BaseSenser(object):
           discourse relation whose sense should be predicted
         a_test_data (2-tuple(dict, dict)):
           list of input JSON data
+        a_ret (np.array):
+          prediction matrix
+        a_i (int):
+          row index in the output vector
 
         Returns:
         (void):

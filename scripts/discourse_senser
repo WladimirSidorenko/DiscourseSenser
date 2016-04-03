@@ -157,7 +157,7 @@ def _read_dataset(a_dir, a_train=False):
               file=sys.stderr)
         parses = json.load(ifile)
         print("done", file=sys.stderr)
-    return (rels, parses)
+    return [rels, parses]
 
 
 def main():

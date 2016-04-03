@@ -15,6 +15,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from dsenser.constants import ARG1, ARG2, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
     SENSE, TOK_LIST, TOK_OFFS_IDX, TYPE, DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
     DFLT_ECONN_PATH, ALT_LEX, EXPLICIT, IMPLICIT, FFNN, LSTM, MJR, SVM, WANG
+from dsenser.utils import timeit
 
 from collections import Iterable
 from cPickle import dump, load
@@ -66,6 +67,7 @@ class DiscourseSenser(object):
         self.judge = None
         self.cls2idx = {}
         self.idx2cls = {}
+        self.wbench = None
         self.econn = set([self._normalize_conn(iconn) for iconn in DFLT_CONN])
         # load serialized model
         if a_model is not None:
@@ -91,6 +93,8 @@ class DiscourseSenser(object):
         """
         if a_type == 0:
             raise RuntimeError("No model type specified.")
+        if a_dev_data is None:
+            a_dev_data = ((), ())
         # initialize
         if a_type & MJR:
             from dsenser import MajorSenser
@@ -99,37 +103,23 @@ class DiscourseSenser(object):
             from dsenser import WangSenser
             self.models.append(WangSenser())
         # convert classes to indices
-        n_senses = 0
-        isense = isenses = None
-        for irel in a_train_data[0]:
-            isenses = irel[SENSE]
-            for isense in isenses:
-                if isense not in self.cls2idx:
-                    self.cls2idx[isense] = n_senses
-                    self.idx2cls[n_senses] = isense
-                    n_senses += 1
-            if irel[TYPE] == EXPLICIT:
-                self.econn.add(self._normalize_conn(
-                    irel[CONNECTIVE][RAW_TEXT]))
-            else:
-                irel[CONNECTIVE][RAW_TEXT] = ""
-        vsense = None
-        for irel in a_train_data[0]:
-            isenses = irel[SENSE]
-            vsense = np.zeros(n_senses)
-            for isense in isenses:
-                vsense[self.cls2idx[isense]] = 1
-            irel[SENSE] = vsense / sum(vsense)
-        # train models
-        for imodel in self.models:
-            imodel.train(a_train_data, a_dev_data, len(self.cls2idx))
+        self._sense2idx(a_train_data[0])
+        # train models and remember their predictions
+        x_train = np.zeros((len(a_train_data[0]), len(self.models),
+                            len(self.cls2idx)))
+        x_dev = np.zeros((len(a_dev_data[0] if a_dev_data else ()),
+                          len(self.models), len(self.cls2idx)))
+        for i, imodel in enumerate(self.models):
+            imodel.train(a_train_data, a_dev_data, len(self.cls2idx),
+                         i, x_train, x_dev)
+        # convert training and ddevelopment sets to the appropriate format for
+        # the judge
+        x_train = [(x_i, irel[SENSE]) for x_i, irel in zip(x_train,
+                                                           a_train_data[0])]
+        x_dev = [(x_i, irel[SENSE]) for x_i, irel in zip(x_dev, a_dev_data[0])]
         # train the judge (defer the import due to slow theano loading)
         from dsenser.judge import Judge
         self.judge = Judge(len(self.models), len(self.cls2idx))
-        x_train = [(self._prejudge(irel, a_train_data), irel[SENSE])
-                   for irel in a_train_data[0]]
-        x_dev = [(self._prejudge(irel, a_dev_data), irel[SENSE])
-                 for irel in ((a_dev_data and a_dev_data[0]) or [])]
         self.judge.train(x_train, x_dev)
         # dump model
         self._dump(a_path)
@@ -163,7 +153,8 @@ class DiscourseSenser(object):
                 irel[CONNECTIVE][RAW_TEXT] = ""
             if not SENSE in irel:
                 irel[SENSE] = []
-            irel[SENSE].append(self._predict(irel, a_data))
+            irel[SENSE].append(self._predict(irel, a_data)[0])
+
             if not TYPE in irel or not irel[TYPE]:
                 irel[TYPE] = self._get_type(irel)
             irel[CONNECTIVE].pop(CHAR_SPAN, None)
@@ -174,7 +165,41 @@ class DiscourseSenser(object):
             irel[CONNECTIVE][TOK_LIST] = self._normalize_tok_list(
                 irel[CONNECTIVE][TOK_LIST])
 
-    def _predict(self, a_rel, a_data, a_verbose=False):
+    def _sense2idx(self, a_rels):
+        """Convert symbolic senses to vectors.
+
+        Args:
+        a_rels (list):
+        list of discourse relations
+
+        Returns:
+        (void):
+        updates ``a_rels`` in place
+
+        """
+        n_senses = 0
+        isense = isenses = None
+        for irel in a_rels:
+            isenses = irel[SENSE]
+            for isense in isenses:
+                if isense not in self.cls2idx:
+                    self.cls2idx[isense] = n_senses
+                    self.idx2cls[n_senses] = isense
+                    n_senses += 1
+            if irel[TYPE] == EXPLICIT:
+                self.econn.add(self._normalize_conn(
+                    irel[CONNECTIVE][RAW_TEXT]))
+            else:
+                irel[CONNECTIVE][RAW_TEXT] = ""
+        vsense = None
+        for irel in a_rels:
+            isenses = irel[SENSE]
+            vsense = np.zeros(n_senses)
+            for isense in isenses:
+                vsense[self.cls2idx[isense]] = 1
+            irel[SENSE] = vsense / sum(vsense)
+
+    def _predict(self, a_rel, a_data):
         """Determine sense of discourse relation.
 
         Args:
@@ -182,19 +207,15 @@ class DiscourseSenser(object):
           JSON instance representing discourse relation
         a_data (list):
           2-tuple(dict, dict): input rels and parses
-        a_verbose (bool):
-          output label along with the probability
 
         Returns:
-        (void):
-          updates input set in place
+        (tuple(str, float)):
+          predicted label and its probability
 
         """
         idx, iprob = self.judge.predict(self._prejudge(a_rel, a_data))
         lbl = self.idx2cls[int(idx)]
-        if a_verbose:
-            return (lbl, iprob)
-        return lbl
+        return (lbl, iprob)
 
     def _get_type(self, a_rel):
         """Determine type of discourse relation.
@@ -315,6 +336,7 @@ class DiscourseSenser(object):
         (void)
 
         """
+        self.wbench = a_senser.wbench
         self.models = a_senser.models
         self.judge = a_senser.judge
         self.cls2idx = a_senser.cls2idx
@@ -350,10 +372,11 @@ class DiscourseSenser(object):
 
         Returns:
         (np.array):
-          (n x m) matrix of n classifiers' judgments
+          modified ``a_ret``
 
         """
-        ret = np.zeros((len(self.models), len(self.cls2idx)))
+        if self.wbench is None:
+            self.wbench = np.zeros((len(self.models), len(self.cls2idx)))
         for i, imodel in enumerate(self.models):
-            ret[i] = imodel.predict(a_rel, a_data)
-        return ret
+            imodel.predict(a_rel, a_data, self.wbench, i)
+        return self.wbench

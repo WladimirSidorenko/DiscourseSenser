@@ -4,8 +4,8 @@
 """Module providing class for Wang sense disambiguation.
 
 Attributes:
-WangSenser (class):
-  class that always chooses majority category  for sense disambiguation
+WangExplicitSenser (class):
+  class that predict senses of explicit relations
 
 """
 
@@ -13,20 +13,20 @@ WangSenser (class):
 # Imports
 from __future__ import absolute_import, print_function
 
-from dsenser.base import BaseSenser
 from dsenser.constants import CONNECTIVE, DOC_ID, \
-    TOK_LIST, SENSE, SENTENCES, WORDS, POS, TOK_IDX, SNT_ID, \
+    TOK_LIST, SENTENCES, WORDS, POS, TOK_IDX, SNT_ID, \
     PARSE_TREE
 from dsenser.resources import CONNTOK2CONN, CONNTOKS, conn2str
+from dsenser.wang.base import WangBaseSenser
+from dsenser.utils import timeit
 
 from collections import defaultdict
 from nltk import Tree
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.feature_selection import SelectKBest, chi2
+# from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
-import numpy as np
 import re
 import sys
 
@@ -46,8 +46,8 @@ DFLT_C = 0.3
 
 
 ##################################################################
-# Classes
-class WangExplicitSenser(BaseSenser):
+# Class
+class WangExplicitSenser(WangBaseSenser):
     """Class for disambiguating explicit connectives.
 
     Attrs:
@@ -64,80 +64,17 @@ class WangExplicitSenser(BaseSenser):
 
         """
         self.n_y = -1
-        # classifier = OneVsRestClassifier(LinearSVC(C=DFLT_C, dual=False))
-        classifier = LinearSVC(C=DFLT_C, dual=False)
+        self.ctype = "explicit"
+        classifier = LinearSVC(C=DFLT_C, dual=False,
+                               multi_class="crammer_singer")
         self._model = Pipeline([('vectorizer', DictVectorizer()),
-                                ('var_filter', SelectKBest(chi2,
-                                                           k=1500)),
+                                # ('var_filter', SelectKBest(chi2,
+                                #                            k=1500)),
                                 ('classifier', classifier)])
 
-    def train(self, a_train_data, a_dev_data=None, a_n_y=-1):
-        """Method for training the model.
-
-        Args:
-        a_train_data (2-tuple(list, dict)):
-          list of training JSON data
-        a_dev_data (2-tuple(list, dict) or None):
-          list of development JSON data
-        a_n_y (int):
-          number of distinct classes
-
-        Returns:
-        (void)
-
-        """
-        print("Training Wang explicit classifier ...", file=sys.stderr)
-        self.n_y = a_n_y
-        x_train = []
-        y_train = []
-        x_i = y_i = None
-        # generate features
-        for irel in a_train_data[0]:
-            x_i = self._extract_features(irel, a_train_data[1])
-            if not x_i:
-                continue
-            x_train.append(x_i)
-            y_i = np.argmax(irel[SENSE])
-            # y_i = [i for i, val in enumerate(irel[SENSE]) if val]
-            y_train.append(y_i)
-        # fit the model
-        # y_train = MultiLabelBinarizer().fit_transform(y_train)
-        self._model.fit(x_train, y_train)
-        print(" done", file=sys.stderr)
-
-    def predict(self, a_rel, a_data):
-        """Method for predicting sense of single relation.
-
-        Args:
-        a_rel (dict):
-          discourse relation whose sense should be predicted
-        a_data (2-tuple(dict, dict)):
-          list of input JSON data
-
-        Returns:
-        (np.array):
-          probabilities of senses
-
-        """
-        ret = np.zeros(self.n_y)
-        feats = self._extract_features(a_rel, a_data[-1])
-        # map model's classes to original indices
-        for i, ival in enumerate(self._model.decision_function(feats)[0]):
-            ret[self._model.classes_[i]] = ival
-        # normalize using softmax
-        return np.exp(ret) / (np.sum(np.exp(ret)) or 1e10)
-
-    def _free(self):
-        """Free resources used by the model.
-
-        Args:
-        (void):
-
-        Returns:
-        (void):
-
-        """
-        self.n_y = -1
+    @timeit("Training explicit Wang classifier...")
+    def train(self, *args, **kwargs):
+        super(WangExplicitSenser, self).train(*args, **kwargs)
 
     def _extract_features(self, a_rel, a_parses):
         """Extract classification features for a given relation.

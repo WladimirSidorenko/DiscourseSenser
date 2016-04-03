@@ -13,13 +13,14 @@ WangSenser (class):
 # Imports
 from __future__ import absolute_import, print_function
 
-from dsenser.base import BaseSenser
 from dsenser.constants import ARG1, ARG2, DEPS, \
-    DOC_ID, PARSE_TREE, POS, SENTENCES, SENSE, SNT_ID, \
+    DOC_ID, PARSE_TREE, POS, SENTENCES, SNT_ID, \
     TOK_ID, TOK_IDX, TOK_LIST, WORDS
 from dsenser.resources import LCSI, BROWN_CLUSTERS, \
     INQUIRER, MPQA, STEMMED_INQUIRER, PSTEMMER, \
-    POL_IDX, INTENS_IDX, POS_IDX, NEGATIONS
+    POL_IDX, INTENS_IDX, NEGATIONS
+from dsenser.utils import timeit
+from dsenser.wang.base import WangBaseSenser
 
 
 from collections import Counter, defaultdict
@@ -30,7 +31,6 @@ from sklearn.feature_selection import SelectKBest, chi2
 # from sklearn.feature_selection import VarianceThreshold
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
-import numpy as np
 import re
 import sys
 
@@ -52,7 +52,7 @@ BOTH = "both"
 
 ##################################################################
 # Classes
-class WangImplicitSenser(BaseSenser):
+class WangImplicitSenser(WangBaseSenser):
     """Class for disambiguating explicit connectives.
 
     Attrs:
@@ -69,80 +69,18 @@ class WangImplicitSenser(BaseSenser):
 
         """
         self.n_y = -1
-        classifier = LinearSVC(C=DFLT_C, dual=False)
+        self.ctype = "implicit"
+        classifier = LinearSVC(C=DFLT_C, dual=False,
+                               multi_class="crammer_singer")
         self._model = Pipeline([('vectorizer', DictVectorizer()),
-                                ('var_filter', SelectKBest(chi2,
-                                                           k=1500)),
+                                # ('var_filter', SelectKBest(chi2,
+                                #                            k=1500)),
                                 # ('var_filter', VarianceThreshold()),
                                 ('classifier', classifier)])
 
-    def train(self, a_train_data, a_dev_data=None, a_n_y=-1):
-        """Method for training the model.
-
-        Args:
-        a_train_data (2-tuple(list, dict)):
-          list of training JSON data
-        a_dev_data (2-tuple(list, dict) or None):
-          list of development JSON data
-        a_n_y (int):
-          number of distinct classes
-
-        Returns:
-        (void)
-
-        """
-        print("Training Wang implicit classifier ...", file=sys.stderr)
-        self.n_y = a_n_y
-        x_train = []
-        y_train = []
-        x_i = y_i = None
-        # generate features
-        for irel in a_train_data[0]:
-            x_i = self._extract_features(irel, a_train_data[1])
-            if not x_i:
-                continue
-            x_train.append(x_i)
-            y_i = np.argmax(irel[SENSE])
-            # y_i = [i for i, val in enumerate(irel[SENSE]) if val]
-            y_train.append(y_i)
-        # fit the model
-        # y_train = MultiLabelBinarizer().fit_transform(y_train)
-        self._model.fit(x_train, y_train)
-        print(" done", file=sys.stderr)
-
-    def predict(self, a_rel, a_data):
-        """Method for predicting sense of single relation.
-
-        Args:
-        a_rel (dict):
-          discourse relation whose sense should be predicted
-        a_data (2-tuple(dict, dict)):
-          list of input JSON data
-
-        Returns:
-        str:
-          most probable sense of discourse relation
-
-        """
-        ret = np.zeros(self.n_y)
-        feats = self._extract_features(a_rel, a_data[-1])
-        # map model's classes to original indices
-        for i, ival in enumerate(self._model.decision_function(feats)[0]):
-            ret[self._model.classes_[i]] = ival
-        # normalize using softmax
-        return np.exp(ret) / (np.sum(np.exp(ret)) or 1e10)
-
-    def _free(self):
-        """Free resources used by the model.
-
-        Args:
-        (void):
-
-        Returns:
-        (void):
-
-        """
-        self.n_y = -1
+    @timeit("Training implicit Wang classifier...")
+    def train(self, *args, **kwargs):
+        super(WangImplicitSenser, self).train(*args, **kwargs)
 
     def _extract_features(self, a_rel, a_parses):
         """Extract classification features for the given relation.
@@ -163,7 +101,6 @@ class WangImplicitSenser(BaseSenser):
                                        a_rel, ARG1)
         toks_pos2 = self._get_toks_pos(a_parses[doc_id][SENTENCES],
                                        a_rel, ARG2)
-
         self._get_product_rules(feats, doc_id, a_rel, a_parses)
         self._get_dep_rules(feats, doc_id, a_rel, a_parses)
         self._get_first_last_toks(feats, toks_pos1, toks_pos2)
@@ -508,7 +445,7 @@ class WangImplicitSenser(BaseSenser):
             if val:
                 a_feats["inq2-" + str(i)] = 1.
         inq = [i1 and i2 for i1 in inq1 for i2 in inq2]
-        for i, val in enumerate(inq2):
+        for i, val in enumerate(inq):
             if val:
                 a_feats["cmnInq-" + str(i)] = 1.
 
@@ -579,18 +516,18 @@ class WangImplicitSenser(BaseSenser):
         """
         ret = {}
         j = 0
-        entry = ipol = iint = None
+        entry = ipol = None
         for i, (tok, pos) in enumerate(a_toks):
             if tok in MPQA:
-                ipol, iint, _ = MPQA[tok]
+                entry = MPQA[tok]
+                ipol = entry[POL_IDX]
                 if ipol == BOTH:
                     continue
                 elif ipol == POS:
                     j = max(0, i - 3)
-                    prev_toks = set(el[0] for el in a_toks[j:i])
-                    if prev_toks & NEGATIONS:
+                    if any(el[0] in NEGATIONS for el in a_toks[j:i]):
                         ipol = "negatedpos"
-                ret[ipol + '|' + iint] = 1.
+                ret[ipol + '|' + entry[INTENS_IDX]] = 1.
         return ret
 
     def _get_snt2tok(self, a_tok_list):

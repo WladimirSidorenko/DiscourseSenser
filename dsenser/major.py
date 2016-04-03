@@ -17,6 +17,7 @@ from collections import defaultdict, Counter
 
 from dsenser.base import BaseSenser
 from dsenser.constants import CONNECTIVE, RAW_TEXT, SENSE
+from dsenser.utils import timeit
 
 import numpy as np
 import sys
@@ -49,7 +50,9 @@ class MajorSenser(BaseSenser):
         self.conn2sense = {}
         self.n_y = -1
 
-    def train(self, a_train_data, a_dev_data=None, a_n_y=-1):
+    @timeit("Training majority class classifier...")
+    def train(self, a_train_data, a_dev_data=None, a_n_y=-1,
+              a_i=-1, a_train_out=None, a_dev_out=None):
         """Method for training the model.
 
         Args:
@@ -59,13 +62,18 @@ class MajorSenser(BaseSenser):
           list of development JSON data
         a_n_y (int):
           number of distinct classes
+        a_i (int):
+          row index for the output predictions
+        a_train_out (np.array or None):
+          predictions for the training set
+        a_dev_out (np.array or None):
+          predictions for the training set
 
         Returns:
-        (void)
+        (void):
+        updates ``a_train_out`` and ``a_dev_out`` in place
 
         """
-        print("Training majority class classifier ...", end="",
-              file=sys.stderr)
         self.n_y = a_n_y
         iconn = ""
         conn2sense = defaultdict(Counter)
@@ -84,9 +92,17 @@ class MajorSenser(BaseSenser):
         # for other connectives use their the respective most frequent sense
         for iconn, istat in conn2sense.iteritems():
             self.conn2sense[iconn] = self._get_sense_stat(istat)
-        print(" done", file=sys.stderr)
+        # make predictions for the training and development set instances if
+        # needed
+        if a_i >= 0:
+            if a_train_out is not None:
+                for i, irel in enumerate(a_train_data[0]):
+                    self.predict(irel, a_train_data, a_train_out[i], a_i)
+            if a_dev_data is not None:
+                for i, irel in enumerate(a_dev_data[0]):
+                    self.predict(irel, a_dev_data, a_dev_out[i], a_i)
 
-    def predict(self, a_rel, a_test_data):
+    def predict(self, a_rel, a_test_data, a_ret, a_i):
         """Method for predicting sense of single relation.
 
         Args:
@@ -94,14 +110,20 @@ class MajorSenser(BaseSenser):
           discourse relation whose sense should be predicted
         a_test_data (2-tuple(dict, dict)):
           list of input JSON data
+        a_ret (np.array):
+          prediction matrix
+        a_i (int):
+          row index in the output vector
 
         Returns:
-        (np.array):
-          prior probabilities of senses
+        (void):
+          update a_ret in place
 
         """
         iconn = self._normalize_conn(a_rel[CONNECTIVE][RAW_TEXT])
-        return self.conn2sense.get(iconn, self.dflt_sense)
+        isense = self.conn2sense.get(iconn, self.dflt_sense)
+        for i in xrange(len(isense)):
+            a_ret[a_i][i] = isense[i]
 
     def _get_sense_stat(self, a_stat):
         """Generate sense statistcs.

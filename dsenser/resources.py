@@ -201,7 +201,7 @@ def load_MPQA(a_fname):
                          if EQ_RE.search(iword))
             ret[attrs[WORD1]] = (attrs[POL], attrs[INTENS], attrs[POS])
     # convert defaultdict back to the normal one
-    return dict(ret)
+    return dict(ret.iteritems())
 
 
 ##################################################################

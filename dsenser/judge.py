@@ -13,6 +13,8 @@ Judge (class):
 # Imports
 from __future__ import absolute_import, print_function
 
+from dsenser.utils import timeit
+
 from datetime import datetime
 from lasagne.init import HeUniform, Orthogonal
 from theano import config, tensor as TT
@@ -147,6 +149,7 @@ class Judge(object):
         # define trainable parameters
         self._params = [self.X2Y, self.y_bias]
 
+    @timeit("Training judge model ...")
     def train(self, a_ts, a_dev_data=None):
         """Method for training the model.
 
@@ -160,7 +163,6 @@ class Judge(object):
         (void)
 
         """
-        print("Training judge model ...", file=sys.stderr)
         # gold vector
         y_gold = TT.dvector(name="y_gold")
         # define cost and optimization function
@@ -203,7 +205,6 @@ class Judge(object):
         if best_values:
             for p, val in zip(self._params, best_values):
                 p.set_value(val)
-        print("done", file=sys.stderr)
 
     def predict(self, a_x):
         """Method for predicting sense of single relation.

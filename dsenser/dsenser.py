@@ -114,9 +114,10 @@ class DiscourseSenser(object):
                          i, x_train, x_dev)
         # convert training and ddevelopment sets to the appropriate format for
         # the judge
-        x_train = [(x_i, irel[SENSE]) for x_i, irel in zip(x_train,
-                                                           a_train_data[0])]
-        x_dev = [(x_i, irel[SENSE]) for x_i, irel in zip(x_dev, a_dev_data[0])]
+        x_train = [(x_i, irel, irel[SENSE])
+                   for x_i, irel in zip(x_train, a_train_data[0])]
+        x_dev = [(x_i, irel, irel[SENSE])
+                 for x_i, irel in zip(x_dev, a_dev_data[0])]
         # train the judge (defer the import due to slow theano loading)
         from dsenser.judge import Judge
         self.judge = Judge(len(self.models), len(self.cls2idx))
@@ -153,10 +154,11 @@ class DiscourseSenser(object):
                 irel[CONNECTIVE][RAW_TEXT] = ""
             if not SENSE in irel:
                 irel[SENSE] = []
-            irel[SENSE].append(self._predict(irel, a_data)[0])
-
             if not TYPE in irel or not irel[TYPE]:
                 irel[TYPE] = self._get_type(irel)
+
+            irel[SENSE].append(self._predict(irel, a_data)[0])
+
             irel[CONNECTIVE].pop(CHAR_SPAN, None)
             if irel[TYPE] != EXPLICIT:
                 irel[CONNECTIVE].pop(RAW_TEXT, None)
@@ -213,7 +215,7 @@ class DiscourseSenser(object):
           predicted label and its probability
 
         """
-        idx, iprob = self.judge.predict(self._prejudge(a_rel, a_data))
+        idx, iprob = self.judge.predict(a_rel, self._prejudge(a_rel, a_data))
         lbl = self.idx2cls[int(idx)]
         return (lbl, iprob)
 

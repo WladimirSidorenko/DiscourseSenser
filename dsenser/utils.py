@@ -5,12 +5,15 @@
 
 Attributes:
 timeit (class): parameterized decorator for measurinng time performance
+divide_ds (method): separate training set into explicit and implicit instances
 
 """
 
 ##################################################################
 # Imports
-from __future__ import print_function
+from __future__ import absolute_import, print_function
+
+from dsenser.constants import CONNECTIVE, TOK_LIST
 
 from datetime import datetime
 from functools import wraps
@@ -57,5 +60,19 @@ class timeit(object):
                   file=sys.stderr)
         return wraps(a_func)(_wrapper)
 
+
 ##################################################################
 # Methods
+def is_explicit(a_rel):
+    """Check whether given relation is explicit.
+
+    Args:
+    a_rel (dict):
+    discourse relation to classify
+
+    Returns:
+    (bool):
+    True if the relation is explicit
+
+    """
+    return bool(a_rel[CONNECTIVE][TOK_LIST])

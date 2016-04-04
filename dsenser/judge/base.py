@@ -4,7 +4,7 @@
 """Module providing class for meta-classification.
 
 Attributes:
-Judge (class):
+BaseJudge (class):
   class for joining decisions of single classifiers
 
 """
@@ -12,8 +12,6 @@ Judge (class):
 ##################################################################
 # Imports
 from __future__ import absolute_import, print_function
-
-from dsenser.utils import timeit
 
 from datetime import datetime
 from lasagne.init import HeUniform, Orthogonal
@@ -27,7 +25,7 @@ import theano
 HE_UNIFORM = HeUniform()
 EPS = 1e-3
 CONV_EPS = 1e-5
-MAX_ITERS = 120
+MAX_ITERS = 128
 INF = float("inf")
 
 
@@ -107,7 +105,7 @@ def rmsprop(tparams, grads, x, y, cost):
 
 ##################################################################
 # Class
-class Judge(object):
+class BaseJudge(object):
     """Meta-classifier.
 
     This classifier unites decisions of other multiple independent classifiers.
@@ -149,7 +147,6 @@ class Judge(object):
         # define trainable parameters
         self._params = [self.X2Y, self.y_bias]
 
-    @timeit("Training judge model ...")
     def train(self, a_ts, a_dev_data=None):
         """Method for training the model.
 
@@ -211,7 +208,7 @@ class Judge(object):
 
         Args:
         a_x (np.array):
-          (submodels x class) array of submodels' predictions
+          (submodels x class) array of input predictions
 
         Returns:
         str:

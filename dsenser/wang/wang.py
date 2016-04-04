@@ -5,7 +5,7 @@
 
 Attributes:
 WangSenser (class):
-  class that always chooses majority category  for sense disambiguation
+  class for predicting sense probabilities for explicit and implcit relations
 
 """
 
@@ -14,11 +14,9 @@ WangSenser (class):
 from __future__ import absolute_import, print_function
 
 from dsenser.base import BaseSenser
-from dsenser.constants import CONNECTIVE, RAW_TEXT, TOK_LIST
+from dsenser.utils import is_explicit
 from dsenser.wang.explicit import WangExplicitSenser
 from dsenser.wang.implicit import WangImplicitSenser
-
-import numpy as np
 
 ##################################################################
 # Variables and Constants
@@ -96,7 +94,7 @@ class WangSenser(BaseSenser):
           most probable sense of discourse relation
 
         """
-        if self._is_explicit(a_rel):
+        if is_explicit(a_rel):
             return self.explicit.predict(a_rel, a_data, a_ret, a_i)
         return self.implicit.predict(a_rel, a_data, a_ret, a_i)
 
@@ -119,11 +117,11 @@ class WangSenser(BaseSenser):
 
         Args:
         a_ds (2-tuple(dict, dict)):
-          list of gold relations and dict with parses
+        list of gold relations and dict with parses
 
         Returns:
         (((list, dict), (list, dict))):
-          trainings set with explicit and implicit connectives
+        trainings set with explicit and implicit connectives
 
         """
         if a_ds is None:
@@ -131,24 +129,10 @@ class WangSenser(BaseSenser):
         explicit_instances = []
         implicit_instances = []
         for i, irel in enumerate(a_ds[0]):
-            if self._is_explicit(irel):
+            if is_explicit(irel):
                 explicit_instances.append((i, irel))
             else:
                 implicit_instances.append((i, irel))
         ret = ((explicit_instances, a_ds[1]),
                (implicit_instances, a_ds[1]))
         return ret
-
-    def _is_explicit(self, a_rel):
-        """Check whether given relation is explicit.
-
-        Args:
-        a_rel (dict):
-          discourse relation to classify
-
-        Returns:
-        (bool):
-          True if the relation is explicit
-
-        """
-        return bool(a_rel[CONNECTIVE][TOK_LIST])

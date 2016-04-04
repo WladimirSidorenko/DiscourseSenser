@@ -32,8 +32,8 @@ DFLT_MPQA_PATH = os.path.join(DATA_DIR, "MPQA_Subjectivity_Lexicon.txt")
 FFNN = 0
 LSTM = 1
 MJR = 2
-SVM = 4
-WANG = 8
+WANG = 4
+XGBOOST = 8
 DFLT_MODEL_TYPE = WANG
 
 # JSON field names

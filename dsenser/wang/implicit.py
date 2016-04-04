@@ -62,16 +62,18 @@ class WangImplicitSenser(WangBaseSenser):
 
     """
 
-    def __init__(self):
+    def __init__(self, a_clf=None):
         """Class constructor.
 
         Args:
+        a_clf (classifier or None):
+          classifier to use or None for default
 
         """
         self.n_y = -1
         self.ctype = "implicit"
-        classifier = LinearSVC(C=DFLT_C, dual=False,
-                               multi_class="crammer_singer")
+        classifier = a_clf or LinearSVC(C=DFLT_C, dual=False,
+                                        multi_class="crammer_singer")
         self._model = Pipeline([('vectorizer', DictVectorizer()),
                                 # ('var_filter', SelectKBest(chi2,
                                 #                            k=1500)),

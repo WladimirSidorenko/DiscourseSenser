@@ -29,7 +29,7 @@ class WangSenser(BaseSenser):
 
     Attrs:
     explicit (ImplicitSenser): classifier for implicit discourse relations
-    implicit (ExplicitSenser): classifier
+    implicit (ExplicitSenser): classifier for explicit discourse relations
     n_y (int): number of distinct classes
 
     Methods:

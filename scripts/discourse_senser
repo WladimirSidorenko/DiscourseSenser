@@ -11,7 +11,7 @@ from __future__ import print_function, unicode_literals
 
 from dsenser import DiscourseSenser, \
     DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
-    FFNN, LSTM, MJR, SVM, WANG
+    FFNN, LSTM, MJR, WANG, XGBOOST
 
 import argparse
 import codecs
@@ -186,11 +186,11 @@ def main():
                               type=str)
     parser_train.add_argument("--type", help=("type of the model to train"
                                "({:d} - feed-forward, {:d} - LSTM, {:d} - majority,"
-                               " {:d} - SVM, {:d} - Wang), ".format(FFNN, LSTM, MJR,
-                                                                   SVM, WANG) +
-                               "default = {:d}".format(DFLT_MODEL_TYPE)),
+                                              " {:d} - Wang, {:d} - XGBOOST), ".format(
+                                                  FFNN, LSTM, MJR, WANG, XGBOOST) +
+                                              "default = {:d}".format(DFLT_MODEL_TYPE)),
                               type=int, action="append", choices=(FFNN, LSTM, MJR,
-                                                                  SVM, WANG))
+                                                                  WANG, XGBOOST))
     _add_cmn_options(parser_train)
 
     # testing parser

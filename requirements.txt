@@ -5,3 +5,4 @@ scipy>=0.17
 scikit-learn>=0.17.1
 theano>=0.8.0
 lasagne>=0.1
+xgboost>=0.4

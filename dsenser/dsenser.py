@@ -14,7 +14,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from dsenser.constants import ARG1, ARG2, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
     SENSE, TOK_LIST, TOK_OFFS_IDX, TYPE, DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
-    DFLT_ECONN_PATH, ALT_LEX, EXPLICIT, IMPLICIT, FFNN, LSTM, MJR, SVM, WANG
+    DFLT_ECONN_PATH, ALT_LEX, EXPLICIT, IMPLICIT, FFNN, LSTM, MJR, WANG, \
+    XGBOOST
 from dsenser.utils import timeit
 
 from collections import Iterable
@@ -97,11 +98,14 @@ class DiscourseSenser(object):
             a_dev_data = ((), ())
         # initialize
         if a_type & MJR:
-            from dsenser import MajorSenser
+            from dsenser.major import MajorSenser
             self.models.append(MajorSenser())
         if a_type & WANG:
-            from dsenser import WangSenser
+            from dsenser.wang import WangSenser
             self.models.append(WangSenser())
+        if a_type & XGBOOST:
+            from dsenser.xgboost import XGBoostSenser
+            self.models.append(XGBoostSenser())
         # convert classes to indices
         self._sense2idx(a_train_data[0])
         # train models and remember their predictions

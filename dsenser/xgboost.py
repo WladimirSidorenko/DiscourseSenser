@@ -32,7 +32,7 @@ EPS = 0.1
 
 ##################################################################
 # Class
-class XGBoostBaseSenser(WangExplicitSenser):
+class XGBoostBaseSenser(object):
     """Subclass of explicit WangSenser using XGBoost
 
     """

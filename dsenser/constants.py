@@ -29,11 +29,11 @@ DFLT_INQUIRER_PATH = os.path.join(DATA_DIR, "inquirer_word")
 DFLT_LCSI_PATH = os.path.join(DATA_DIR, "LCSInfomerge.txt")
 DFLT_MPQA_PATH = os.path.join(DATA_DIR, "MPQA_Subjectivity_Lexicon.txt")
 
-FFNN = 0
-LSTM = 1
-MJR = 2
-WANG = 4
-XGBOOST = 8
+FFNN = 1
+LSTM = 2
+MJR = 4
+WANG = 8
+XGBOOST = 16
 DFLT_MODEL_TYPE = WANG
 
 # JSON field names

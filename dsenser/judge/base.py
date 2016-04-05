@@ -13,6 +13,8 @@ BaseJudge (class):
 # Imports
 from __future__ import absolute_import, print_function
 
+from dsenser.theano_utils import floatX, rmsprop
+
 from datetime import datetime
 from lasagne.init import HeUniform, Orthogonal
 from theano import config, tensor as TT
@@ -23,84 +25,10 @@ import theano
 ##################################################################
 # Variables and Constants
 HE_UNIFORM = HeUniform()
-EPS = 1e-3
+EPS = 0.  # 1e-3
 CONV_EPS = 1e-5
 MAX_ITERS = 128
 INF = float("inf")
-
-
-##################################################################
-# Variables and Constants
-def _floatX(a_data, a_dtype=config.floatX):
-    """Return numpy array populated with the given data.
-
-    Args:
-    data (np.array):
-      input tensor
-    dtype (class):
-      digit type
-
-    Returns:
-    (np.array):
-     array populated with the given data
-
-    """
-    return np.asarray(a_data, dtype=a_dtype)
-
-
-def rmsprop(tparams, grads, x, y, cost):
-    """
-    A variant of  SGD that scales the step size by running average of the
-    recent step norms.
-
-    Parameters:
-    tpramas (Theano SharedVariable):
-        Model parameters
-    grads (Theano variable):
-        Gradients of cost w.r.t to parameres
-    x (Theano variable):
-        Model inputs
-    y (Theano variable):
-        Targets
-    cost (Theano variable):
-        Objective fucntion to minimize
-
-    Notes:
-    For more information, see [Hint2014]_.
-
-    .. [Hint2014] Geoff Hinton, *Neural Networks for Machine Learning*,
-       lecture 6a,
-       http://cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
-
-    """
-    zipped_grads = [theano.shared(p.get_value() * _floatX(0.))
-                    for p in tparams]
-    running_grads = [theano.shared(p.get_value() * _floatX(0.))
-                     for p in tparams]
-    running_grads2 = [theano.shared(p.get_value() * _floatX(0.))
-                      for p in tparams]
-
-    zgup = [(zg, g) for zg, g in zip(zipped_grads, grads)]
-    rgup = [(rg, 0.95 * rg + 0.05 * g) for rg, g in zip(running_grads, grads)]
-    rg2up = [(rg2, 0.95 * rg2 + 0.05 * (g ** 2))
-             for rg2, g in zip(running_grads2, grads)]
-
-    f_grad_shared = theano.function([x, y], cost,
-                                    updates=zgup + rgup + rg2up,
-                                    name='rmsprop_f_grad_shared')
-
-    updir = [theano.shared(p.get_value() * _floatX(0.))
-             for p in tparams]
-    updir_new = [(ud, 0.9 * ud - 1e-4 * zg / TT.sqrt(rg2 - rg ** 2 + 1e-4))
-                 for ud, zg, rg, rg2 in zip(updir, zipped_grads, running_grads,
-                                            running_grads2)]
-    param_up = [(p, p + udn[1])
-                for p, udn in zip(tparams, updir_new)]
-    f_update = theano.function([], [], updates=updir_new + param_up,
-                               on_unused_input='ignore',
-                               name='rmsprop_f_update')
-    return (f_grad_shared, f_update, (zipped_grads, running_grads,
-                                      running_grads2, updir))
 
 
 ##################################################################
@@ -174,7 +102,7 @@ class BaseJudge(object):
         best_values = []
         start_time = end_time = None
         time_delta = prev_icost = icost = 0.
-        a_ts = [(_floatX(x), _floatX(y)) for x, y in a_ts]
+        a_ts = [(floatX(x), floatX(y)) for x, y in a_ts]
         for i in xrange(MAX_ITERS):
             icost = 0.
             np.random.shuffle(a_ts)
@@ -232,5 +160,5 @@ class BaseJudge(object):
         tens -= EPS
         for i in xrange(self.n_y):
             tens[i, :, i] = 1.
-        return theano.shared(value=_floatX(tens),
+        return theano.shared(value=floatX(tens),
                              name="X2Y")

@@ -24,8 +24,8 @@ from xgboost import XGBClassifier
 
 ##################################################################
 # COnstants
-MAX_DEPTH = 4                   # maximim depth of tree
-NTREES = 150                    # number of tree estimators
+MAX_DEPTH = 3                   # maximim depth of tree
+NTREES = 300                    # number of tree estimators
 ALPHA = 0.05                    # learning rate
 EPS = 0.1
 

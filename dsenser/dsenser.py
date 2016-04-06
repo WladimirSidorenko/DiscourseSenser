@@ -123,9 +123,9 @@ class DiscourseSenser(object):
         x_dev = [(x_i, irel, irel[SENSE])
                  for x_i, irel in zip(x_dev, a_dev_data[0])]
         # train the judge (defer the import due to slow theano loading)
-        from dsenser.judge import Judge
-        self.judge = Judge(len(self.models), len(self.cls2idx))
-        self.judge.train(x_train, x_dev)
+        # from dsenser.judge import Judge
+        # self.judge = Judge(len(self.models), len(self.cls2idx))
+        # self.judge.train(x_train, x_dev)
         # dump model
         self._dump(a_path)
 
@@ -219,6 +219,14 @@ class DiscourseSenser(object):
           predicted label and its probability
 
         """
+        # the best performing strategy so far is to return the highest mean
+        # judgment
+        x = self._prejudge(a_rel, a_data)
+        x_mean = np.mean(x, axis=0)
+        idx = np.argmax(x_mean)
+        lbl = self.idx2cls[int(idx)]
+        return (lbl, x_mean[idx])
+        # earlier we were using a pre-trained tensor
         idx, iprob = self.judge.predict(a_rel, self._prejudge(a_rel, a_data))
         lbl = self.idx2cls[int(idx)]
         return (lbl, iprob)

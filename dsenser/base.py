@@ -36,6 +36,13 @@ class BaseSenser(object):
 
     """
 
+    def __init__(self):
+        """Class constructor.
+
+        """
+        self.explicit = None
+        self.implicit = None
+
     def train(self, a_train_data, a_dev_data=None, a_n_y=-1,
               a_i=-1, a_train_out=None, a_dev_out=None):
         """Method for training the model.
@@ -114,7 +121,7 @@ class BaseSenser(object):
         trainings set with explicit and implicit connectives
 
         """
-        if a_ds is None:
+        if not a_ds:
             return (([], {}), ([], {}))
         explicit_instances = []
         implicit_instances = []

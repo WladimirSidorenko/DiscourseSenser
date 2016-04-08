@@ -28,6 +28,7 @@ DFLT_BROWN_PATH = os.path.join(DATA_DIR, "brown_cluster_1000.txt")
 DFLT_INQUIRER_PATH = os.path.join(DATA_DIR, "inquirer_word")
 DFLT_LCSI_PATH = os.path.join(DATA_DIR, "LCSInfomerge.txt")
 DFLT_MPQA_PATH = os.path.join(DATA_DIR, "MPQA_Subjectivity_Lexicon.txt")
+DFLT_W2V_PATH = os.path.join(DATA_DIR, "GoogleNews-vectors-negative300.bin")
 
 FFNN = 1
 LSTM = 2

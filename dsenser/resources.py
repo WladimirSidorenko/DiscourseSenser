@@ -17,20 +17,22 @@ CONNTOK2CONN (defaultdict(list)): mapping from connective to its
 CONNTOKS (set): set of tokens which can be part of a connective
 INQUIRER (dict): mapping from word to General Inquirer class
 STEMMED_INQUIRER (dict): mapping from stemmed word to General Inquirer class
+W2V (dict): word2vec embeddings
 
 """
 
 ##################################################################
 # Imports
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 from dsenser.constants import ENCODING, DFLT_BROWN_PATH, DFLT_ECONN_PATH, \
-    DFLT_INQUIRER_PATH, DFLT_LCSI_PATH, DFLT_MPQA_PATH
+    DFLT_INQUIRER_PATH, DFLT_LCSI_PATH, DFLT_MPQA_PATH, DFLT_W2V_PATH
 
 from collections import defaultdict
 from nltk.stem.porter import PorterStemmer
 import codecs
 import re
+import sys
 
 
 ##################################################################
@@ -136,14 +138,16 @@ def load_BROWN(a_fname):
     """
     ret = defaultdict(set)
     iword = iclass = None
+    print("Loading {:s}... ".format(a_fname), end="", file=sys.stderr)
     with codecs.open(a_fname, 'r', ENCODING) as ifile:
         for iline in ifile:
             iline = iline.strip()
             if not iline:
                 continue
-            iclass, iword = SPACE_RE.split(iline, 1)
+            _, iword, iclass = SPACE_RE.split(iline, 2)
             iword = iword.lower()
             ret[iword].add(iclass)
+    print("done", file=sys.stderr)
     # convert defaultdict back to the normal one
     return {k: '|'.join(cls) for k, cls in ret.iteritems()}
 
@@ -190,7 +194,7 @@ def load_MPQA(a_fname):
 
     """
     ret = defaultdict(lambda: [None] * 3)
-    iwords = attrs = None
+    attrs = None
     with codecs.open(a_fname, 'r', ENCODING) as ifile:
         for iline in ifile:
             iline = iline.strip()
@@ -204,10 +208,105 @@ def load_MPQA(a_fname):
     return dict(ret.iteritems())
 
 
+def load_W2V(a_fname):
+    """Load Word2Vec data from file.
+
+    Args:
+    a_fname (str): file containing W2V data
+
+    Returns:
+    (dict(str: tuple(polarity, type, pos))):
+      mapping from word to Inquirer classes and the same mapping for stemmed
+      words
+
+    """
+    from gensim.models.word2vec import Word2Vec
+    print("Loading {:s}... ".format(a_fname), end="", file=sys.stderr)
+    w2v = Word2Vec.load_word2vec_format(a_fname, binary=True)
+    print("done", file=sys.stderr)
+    return w2v
+
+
+##################################################################
+# Class
+class LoadOnDemand(object):
+    """Custom class for deferring loading of huge resources.
+
+    Loads resources only if they are actually used.
+
+    Attributes:
+    __init__ (method): class constructor
+    __getattr__ (method): method for initiliazing the resource the first time
+                       it gets used
+    resource (object or None): loaded resource
+    cmd (method): method to load the  resource
+    args (list): arguments to pass to ``cmd``
+    kwargs (dict): keyword arguments to pass to ``cmd``
+
+    """
+
+    def __init__(self, a_cmd, *a_args, **a_kwargs):
+        """Class cosntructor.
+
+        Args:
+        a_cmd (method): custom method to load the resource
+        args (list): arguments to pass to ``a_cmd``
+        kwargs (dict): keyword arguments to pass to ``a_cmd``
+
+        """
+        self.resource = None
+        self.cmd = a_cmd
+        self.args = a_args
+        self.kwargs = a_kwargs
+
+    def __contains__(self, a_name):
+        """Proxy method for looking up a word in the resource.
+
+        Args:
+        a_name (str): word to look up in the resource
+
+        Returns:
+        forwards the request to the underlying resource
+
+        """
+        if self.resource is None:
+            self.resource = self.cmd(*self.args, **self.kwargs)
+        return a_name in self.resource
+
+    def has_key(self, a_key):
+        """Proxy method for looking up a word in the resource.
+
+        Args:
+        a_key (str): word to look up in the resource
+
+        Returns:
+        forwards the request to the underlying resource
+
+        """
+        if self.resource is None:
+            self.resource = self.cmd(*self.args, **self.kwargs)
+        return a_key in self.resource
+
+    def __getitem__(self, a_name):
+        """Proxy method for accessing the resource.
+
+        Args:
+        a_name (str): word to look up in the resource
+
+        Returns:
+        forwards the request to the underlying resource
+
+        """
+        # initialize the resource if needed
+        if self.resource is None:
+            self.resource = self.cmd(*self.args, **self.kwargs)
+        return self.resource.__getitem__(a_name)
+
+
 ##################################################################
 # Resources
 LCSI = load_LCSI(DFLT_LCSI_PATH)
-BROWN_CLUSTERS = load_BROWN(DFLT_BROWN_PATH)
+BROWN_CLUSTERS = LoadOnDemand(load_BROWN, DFLT_BROWN_PATH)
 CONNS = load_conns(DFLT_ECONN_PATH)
 CONNTOK2CONN = defaultdict(list)
 
@@ -223,3 +322,4 @@ for iconns in CONNTOK2CONN.itervalues():
 CONNTOKS = set(CONNTOK2CONN.keys())
 INQUIRER, STEMMED_INQUIRER = load_INQUIRER(DFLT_INQUIRER_PATH)
 MPQA = load_MPQA(DFLT_MPQA_PATH)
+W2V = LoadOnDemand(load_W2V, DFLT_W2V_PATH)

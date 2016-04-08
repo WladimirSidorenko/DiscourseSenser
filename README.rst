@@ -37,6 +37,10 @@ its submodules and subsequently run the following commands:
     cd DiscourseSenser
     git submodule init
     git submodule update
+
+    # download the `Skip-gram Neural Word Embeddings`_ and store the
+    # unpacked archive at `dsenser/data/GoogleNews-vectors-negative300.bin`
+
     pip install -r requirements.txt . --user
 
 
@@ -68,3 +72,4 @@ See the official `CoNLL instructions`_ for complete specification of
 the input and output format.
 
 .. _`CoNLL instructions`: https://github.com/attapol/conll16st/blob/master/README.md
+.. _`Skip-gram Neural Word Embeddings`: https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing

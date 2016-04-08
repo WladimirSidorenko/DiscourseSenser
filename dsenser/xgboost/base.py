@@ -1,11 +1,11 @@
 #!/usr//bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
-"""Module providing class for Wang sense disambiguation.
+"""Module providing abstract interface class for XGBoost sense calssification.
 
 Attributes:
-WangSenser (class):
-  class for XGBoost sense classification of explicit and implicit relations
+XGBoostBaseSenser (class):
+  abstract class defining interface for explicit and implicit classifier
 
 """
 
@@ -13,17 +13,13 @@ WangSenser (class):
 # Imports
 from __future__ import absolute_import, print_function
 
-from dsenser.wang import WangSenser
-from dsenser.wang.explicit import WangExplicitSenser
-from dsenser.wang.implicit import WangImplicitSenser
-from dsenser.utils import timeit
-
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 
+
 ##################################################################
-# COnstants
+# Constants
 MAX_DEPTH = 3                   # maximim depth of tree
 NTREES = 300                    # number of tree estimators
 ALPHA = 0.05                    # learning rate
@@ -90,46 +86,3 @@ class XGBoostBaseSenser(object):
                 a_ret[a_i][i] = self.one
             else:
                 a_ret[a_i][i] = self.eps
-
-
-class XGBoostExplicitSenser(XGBoostBaseSenser, WangExplicitSenser):
-    """Subclass of explicit WangSenser using XGBoost
-
-    """
-
-    @timeit("Training explicit XGBoost classifier...")
-    def train(self, *args, **kwargs):
-        super(WangExplicitSenser, self).train(*args, **kwargs)
-
-
-class XGBoostImplicitSenser(XGBoostBaseSenser, WangImplicitSenser):
-    """Subclass of explicit WangSenser using XGBoost
-
-    """
-
-    @timeit("Training implicit XGBoost classifier...")
-    def train(self, *args, **kwargs):
-        super(WangImplicitSenser, self).train(*args, **kwargs)
-
-
-class XGBoostSenser(WangSenser):
-    """Class for XGBoost classification of discourse relations.
-
-    Attrs:
-    explicit (ImplicitSenser): classifier for implicit discourse relations
-    implicit (ExplicitSenser): classifier for explicit discourse relations
-    n_y (int): number of distinct classes
-
-    Methods:
-
-    """
-
-    def __init__(self):
-        """Class constructor.
-
-        Args:
-
-        """
-        self.explicit = XGBoostExplicitSenser()
-        self.implicit = XGBoostImplicitSenser()
-        self.n_y = -1

@@ -31,7 +31,6 @@ class WangBaseSenser(BaseSenser):
     Methods:
 
     """
-    __metaclass__ = abc.ABCMeta
 
     def train(self, a_train_data, a_dev_data=None, a_n_y=-1,
               a_i=-1, a_train_out=None, a_dev_out=None):

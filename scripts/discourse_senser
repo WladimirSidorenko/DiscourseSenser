@@ -51,8 +51,6 @@ def _add_cmn_options(a_parser):
     a_parser.add_argument("-m", "--model",
                           help="path to the main model (if different from default)",
                           type=str, default=DFLT_MODEL_PATH)
-    a_parser.add_argument("input_dir", help="directory containing input data",
-                          type=str)
 
 
 def _read_json(a_dir, a_fname, a_enc=ENCODING):
@@ -67,8 +65,8 @@ def _read_json(a_dir, a_fname, a_enc=ENCODING):
       input file encoding
 
     Returns:
-    (dict):
-    input data as dictionary
+    (list):
+    input data as list
 
     """
     fname = os.path.join(a_dir, a_fname or "")
@@ -192,11 +190,15 @@ def main():
                               type=int, action="append", choices=(FFNN, LSTM, MJR,
                                                                   WANG, XGBOOST))
     _add_cmn_options(parser_train)
+    parser_train.add_argument("input_dir", help="directories containing input data",
+                              type=str, nargs="+")
 
     # testing parser
     parser_test = subparsers.add_parser(M_TEST, help="""determine senses
     using pre-trained models""")
     _add_cmn_options(parser_test)
+    parser_test.add_argument("input_dir", help="directories containing input data",
+                              type=str)
     parser_test.add_argument("output_dir", help=
                               "directory for storing output files", type=str)
     args = argparser.parse_args()
@@ -209,12 +211,19 @@ def main():
     if args.mode == M_TRAIN:
         # read data
         dev_set = _read_dataset(args.dev, True)
-        train_set = _read_dataset(args.input_dir, True)
-        # train the model
+        rels = []
+        parses = {}
+        irels = iparses = None
+        for idir in args.input_dir:
+            irels, iparses = _read_dataset(idir, True)
+            rels.extend(irels)
+            parses.update(iparses)
+        train_set = (rels, parses)
         # determine model type
         mtype = 0
         for itype in args.type:
             mtype |= itype
+        # initialize and train the model
         dsenser =  DiscourseSenser(None)
         dsenser.train(train_set, mtype, args.model, dev_set)
     else:

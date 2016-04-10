@@ -4,8 +4,8 @@
 """Module providing class for Wang sense disambiguation.
 
 Attributes:
-WangSenser (class):
-  class that always chooses majority category  for sense disambiguation
+WangImplicitSenser (class):
+  class that predicts senses of implicit relations using Wang classifier
 
 """
 

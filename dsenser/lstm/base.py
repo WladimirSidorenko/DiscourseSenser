@@ -487,8 +487,7 @@ class LSTMBaseSenser(BaseSenser):
         invars = (self.EMB_ARG1, self.EMB_ARG2)
         params, outvars = self._init_lstm(invars)
         self._params.extend(params)
-        self.F_OUT_ARG1, self.F_OUT_ARG1_REV, \
-            self.F_OUT_ARG2, self.F_OUT_ARG2_REV = outvars
+        self.F_OUT_ARG1, self.F_OUT_ARG2 = outvars
         # initialize backward LSTM unit
         # define final units
         self.I = TT.concatenate((self.F_OUT_ARG1, self.F_OUT_ARG2,
@@ -624,15 +623,14 @@ class LSTMBaseSenser(BaseSenser):
         n = lstm_dim
         ov = h = c = None
         outvars = []
-        for iv, igbw in a_invars:
+        for iv in a_invars:
             m = iv.shape[0]
             ret, _ = theano.scan(_step,
                                  sequences=[iv],
                                  outputs_info=[floatX(np.zeros((n,))),
                                                floatX(np.zeros((n,)))],
                                  name="LSTM" + str(iv) + a_sfx,
-                                 n_steps=m,
-                                 go_backwards=igbw)
+                                 n_steps=m)
             ov = TT.mean(ret[0], axis=0)
             # ov = ret[0]
             outvars.append(ov)

@@ -13,6 +13,7 @@ rmsprop (method): separate training set into explicit and implicit instances
 # Imports
 from __future__ import absolute_import, print_function
 
+from lasagne.init import HeNormal, HeUniform, Orthogonal
 from theano import config, tensor as TT
 import numpy as np
 import theano
@@ -47,7 +48,7 @@ def rmsprop(tparams, grads, x, y, cost):
         Model parameters
     grads (Theano variable):
         Gradients of cost w.r.t to parameres
-    x (Theano variable):
+    x (list):
         Model inputs
     y (Theano variable):
         Targets
@@ -74,10 +75,9 @@ def rmsprop(tparams, grads, x, y, cost):
     rg2up = [(rg2, 0.95 * rg2 + 0.05 * (g ** 2))
              for rg2, g in zip(running_grads2, grads)]
 
-    f_grad_shared = theano.function([x, y], cost,
+    f_grad_shared = theano.function(x + [y], cost,
                                     updates=zgup + rgup + rg2up,
                                     name='rmsprop_f_grad_shared')
-
     updir = [theano.shared(p.get_value() * floatX(0.))
              for p in tparams]
     updir_new = [(ud, 0.9 * ud - 1e-4 * zg / TT.sqrt(rg2 - rg ** 2 + 1e-4))
@@ -88,5 +88,27 @@ def rmsprop(tparams, grads, x, y, cost):
     f_update = theano.function([], [], updates=updir_new + param_up,
                                on_unused_input='ignore',
                                name='rmsprop_f_update')
-    return (f_grad_shared, f_update, (zipped_grads, running_grads,
-                                      running_grads2, updir))
+    return (f_grad_shared, f_update)
+
+
+##################################################################
+# Variables and Constants
+MAX_ITERS = 10  # 450
+
+_HE_NORMAL = HeNormal()
+HE_NORMAL = lambda x: floatX(_HE_NORMAL.sample(x))
+
+_HE_UNIFORM = HeUniform()
+HE_UNIFORM = lambda x: floatX(_HE_UNIFORM.sample(x))
+
+_HE_UNIFORM_RELU = HeUniform(gain=np.sqrt(2))
+HE_UNIFORM_RELU = lambda x: floatX(_HE_UNIFORM_RELU.sample(x))
+
+_RELU_ALPHA = 0.
+_HE_UNIFORM_LEAKY_RELU = HeUniform(
+    gain=np.sqrt(2. / (1 + (_RELU_ALPHA or 1e-6)**2)))
+HE_UNIFORM_LEAKY_RELU = lambda x: \
+    floatX(_HE_UNIFORM_LEAKY_RELU.sample(x))
+
+_ORTHOGONAL = Orthogonal()
+ORTHOGONAL = lambda x: floatX(_ORTHOGONAL.sample(x))

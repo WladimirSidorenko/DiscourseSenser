@@ -14,8 +14,8 @@ WangImplicitSenser (class):
 from __future__ import absolute_import, print_function
 
 from dsenser.constants import ARG1, ARG2, DEPS, \
-    DOC_ID, PARSE_TREE, POS, SENTENCES, SNT_ID, \
-    TOK_ID, TOK_IDX, TOK_LIST, WORDS
+    DOC_ID, PARSE_TREE, POS, SENTENCES, \
+    TOK_LIST
 from dsenser.resources import LCSI, BROWN_CLUSTERS, \
     INQUIRER, MPQA, STEMMED_INQUIRER, PSTEMMER, \
     POL_IDX, INTENS_IDX, NEGATIONS
@@ -27,7 +27,7 @@ from collections import Counter, defaultdict
 from nltk import Tree
 from nltk.grammar import is_nonterminal
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.feature_selection import SelectKBest, chi2
+# from sklearn.feature_selection import SelectKBest, chi2
 # from sklearn.feature_selection import VarianceThreshold
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
@@ -108,7 +108,7 @@ class WangImplicitSenser(WangBaseSenser):
         self._get_first_last_toks(feats, toks_pos1, toks_pos2)
         self._get_modality(feats, toks_pos1, toks_pos2)
         self._get_vb_class(feats, toks_pos1, toks_pos2)
-        self._get_brown_clusters(feats, toks_pos1, toks_pos2)
+        # self._get_brown_clusters(feats, toks_pos1, toks_pos2)
         self._get_inquirer(feats, toks_pos1, toks_pos2)
         self._get_MPQA(feats, toks_pos1, toks_pos2)
         return feats
@@ -530,48 +530,4 @@ class WangImplicitSenser(WangBaseSenser):
                     if any(el[0] in NEGATIONS for el in a_toks[j:i]):
                         ipol = "negatedpos"
                 ret[ipol + '|' + entry[INTENS_IDX]] = 1.
-        return ret
-
-    def _get_snt2tok(self, a_tok_list):
-        """Generate mapping from sentence indices to token lists.
-
-        Args:
-        a_tok_list (list(tuple(int, int))):
-          list of sentence and token indices pertaining to the argument
-
-        Returns:
-        defaultdict(set):
-          mapping from sentence indices to token lists
-
-        """
-        snt2tok_pos = defaultdict(set)
-        for el in a_tok_list:
-            snt_id = el[SNT_ID]
-            snt2tok_pos[snt_id].add(el[TOK_ID])
-        return snt2tok_pos
-
-    def _get_toks_pos(self, a_parses, a_rel, a_arg):
-        """Method for getting raw tokens with their parts of speech.
-
-        Args:
-        a_parses (dict):
-          parsed sentences
-        a_rel (dict):
-          discourse relation whose tokens should be obtained
-        a_arg (str):
-          relation argument to obtain senses for
-
-        Returns:
-        (list(tuple(str, str))):
-          list of tokens and their parts of speech
-
-        """
-        ret = []
-        snt = wrd = None
-        for s_id, w_ids in \
-                self._get_snt2tok(a_rel[a_arg][TOK_LIST]).iteritems():
-            snt = a_parses[s_id][WORDS]
-            for w_id in w_ids:
-                wrd = snt[w_id]
-                ret.append((wrd[TOK_IDX].lower(), wrd[1][POS]))
         return ret

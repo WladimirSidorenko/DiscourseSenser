@@ -13,12 +13,16 @@ BaseSenser (class):
 # Imports
 from __future__ import absolute_import, print_function
 
+from dsenser.constants import POS, SNT_ID, TOK_IDX, TOK_ID, TOK_LIST, WORDS
 from dsenser.scorer.conn_head_mapper import ConnHeadMapper
+from dsenser.resources import CHM
 from dsenser.utils import is_explicit
+
+from collections import defaultdict
+
 
 ##################################################################
 # Variables and Constants
-CHM = ConnHeadMapper()
 
 ##################################################################
 # Methods
@@ -149,3 +153,47 @@ class BaseSenser(object):
         if a_conn:
             return CHM.map_raw_connective(a_conn)[0]
         return a_conn
+
+    def _get_toks_pos(self, a_parses, a_rel, a_arg):
+        """Method for getting raw tokens with their parts of speech.
+
+        Args:
+        a_parses (dict):
+          parsed sentences
+        a_rel (dict):
+          discourse relation whose tokens should be obtained
+        a_arg (str):
+          relation argument to obtain senses for
+
+        Returns:
+        (list(tuple(str, str))):
+          list of tokens and their parts of speech
+
+        """
+        ret = []
+        snt = wrd = None
+        for s_id, w_ids in \
+                self._get_snt2tok(a_rel[a_arg][TOK_LIST]).iteritems():
+            snt = a_parses[s_id][WORDS]
+            for w_id in w_ids:
+                wrd = snt[w_id]
+                ret.append((wrd[TOK_IDX].lower(), wrd[1][POS]))
+        return ret
+
+    def _get_snt2tok(self, a_tok_list):
+        """Generate mapping from sentence indices to token lists.
+
+        Args:
+        a_tok_list (list(tuple(int, int))):
+          list of sentence and token indices pertaining to the argument
+
+        Returns:
+        defaultdict(set):
+          mapping from sentence indices to token lists
+
+        """
+        snt2tok_pos = defaultdict(set)
+        for el in a_tok_list:
+            snt_id = el[SNT_ID]
+            snt2tok_pos[snt_id].add(el[TOK_ID])
+        return snt2tok_pos

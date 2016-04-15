@@ -95,8 +95,11 @@ class DiscourseSenser(object):
         if a_type == 0:
             raise RuntimeError("No model type specified.")
         if a_dev_data is None:
-            a_dev_data = ((), ())
+            a_dev_data = ([], {})
         # initialize
+        if a_type & LSTM:
+            from dsenser.lstm import LSTMSenser
+            self.models.append(LSTMSenser())
         if a_type & MJR:
             from dsenser.major import MajorSenser
             self.models.append(MajorSenser())
@@ -116,7 +119,7 @@ class DiscourseSenser(object):
         for i, imodel in enumerate(self.models):
             imodel.train(a_train_data, a_dev_data, len(self.cls2idx),
                          i, x_train, x_dev)
-        # convert training and ddevelopment sets to the appropriate format for
+        # convert training and development sets to the appropriate format for
         # the judge
         x_train = [(x_i, irel, irel[SENSE])
                    for x_i, irel in zip(x_train, a_train_data[0])]
@@ -171,6 +174,32 @@ class DiscourseSenser(object):
             irel[CONNECTIVE][TOK_LIST] = self._normalize_tok_list(
                 irel[CONNECTIVE][TOK_LIST])
 
+    def _predict(self, a_rel, a_data):
+        """Determine sense of discourse relation.
+
+        Args:
+        a_rel (dict):
+          JSON instance representing discourse relation
+        a_data (list):
+          2-tuple(dict, dict): input rels and parses
+
+        Returns:
+        (tuple(str, float)):
+          predicted label and its probability
+
+        """
+        # the best performing strategy so far is to return the highest mean
+        # judgment
+        x = self._prejudge(a_rel, a_data)
+        x_mean = np.mean(x, axis=0)
+        idx = np.argmax(x_mean)
+        lbl = self.idx2cls[int(idx)]
+        return (lbl, x_mean[idx])
+        # earlier we were using a pre-trained tensor
+        idx, iprob = self.judge.predict(a_rel, self._prejudge(a_rel, a_data))
+        lbl = self.idx2cls[int(idx)]
+        return (lbl, iprob)
+
     def _sense2idx(self, a_rels):
         """Convert symbolic senses to vectors.
 
@@ -204,32 +233,6 @@ class DiscourseSenser(object):
             for isense in isenses:
                 vsense[self.cls2idx[isense]] = 1
             irel[SENSE] = vsense / sum(vsense)
-
-    def _predict(self, a_rel, a_data):
-        """Determine sense of discourse relation.
-
-        Args:
-        a_rel (dict):
-          JSON instance representing discourse relation
-        a_data (list):
-          2-tuple(dict, dict): input rels and parses
-
-        Returns:
-        (tuple(str, float)):
-          predicted label and its probability
-
-        """
-        # the best performing strategy so far is to return the highest mean
-        # judgment
-        x = self._prejudge(a_rel, a_data)
-        x_mean = np.mean(x, axis=0)
-        idx = np.argmax(x_mean)
-        lbl = self.idx2cls[int(idx)]
-        return (lbl, x_mean[idx])
-        # earlier we were using a pre-trained tensor
-        idx, iprob = self.judge.predict(a_rel, self._prejudge(a_rel, a_data))
-        lbl = self.idx2cls[int(idx)]
-        return (lbl, iprob)
 
     def _get_type(self, a_rel):
         """Determine type of discourse relation.

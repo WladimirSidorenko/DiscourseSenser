@@ -13,7 +13,7 @@ BaseJudge (class):
 # Imports
 from __future__ import absolute_import, print_function
 
-from dsenser.theano_utils import floatX, rmsprop
+from dsenser.theano_utils import floatX, rmsprop, HE_UNIFORM, MAX_ITERS
 
 from datetime import datetime
 from lasagne.init import HeUniform, Orthogonal
@@ -24,10 +24,8 @@ import theano
 
 ##################################################################
 # Variables and Constants
-HE_UNIFORM = HeUniform()
 EPS = 0.  # 1e-3
 CONV_EPS = 1e-5
-MAX_ITERS = 128
 INF = float("inf")
 
 
@@ -62,7 +60,7 @@ class BaseJudge(object):
         self.x = TT.dmatrix(name="x")
         # mapping from input to output vector
         self.X2Y = self._init_X2Y()
-        self.y_bias = theano.shared(value=HE_UNIFORM.sample((1, self.n_y)),
+        self.y_bias = theano.shared(value=HE_UNIFORM((1, self.n_y)),
                                     name="y_bias")
         # prediction vector
         self.y_pred = TT.nnet.softmax(
@@ -96,10 +94,10 @@ class BaseJudge(object):
         #                           name="predict")
         gradients = TT.grad(cost, wrt=self._params)
         f_grad_shared, f_update, _ = rmsprop(self._params, gradients,
-                                             self.x, y_gold, cost)
+                                             [self.x], y_gold, cost)
         # perform actual training
         min_cost = INF
-        best_values = []
+        best_params = []
         start_time = end_time = None
         time_delta = prev_icost = icost = 0.
         a_ts = [(floatX(x), floatX(y)) for x, y in a_ts]
@@ -114,7 +112,7 @@ class BaseJudge(object):
                 except Exception as e:
                     raise e
             if icost < min_cost:
-                best_values = [p.get_value() for p in self._params]
+                best_params = [p.get_value() for p in self._params]
                 min_cost = icost
             end_time = datetime.utcnow()
             time_delta = (end_time - start_time).seconds
@@ -127,8 +125,8 @@ class BaseJudge(object):
                 break
             prev_icost = icost
         # set best values seen during training
-        if best_values:
-            for p, val in zip(self._params, best_values):
+        if best_params:
+            for p, val in zip(self._params, best_params):
                 p.set_value(val)
 
     def predict(self, a_x):

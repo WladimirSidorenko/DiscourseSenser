@@ -27,6 +27,7 @@ from __future__ import absolute_import, print_function
 
 from dsenser.constants import ENCODING, DFLT_BROWN_PATH, DFLT_ECONN_PATH, \
     DFLT_INQUIRER_PATH, DFLT_LCSI_PATH, DFLT_MPQA_PATH, DFLT_W2V_PATH
+from dsenser.scorer.conn_head_mapper import ConnHeadMapper
 
 from collections import defaultdict
 from nltk.stem.porter import PorterStemmer
@@ -38,6 +39,7 @@ import sys
 ##################################################################
 # Constants
 BAR_RE = re.compile(r'\|')
+CHM = ConnHeadMapper()
 ELLIPSIS_RE = re.compile(r"[.][.]+")
 EQ_RE = re.compile("=+")
 HASH_RE = re.compile("\s*#\s*")
@@ -269,23 +271,8 @@ class LoadOnDemand(object):
         forwards the request to the underlying resource
 
         """
-        if self.resource is None:
-            self.resource = self.cmd(*self.args, **self.kwargs)
+        self.load()
         return a_name in self.resource
-
-    def has_key(self, a_key):
-        """Proxy method for looking up a word in the resource.
-
-        Args:
-        a_key (str): word to look up in the resource
-
-        Returns:
-        forwards the request to the underlying resource
-
-        """
-        if self.resource is None:
-            self.resource = self.cmd(*self.args, **self.kwargs)
-        return a_key in self.resource
 
     def __getitem__(self, a_name):
         """Proxy method for accessing the resource.
@@ -298,10 +285,23 @@ class LoadOnDemand(object):
 
         """
         # initialize the resource if needed
-        if self.resource is None:
-            self.resource = self.cmd(*self.args, **self.kwargs)
+        self.load()
         return self.resource.__getitem__(a_name)
 
+    def load(self):
+        """Force loading the resource.
+
+        Args:
+        (void):
+
+        Returns:
+        (void):
+        load the resource
+
+        """
+        if self.resource is None:
+            self.resource = self.cmd(*self.args, **self.kwargs)
+        return self.resource
 
 ##################################################################
 # Resources

@@ -142,8 +142,8 @@ def _read_dataset(a_dir, a_train=False):
     2-tuple(dict, dict): training rel set and parses
 
     """
-    if a_dir is None:
-        return a_dir
+    if not a_dir:
+        return None
     # read relations
     if a_train:
         rels = _read_json(a_dir, GOLD_FNAME)
@@ -183,7 +183,7 @@ def main():
                               "development directory with JSON data",
                               type=str)
     parser_train.add_argument("--type", help=("type of the model to train"
-                               "({:d} - feed-forward, {:d} - LSTM, {:d} - majority,"
+                               "({:d} - feed-forward, {:d} - bi-LSTM, {:d} - majority,"
                                               " {:d} - Wang, {:d} - XGBOOST), ".format(
                                                   FFNN, LSTM, MJR, WANG, XGBOOST) +
                                               "default = {:d}".format(DFLT_MODEL_TYPE)),

@@ -166,12 +166,21 @@ class LSTMBaseSenser(BaseSenser):
             for (_, (emb1, emb2, conn)), y in zip(x_train, y_train):
                 # print("x =", repr(x), file=sys.stderr)
                 # print("y =", repr(y), file=sys.stderr)
-                # F_OUT_ARG1, F_OUT_ARG2, I, EMB_CONN = self._debug_nn(*x)
-                # print("F_OUT_ARG1 =", repr(F_OUT_ARG1), repr(F_OUT_ARG1.shape),
+                # F_OUT_ARG1, F_OUT_ARG2, F_OUT_ARG1_REV, \
+                #     F_OUT_ARG2_REV, F_ARG1, F_ARG2, EMB_CONN = \
+                #     self._debug_nn(emb1, emb2, conn)
+                # print("F_OUT_ARG1 =", repr(F_OUT_ARG1),
+                # repr(F_OUT_ARG1.shape), file=sys.stderr)
+                # print("F_OUT_ARG1_REV =", repr(F_OUT_ARG1_REV),
+                # repr(F_OUT_ARG1_REV.shape), file=sys.stderr)
+                # print("F_ARG1 =", repr(F_ARG1), repr(F_ARG1.shape),
                 #       file=sys.stderr)
-                # print("F_OUT_ARG2 =", repr(F_OUT_ARG2), repr(F_OUT_ARG2.shape),
+                # print("F_OUT_ARG2 =", repr(F_OUT_ARG2),
+                # repr(F_OUT_ARG2.shape), file=sys.stderr)
+                # print("F_OUT_ARG2_REV =", repr(F_OUT_ARG2_REV),
+                # repr(F_OUT_ARG2_REV.shape), file=sys.stderr)
+                # print("F_ARG2 =", repr(F_ARG2), repr(F_ARG2.shape),
                 #       file=sys.stderr)
-                # print("I =", repr(I), repr(I.shape), file=sys.stderr)
                 # print("EMB_CONN =", repr(EMB_CONN), repr(EMB_CONN.shape),
                 #       file=sys.stderr)
                 # sys.exit(66)
@@ -482,15 +491,23 @@ class LSTMBaseSenser(BaseSenser):
         self._params.append(self.CONN_EMB)
         self.EMB_CONN = self.CONN_EMB[self.CONN_INDEX]
         # initialize forward LSTM unit
-        # invars = ((self.EMB_ARG1, False), (self.EMB_ARG1, True),
-        #           (self.EMB_ARG2, False), (self.EMB_ARG2, True))
-        invars = (self.EMB_ARG1, self.EMB_ARG2)
+        invars = ((self.EMB_ARG1, False), (self.EMB_ARG2, False))
         params, outvars = self._init_lstm(invars)
         self._params.extend(params)
         self.F_OUT_ARG1, self.F_OUT_ARG2 = outvars
-        # initialize backward LSTM unit
+        self.F_ARG1 = TT.mean(self.F_OUT_ARG1, axis=0)
+        self.F_ARG2 = TT.mean(self.F_OUT_ARG2, axis=0)
+        # self._debug_nn = theano.function([self.W_INDICES_ARG1,
+        #                                   self.W_INDICES_ARG2,
+        #                                   self.CONN_INDEX],
+        #                                  [self.F_OUT_ARG1, self.F_OUT_ARG2,
+        #                                   self.F_OUT_ARG1_REV,
+        #                                   self.F_OUT_ARG2_REV, self.F_ARG1,
+        #                                   self.F_ARG2, self.EMB_CONN],
+        #                                  name="_debug_nn")
+        # return
         # define final units
-        self.I = TT.concatenate((self.F_OUT_ARG1, self.F_OUT_ARG2,
+        self.I = TT.concatenate((self.F_ARG1, self.F_ARG2,
                                  self.EMB_CONN))
         self.I2Y = theano.shared(value=HE_UNIFORM((self.n_y,
                                                    self.lstm_dim * 3)),
@@ -623,16 +640,16 @@ class LSTMBaseSenser(BaseSenser):
         n = lstm_dim
         ov = h = c = None
         outvars = []
-        for iv in a_invars:
+        for iv, igbw in a_invars:
             m = iv.shape[0]
             ret, _ = theano.scan(_step,
                                  sequences=[iv],
                                  outputs_info=[floatX(np.zeros((n,))),
                                                floatX(np.zeros((n,)))],
                                  name="LSTM" + str(iv) + a_sfx,
-                                 n_steps=m)
-            ov = TT.mean(ret[0], axis=0)
-            # ov = ret[0]
+                                 n_steps=m,
+                                 go_backwards=igbw)
+            ov = ret[0]
             outvars.append(ov)
         return params, outvars
 
@@ -688,10 +705,9 @@ class LSTMBaseSenser(BaseSenser):
         # initialize debug function
         if self._debug_nn is None:
             self._debug_nn = theano.function([self.W_INDICES_ARG1,
-                                              self.W_INDICES_ARG2,
-                                              self.CONN_INDEX],
-                                             [self.F_OUT_ARG1, self.F_OUT_ARG2,
-                                              self.I, self.EMB_CONN],
+                                              self.W_INDICES_ARG2],
+                                             [self.F_OUT_ARG1,
+                                              self.F_OUT_ARG2],
                                              name="_debug_nn")
 
     def _reset_funcs(self):

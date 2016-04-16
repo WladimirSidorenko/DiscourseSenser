@@ -73,6 +73,24 @@ Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.2582 Recall 0.2620 F1 0.2601
 
+Iteration V (evaluate on train set after 200 iterations with no dropout)
+------------------------------------------------------------------------
+
+================================================
+Evaluation for all discourse relations
+Overall parser performance --------------
+Precision 0.4668 Recall 0.4584 F1 0.4626
+
+================================================
+Evaluation for explicit discourse relations only
+Overall parser performance --------------
+Precision 0.7600 Recall 0.7224 F1 0.7408
+
+================================================
+Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
+Overall parser performance --------------
+Precision 0.2311 Recall 0.2330 F1 0.2321
+
 
 Bi-directional LSTM (10 iterations over dev set):
 =================================================
@@ -112,3 +130,24 @@ Precision 0.8079 Recall 0.7937 F1 0.8007
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.2382 Recall 0.2416 F1 0.2399
+
+Bi-directional LSTM (with separate parameters, 10 iterations over dev set):
+===========================================================================
+
+Iteration IV (evaluate on train set)
+------------------------------------
+
+================================================
+Evaluation for all discourse relations
+Overall parser performance --------------
+Precision 0.4919 Recall 0.4919 F1 0.4919
+
+================================================
+Evaluation for explicit discourse relations only
+Overall parser performance --------------
+Precision 0.8007 Recall 0.7866 F1 0.7936
+
+================================================
+Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
+Overall parser performance --------------
+Precision 0.2366 Recall 0.2400 F1 0.2382

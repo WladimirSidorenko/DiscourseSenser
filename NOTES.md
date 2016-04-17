@@ -92,8 +92,10 @@ Overall parser performance --------------
 Precision 0.2311 Recall 0.2330 F1 0.2321
 
 
-Iteration VI (evaluate on train set after 200 iterations, Gal's dropout)
-------------------------------------------------------------------------
+Iteration VI (evaluate on train set after 200 iterations, Gal's
+----------------------------------------------------------------
+dropout (* with error)
+----------------------
 
 ================================================
 Evaluation for all discourse relations
@@ -110,6 +112,41 @@ Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.2513 Recall 0.2550 F1 0.2531
 
+Iteration VII (evaluate on train set after 200 iterations, na\"ive dropout)
+---------------------------------------------------------------------------
+
+================================================
+Evaluation for all discourse relations
+Overall parser performance --------------
+Precision 0.4999 Recall 0.4999 F1 0.4999
+
+================================================
+Evaluation for explicit discourse relations only
+Overall parser performance --------------
+Precision 0.8029 Recall 0.7888 F1 0.7958
+
+================================================
+Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
+Overall parser performance --------------
+Precision 0.2486 Recall 0.2522 F1 0.2504
+
+Iteration VIII (evaluate on train set after 200 iterations, no dropout)
+-----------------------------------------------------------------------
+
+================================================
+Evaluation for all discourse relations
+Overall parser performance --------------
+Precision 0.4784 Recall 0.4744 F1 0.4764
+
+================================================
+Evaluation for explicit discourse relations only
+Overall parser performance --------------
+Precision 0.7752 Recall 0.7474 F1 0.7611
+
+================================================
+Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
+Overall parser performance --------------
+Precision 0.2380 Recall 0.2414 F1 0.2397
 
 
 

@@ -92,6 +92,27 @@ Overall parser performance --------------
 Precision 0.2311 Recall 0.2330 F1 0.2321
 
 
+Iteration VI (evaluate on train set after 200 iterations, Gal's dropout)
+------------------------------------------------------------------------
+
+================================================
+Evaluation for all discourse relations
+Overall parser performance --------------
+Precision 0.5069 Recall 0.5069 F1 0.5069
+
+================================================
+Evaluation for explicit discourse relations only
+Overall parser performance --------------
+Precision 0.8165 Recall 0.8021 F1 0.8092
+
+================================================
+Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
+Overall parser performance --------------
+Precision 0.2513 Recall 0.2550 F1 0.2531
+
+
+
+
 Bi-directional LSTM (10 iterations over dev set):
 =================================================
 

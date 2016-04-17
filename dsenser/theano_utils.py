@@ -14,6 +14,7 @@ rmsprop (method): separate training set into explicit and implicit instances
 from __future__ import absolute_import, print_function
 
 from lasagne.init import HeNormal, HeUniform, Orthogonal
+from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 from theano import config, tensor as TT
 import numpy as np
 import theano
@@ -93,7 +94,8 @@ def rmsprop(tparams, grads, x, y, cost):
 
 ##################################################################
 # Variables and Constants
-MAX_ITERS = 10  # 450
+MAX_ITERS = 200  # 450
+CONV_EPS = 1e-5
 
 _HE_NORMAL = HeNormal()
 HE_NORMAL = lambda x: floatX(_HE_NORMAL.sample(x))
@@ -112,3 +114,5 @@ HE_UNIFORM_LEAKY_RELU = lambda x: \
 
 _ORTHOGONAL = Orthogonal()
 ORTHOGONAL = lambda x: floatX(_ORTHOGONAL.sample(x))
+
+TRNG = RandomStreams()

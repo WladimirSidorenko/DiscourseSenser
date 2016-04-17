@@ -13,7 +13,8 @@ BaseJudge (class):
 # Imports
 from __future__ import absolute_import, print_function
 
-from dsenser.theano_utils import floatX, rmsprop, HE_UNIFORM, MAX_ITERS
+from dsenser.theano_utils import floatX, rmsprop, \
+    CONV_EPS, HE_UNIFORM, MAX_ITERS
 
 from datetime import datetime
 from lasagne.init import HeUniform, Orthogonal
@@ -25,7 +26,6 @@ import theano
 ##################################################################
 # Variables and Constants
 EPS = 0.  # 1e-3
-CONV_EPS = 1e-5
 INF = float("inf")
 
 

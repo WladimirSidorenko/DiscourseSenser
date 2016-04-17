@@ -18,7 +18,7 @@ from dsenser.constants import ARG1, ARG2, CONNECTIVE, DOC_ID, \
     RAW_TEXT, SENTENCES, SENSE, TOK_IDX, WORDS
 from dsenser.resources import CHM, W2V
 from dsenser.theano_utils import floatX, rmsprop, theano, \
-    HE_UNIFORM, MAX_ITERS, ORTHOGONAL, TT
+    CONV_EPS, HE_UNIFORM, MAX_ITERS, ORTHOGONAL, TT, TRNG
 
 from collections import defaultdict, Counter
 from datetime import datetime
@@ -102,6 +102,7 @@ class LSTMBaseSenser(BaseSenser):
         self._params = []
         self._w_stat = None
         self.W_EMB = self.CONN_EMB = self._cost = None
+        self.use_dropout = theano.shared(floatX(0.))
         # initialize theano functions to None
         self._reset_funcs()
 
@@ -130,7 +131,7 @@ class LSTMBaseSenser(BaseSenser):
         """
         self.n_y = a_n_y
         # allocate data to development set if there is none
-        if a_dev_data is None:
+        if a_dev_data is None or not a_dev_data[0]:
             train_rels, parses = a_train_data
             docs = parses.keys()
             n_docs = len(docs)
@@ -139,7 +140,8 @@ class LSTMBaseSenser(BaseSenser):
             dev_docs = set(np.random.choice(docs, n_dev, False))
             new_train_rels, dev_rels = [], []
             for irel in train_rels:
-                if irel[DOC_ID] in dev_docs:
+                # relations are numbered at this place
+                if irel[-1][DOC_ID] in dev_docs:
                     dev_rels.append(irel)
                 else:
                     new_train_rels.append(irel)
@@ -154,10 +156,12 @@ class LSTMBaseSenser(BaseSenser):
                                          self.get_test_c_emb_i)
         # initialize the network
         self._init_nn()
+        # activate dropout for training
+        self.use_dropout.set_value(1.)
 
         # perform the training
-        train_cost = dev_cost = 0.
         min_train_cost = min_dev_cost = INF
+        prev_train_cost = train_cost = dev_cost = 0.
         best_params = []
         for i in xrange(MAX_ITERS):
             train_cost = 0.
@@ -188,8 +192,12 @@ class LSTMBaseSenser(BaseSenser):
                 self._update()
             # estimate the model on the dev set
             dev_cost = 0.
-            for (_, (emb1, emb2, conn)), y in zip(x_train, y_train):
+            # temporarily deactivate dropout
+            self.use_dropout.set_value(0.)
+            for (_, (emb1, emb2, conn)), y in zip(x_dev, y_dev):
                 dev_cost += self._compute_cost(emb1, emb2, conn, y)
+            # switch dropout on again
+            self.use_dropout.set_value(1.)
             end_time = datetime.utcnow()
             time_delta = (end_time - start_time).seconds
             if min_dev_cost == INF or dev_cost < min_dev_cost:
@@ -198,15 +206,21 @@ class LSTMBaseSenser(BaseSenser):
             print("Iteration {:d}:\ttrain_cost = {:f}\t"
                   "dev_cost={:f}\t({:.2f} sec)".format(
                       i, train_cost, dev_cost, time_delta), file=sys.stderr)
+            if abs(prev_train_cost - train_cost) < CONV_EPS:
+                break
+            prev_train_cost = train_cost
+        # deactivate dropout
+        self.use_dropout.set_value(0.)
         if best_params:
             for p, val in zip(self._params, best_params):
                 p.set_value(val)
         # make predictions for the judge
         if a_i >= 0:
+            # deactivate dropout once again
             if a_train_out is not None:
                 for i, x_i in x_train:
                     self._predict(x_i, a_train_out[i], a_i)
-            if a_dev_out is not None:
+            if a_dev_out:
                 for i, x_i in x_dev:
                     self._predict(x_i, a_dev_out[i], a_i)
             else:
@@ -566,33 +580,34 @@ class LSTMBaseSenser(BaseSenser):
         """
         lstm_dim = self.lstm_dim
         # initialize transformation matrices and bias term
-        W_dim = (lstm_dim, self.ndim)
-        W = np.concatenate([ORTHOGONAL(W_dim), ORTHOGONAL(W_dim),
-                            ORTHOGONAL(W_dim), ORTHOGONAL(W_dim)],
-                           axis=0)
+        W_dim = (4, lstm_dim, self.ndim)
+        W = ORTHOGONAL(W_dim)
         W = theano.shared(value=W, name="W" + a_sfx)
 
-        U_dim = (lstm_dim, lstm_dim)
-        U = np.concatenate([ORTHOGONAL(U_dim), ORTHOGONAL(U_dim),
-                            ORTHOGONAL(U_dim), ORTHOGONAL(U_dim)],
-                           axis=0)
+        U_dim = (4, lstm_dim, lstm_dim)
+        U = ORTHOGONAL(U_dim)
         U = theano.shared(value=U, name="U" + a_sfx)
-        V = ORTHOGONAL(U_dim)   # V for vendetta
+
+        V_dim = (lstm_dim, lstm_dim)
+        V = ORTHOGONAL(V_dim)   # V for vendetta
         V = theano.shared(value=V, name="V" + a_sfx)
 
-        b_dim = (1, lstm_dim * 4)
-        b = theano.shared(value=HE_UNIFORM(b_dim), name="b" + a_sfx)
+        b_dim = (4, lstm_dim)
+        b = theano.shared(value=ORTHOGONAL(b_dim), name="b" + a_sfx)
+
+        # initialize dropout units
+        x_do = theano.shared(value=floatX(np.ones((4, self.ndim))),
+                             name="X_do")
+        X_do = self._init_dropout(x_do)
+        h_do = theano.shared(value=floatX(np.ones((4, lstm_dim))),
+                             name="H_do")
+        H_do = self._init_dropout(h_do)
 
         params = [W, U, V, b]
 
-        # custom function for splitting up matrix parts
-        def _slice(_x, n, dim):
-            if _x.ndim == 3:
-                return _x[:, :, n * dim:(n + 1) * dim]
-            return _x[:, n * dim:(n + 1) * dim]
-
         # define recurrent LSTM unit
-        def _step(x_, h_, c_):
+        def _step(x_, h_, c_,
+                  W, U, V, b, X_do, H_do):
             """Recurrent LSTM unit.
 
             Note:
@@ -604,6 +619,12 @@ class LSTMBaseSenser(BaseSenser):
             x_ (theano.shared): input vector
             h_ (theano.shared): output vector
             c_ (theano.shared): memory state
+            W (theano.shared): input transform matrix
+            U (theano.shared): inner-state transform matrix
+            V (theano.shared): output transform matrix
+            b (theano.shared): bias vector
+            X_do (theano.shared): dropout mask of the input
+            H_do (theano.shared): dropout mask of the inner state
 
             Returns:
             (2-tuple(h, c))
@@ -611,26 +632,28 @@ class LSTMBaseSenser(BaseSenser):
 
             """
             # pre-compute common terms:
-            # W \in R^{236 x 100}
+            # W \in R^{4 x 236 x 100}
             # x \in R^{1 x 100}
-            # U \in R^{236 x 59}
+            # U \in R^{4 x 236 x 59}
             # h \in R^{1 x 59}
-            # b \in R^{1 x 236}
+            # b \in R^{4 x 59}
+            # X_do \in R^{4 x 100}
+            # H_do \in R^{4 x 59}
             # xhb \in R^{1 x 236}
-            xhb = (TT.dot(W, x_.T) + TT.dot(U, h_.T)).T + b
-            # compute gates and output
-            # i \in R^{1 x 59}
-            i = TT.nnet.sigmoid(_slice(xhb, 0, lstm_dim))
-            # f \in R^{1 x 59}
-            f = TT.nnet.sigmoid(_slice(xhb, 1, lstm_dim))
-            # c \in R^{1 x 59}
-            c = TT.tanh(_slice(xhb, 2, lstm_dim))
-            # c \in R^{1 x 59}
+            # input gate (i \in R^{1 x 59})
+            i = TT.nnet.sigmoid((TT.dot(W[0], (x_ * X_do[0]).T) +
+                                 TT.dot(U[0], (h_ * H_do[0]).T)).T + b[0])
+            # forget gate (f \in R^{1 x 59})
+            f = TT.nnet.sigmoid((TT.dot(W[1], (x_ * X_do[1]).T) +
+                                 TT.dot(U[1], (h_ * H_do[1]).T)).T + b[1])
+            # current candidate state (c \in R^{1 x 59})
+            c = TT.tanh((TT.dot(W[2], (x_ * X_do[2]).T) +
+                         TT.dot(U[2], (h_ * H_do[2]).T)).T + b[2])
             c = i * c + f * c_
-            # V \in R^{59 x 59}
-            # o \in R^{1 x 59}
-            o = TT.nnet.sigmoid(_slice(xhb, 3, lstm_dim) +
-                                TT.dot(V, c.T).T)
+            # output state (o \in R^{1 x 59})
+            o = (TT.dot(W[3], (x_ * X_do[3]).T) +
+                 TT.dot(U[3], (h_ * H_do[3]).T)).T + b[3]
+            o = TT.nnet.sigmoid(o + TT.dot(V, c.T).T)
             # h \in R^{1 x 59}
             h = o * TT.tanh(c)
             # return current output and memory state
@@ -642,10 +665,12 @@ class LSTMBaseSenser(BaseSenser):
         outvars = []
         for iv, igbw in a_invars:
             m = iv.shape[0]
+            iv_do = self._init_dropout(iv)
             ret, _ = theano.scan(_step,
-                                 sequences=[iv],
+                                 sequences=[iv_do],
                                  outputs_info=[floatX(np.zeros((n,))),
                                                floatX(np.zeros((n,)))],
+                                 non_sequences=[W, U, V, b, X_do, H_do],
                                  name="LSTM" + str(iv) + a_sfx,
                                  n_steps=m,
                                  go_backwards=igbw)
@@ -669,6 +694,23 @@ class LSTMBaseSenser(BaseSenser):
                                for doc in a_parses.itervalues()
                                for sent in doc[SENTENCES]
                                for w in sent[WORDS])
+
+    def _init_dropout(self, a_input):
+        """Create a dropout layer.
+
+        Args:
+          a_input (theano.vector): input layer
+
+        Returns:
+          theano.vector: dropout layer
+
+        """
+        # the dropout layer itself
+        output = TT.switch(self.use_dropout,
+                           a_input * (TRNG.binomial(a_input.shape, p=0.5, n=1,
+                                                    dtype=a_input.dtype)),
+                           a_input * 0.5)
+        return output
 
     def _init_funcs(self, a_grads=None):
         """Compile theano functions.

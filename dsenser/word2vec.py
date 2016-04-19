@@ -14,14 +14,16 @@ WEMB (class):
 from __future__ import absolute_import, print_function
 
 from dsenser.resources import W2V
+from dsenser.utils import singleton
 
 import numpy as np
 
 
 ##################################################################
 # Class
-class WEMB(object):
-    """Class for fast retrieval and adjustment of word embeddings.
+@singleton
+class Word2Vec(object):
+    """Class for cached retrieval of word embeddings.
 
     """
 
@@ -30,12 +32,13 @@ class WEMB(object):
 
         Args:
         a_w2v (gensim.Word2Vec):
-        dictionary with the original word embeddings
+        dictionary with original word embeddings
 
         """
         self._w2v = a_w2v
+        self._w2v.load()
         self._cache = {}
-        self.ndim = self._w2v.vector_size
+        self.ndim = self._w2v.resource.vector_size
         self.default = np.ones(self.ndim)
 
     def __contains__(self, a_word):
@@ -73,3 +76,29 @@ class WEMB(object):
             emb = self._cache[a_word] = self._w2v[a_word]
             return emb
         raise KeyError
+
+    def load(self):
+        """Load the word2vec resource.
+
+        Args:
+        (void):
+
+        Returns:
+        (void):
+        load the resource in place
+
+        """
+        self._w2v.load()
+
+    def unload(self):
+        """Unload the word2vec resource.
+
+        Args:
+        (void):
+
+        Returns:
+        (void):
+        load the resource in place
+
+        """
+        self._w2v.unload()

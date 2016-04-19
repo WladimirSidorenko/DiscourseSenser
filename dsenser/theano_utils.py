@@ -89,13 +89,15 @@ def rmsprop(tparams, grads, x, y, cost):
     f_update = theano.function([], [], updates=updir_new + param_up,
                                on_unused_input='ignore',
                                name='rmsprop_f_update')
-    return (f_grad_shared, f_update)
+    params = [zipped_grads, running_grads, running_grads2, updir]
+    return (f_grad_shared, f_update, params)
 
 
 ##################################################################
 # Variables and Constants
-MAX_ITERS = 200  # 450
+MAX_ITERS = 2  # 00  # 450
 CONV_EPS = 1e-5
+DFLT_VDIM = 100
 
 _HE_NORMAL = HeNormal()
 HE_NORMAL = lambda x: floatX(_HE_NORMAL.sample(x))

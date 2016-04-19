@@ -21,7 +21,20 @@ import sys
 
 
 ##################################################################
-# Class
+# decorators
+def singleton(cls):
+    """Make `cls` instance unique across all calls.
+
+    Args:
+    cls (class):
+    class to be decorated
+
+    """
+    instance = cls()
+    instance.__call__ = lambda: instance
+    return instance
+
+
 class timeit(object):
     """Decorator class for measuring time performance.
 

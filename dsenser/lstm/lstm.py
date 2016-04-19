@@ -33,12 +33,16 @@ class LSTMSenser(BaseSenser):
 
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """Class constructor.
 
         Args:
+        args (list):
+        list of arguments
+        kwargs (dict):
+        list of keyword arguments
 
         """
-        self.explicit = LSTMExplicitSenser()
-        self.implicit = LSTMImplicitSenser()
+        self.explicit = LSTMExplicitSenser(*args, **kwargs)
+        self.implicit = LSTMImplicitSenser(*args, **kwargs)
         self.n_y = -1

@@ -303,6 +303,21 @@ class LoadOnDemand(object):
             self.resource = self.cmd(*self.args, **self.kwargs)
         return self.resource
 
+    def unload(self):
+        """Unload the resource.
+
+        Args:
+        (void):
+
+        Returns:
+        (void):
+        load the resource
+
+        """
+        del self.resource
+        self.resource = None
+
+
 ##################################################################
 # Resources
 LCSI = load_LCSI(DFLT_LCSI_PATH)

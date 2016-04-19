@@ -17,8 +17,9 @@ from dsenser.base import BaseSenser
 from dsenser.constants import ARG1, ARG2, CONNECTIVE, DOC_ID, \
     RAW_TEXT, SENTENCES, SENSE, TOK_IDX, WORDS
 from dsenser.resources import CHM, W2V
-from dsenser.theano_utils import floatX, rmsprop, theano, \
-    CONV_EPS, HE_UNIFORM, MAX_ITERS, ORTHOGONAL, TT, TRNG
+from dsenser.theano_utils import config, floatX, rmsprop, theano, \
+    CONV_EPS, HE_UNIFORM, MAX_ITERS, ORTHOGONAL, TT, TRNG, DFLT_VDIM
+from dsenser.word2vec import Word2Vec
 
 from collections import defaultdict, Counter
 from datetime import datetime
@@ -81,14 +82,31 @@ class LSTMBaseSenser(BaseSenser):
 
     """
 
-    def __init__(self):
+    def __init__(self, a_w2v=False, a_lst_sq=False):
         """Class constructor.
 
         Args:
+        a_w2v (bool):
+          use pre-trained word2vec instance
+        a_lst_sq (bool):
+          pre-train task-specific word embeddings, but use least-square method
+          to generate embeddings for unknown words from generic word2vec
+          vectors
 
         """
         # access to the original word2vec resource
-        self.ndim = 100
+        if a_w2v:
+            self.w2v = Word2Vec
+        else:
+            self.w2v = None
+        self.lst_sq = a_lst_sq
+        self._plain_w2v = self.w2v and not self.lst_sq
+        self._trained = False
+        # initialize theano functions to None
+        self._reset_funcs()
+        # set up functions for obtaining word embeddings at train and test
+        # times
+        self._init_wemb_funcs()
         self.lstm_dim = -1
         # mapping from word to its embedding index
         self.unk_w_i = 0
@@ -103,8 +121,6 @@ class LSTMBaseSenser(BaseSenser):
         self._w_stat = None
         self.W_EMB = self.CONN_EMB = self._cost = None
         self.use_dropout = theano.shared(floatX(0.))
-        # initialize theano functions to None
-        self._reset_funcs()
 
     def train(self, a_train_data, a_dev_data=None, a_n_y=-1,
               a_i=-1, a_train_out=None, a_dev_out=None):
@@ -168,26 +184,6 @@ class LSTMBaseSenser(BaseSenser):
             start_time = datetime.utcnow()
             # perform one training iteration
             for (_, (emb1, emb2, conn)), y in zip(x_train, y_train):
-                # print("x =", repr(x), file=sys.stderr)
-                # print("y =", repr(y), file=sys.stderr)
-                # F_OUT_ARG1, F_OUT_ARG2, F_OUT_ARG1_REV, \
-                #     F_OUT_ARG2_REV, F_ARG1, F_ARG2, EMB_CONN = \
-                #     self._debug_nn(emb1, emb2, conn)
-                # print("F_OUT_ARG1 =", repr(F_OUT_ARG1),
-                # repr(F_OUT_ARG1.shape), file=sys.stderr)
-                # print("F_OUT_ARG1_REV =", repr(F_OUT_ARG1_REV),
-                # repr(F_OUT_ARG1_REV.shape), file=sys.stderr)
-                # print("F_ARG1 =", repr(F_ARG1), repr(F_ARG1.shape),
-                #       file=sys.stderr)
-                # print("F_OUT_ARG2 =", repr(F_OUT_ARG2),
-                # repr(F_OUT_ARG2.shape), file=sys.stderr)
-                # print("F_OUT_ARG2_REV =", repr(F_OUT_ARG2_REV),
-                # repr(F_OUT_ARG2_REV.shape), file=sys.stderr)
-                # print("F_ARG2 =", repr(F_ARG2), repr(F_ARG2.shape),
-                #       file=sys.stderr)
-                # print("EMB_CONN =", repr(EMB_CONN), repr(EMB_CONN.shape),
-                #       file=sys.stderr)
-                # sys.exit(66)
                 train_cost += self._grad_shared(emb1, emb2, conn, y)
                 self._update()
             # estimate the model on the dev set
@@ -228,6 +224,11 @@ class LSTMBaseSenser(BaseSenser):
                     self._predict(x_i, a_train_out[i], a_i)
         # reset function members to allow cPickle store this model
         self._reset_funcs()
+        self._cleanup(self._rms_params)
+        if self.w2v is not None:
+            self.w2v.unload()
+            self.w2v = None
+        self._trained = True
 
     def predict(self, a_rel, a_data, a_ret, a_i):
         """Method for predicting sense of single relation.
@@ -248,8 +249,12 @@ class LSTMBaseSenser(BaseSenser):
 
         """
         parses = a_data[-1]
+        # do not change this order as `_init_wemb_funcs()` might override
+        # `_init_funcs()`
         if self._predict_func is None:
             self._init_funcs()
+        if self.get_test_w_emb_i is None:
+            self._init_wemb_funcs()
         input_args = self._rel2x(a_rel, parses,
                                  self.get_test_w_emb_i,
                                  self.get_test_c_emb_i)
@@ -360,7 +365,6 @@ class LSTMBaseSenser(BaseSenser):
         """
         # print("rel2x: a_rel =", repr(a_rel))
         emb1 = self._arg2emb_idx(a_parses, a_rel, ARG1, a_get_w_emb_i)
-        # print("emb_1 =", repr(emb1))
         emb2 = self._arg2emb_idx(a_parses, a_rel, ARG2, a_get_w_emb_i)
         # print("emb_2 =", repr(emb2))
         conn_toks = a_rel[CONNECTIVE][RAW_TEXT]
@@ -390,9 +394,11 @@ class LSTMBaseSenser(BaseSenser):
         toks = [t[0] for t in
                 self._get_toks_pos(a_parses[a_rel[DOC_ID]][SENTENCES],
                                    a_rel, a_arg)]
+        if a_get_emb_i == self._get_test_w2v_emb_i:
+            return np.asarray([a_get_emb_i(t) for t in toks])
         return np.asarray([a_get_emb_i(t) for t in toks], dtype="int32")
 
-    def get_train_w_emb_i(self, a_word):
+    def _get_train_w_emb_i(self, a_word):
         """Obtain embedding index for the given word.
 
         Args:
@@ -401,7 +407,7 @@ class LSTMBaseSenser(BaseSenser):
 
         Returns:
         (int):
-        embedding index od the given connective
+          embedding index od the given word
 
         """
         a_word = _norm_word(a_word)
@@ -414,12 +420,83 @@ class LSTMBaseSenser(BaseSenser):
             i = self.w2emb_i[a_word] = self.w_i
             self.w_i += 1
             return i
-        # elif a_word in self.w2v:
-        #     i = self.w2emb_i[a_word] = self.w_i
-        #     self.w_i += 1
-        #     return i
-        # else:
-        #     return self.unk_w_i
+
+    def _get_test_w_emb_i(self, a_word):
+        """Obtain embedding index for the given word.
+
+        Args:
+        a_word (str):
+          word whose embedding index should be retrieved
+
+        Returns:
+        (int):
+          embedding index od the given word
+
+        """
+        a_word = _norm_word(a_word)
+        return self.w2emb_i.get(a_word, self.unk_w_i)
+
+    def _get_train_w2v_emb_i(self, a_word):
+        """Obtain embedding index for the given word.
+
+        Args:
+        a_word (str):
+          word whose embedding index should be retrieved
+
+        Returns:
+        (int):
+          embedding index of the given word
+
+        """
+        a_word = _norm_word(a_word)
+        if a_word in self.w2emb_i:
+            return self.w2emb_i[a_word]
+        elif a_word in self.w2v:
+            i = self.w2emb_i[a_word] = self.w_i
+            self.w_i += 1
+            return i
+        else:
+            return self.unk_w_i
+
+    def _get_test_w2v_emb_i(self, a_word):
+        """Obtain embedding index for the given word.
+
+        Args:
+        a_word (str):
+        word whose embedding index should be retrieved
+
+        Returns:
+        (np.array):
+          embedding of the input word
+
+        """
+        a_word = _norm_word(a_word)
+        emb_i = self.w2emb_i.get(a_word)
+        if emb_i is None:
+            if a_word in self.w2v:
+                return floatX(self.w2v[a_word])
+            return self.W_EMB[self.unk_w_i]
+        return self.W_EMB[emb_i]
+
+    def _get_test_w2v_lst_sq_emb_i(self, a_word):
+        """Obtain embedding index for the given word.
+
+        Args:
+        a_word (str):
+        word whose embedding index should be retrieved
+
+        Returns:
+        (np.array):
+          embedding of the input word
+
+        """
+        a_word = _norm_word(a_word)
+        emb_i = self.w2emb_i.get(a_word)
+        if emb_i is None:
+            if a_word in self.w2v:
+                return self.w2v[a_word]
+            return self.W_EMB[self.unk_w_i]
+        return self.W_EMB[emb_i]
 
     def get_train_c_emb_i(self, a_conn):
         """Obtain embedding index for the given connective.
@@ -441,23 +518,6 @@ class LSTMBaseSenser(BaseSenser):
             self.c_i += 1
             ret = i
         return np.asarray(ret, dtype="int32")
-
-    def get_test_w_emb_i(self, a_word):
-        """Obtain embedding index for the given word.
-
-        Args:
-        a_word (str):
-        word whose embedding index should be retrieved
-
-        Returns:
-        (int):
-        embedding index od the given connective
-
-        """
-        a_word = _norm_word(a_word)
-        if a_word in self.w2emb_i:
-            return self.w2emb_i[a_word]
-        return self.unk_w_i
 
     def get_test_c_emb_i(self, a_conn):
         """Obtain embedding index for the given connective.
@@ -488,15 +548,14 @@ class LSTMBaseSenser(BaseSenser):
         (void)
 
         """
-        self.lstm_dim = self.ndim - (self.ndim - self.n_y) / 2
+        self.lstm_dim = max(100, self.ndim - (self.ndim - self.n_y) / 2)
         # indices of word embeddings
         self.W_INDICES_ARG1 = TT.ivector(name="W_INDICES_ARG1")
         self.W_INDICES_ARG2 = TT.ivector(name="W_INDICES_ARG2")
         # connective's index
         self.CONN_INDEX = TT.iscalar(name="CONN_INDEX")
         # initialize the matrix of word embeddings
-        self._init_w_emb()
-        self._params.append(self.W_EMB)
+        self.init_w_emb()
         # word embeddings of the arguments
         self.EMB_ARG1 = self.W_EMB[self.W_INDICES_ARG1]
         self.EMB_ARG2 = self.W_EMB[self.W_INDICES_ARG2]
@@ -511,15 +570,6 @@ class LSTMBaseSenser(BaseSenser):
         self.F_OUT_ARG1, self.F_OUT_ARG2 = outvars
         self.F_ARG1 = TT.mean(self.F_OUT_ARG1, axis=0)
         self.F_ARG2 = TT.mean(self.F_OUT_ARG2, axis=0)
-        # self._debug_nn = theano.function([self.W_INDICES_ARG1,
-        #                                   self.W_INDICES_ARG2,
-        #                                   self.CONN_INDEX],
-        #                                  [self.F_OUT_ARG1, self.F_OUT_ARG2,
-        #                                   self.F_OUT_ARG1_REV,
-        #                                   self.F_OUT_ARG2_REV, self.F_ARG1,
-        #                                   self.F_ARG2, self.EMB_CONN],
-        #                                  name="_debug_nn")
-        # return
         # define final units
         self.I = TT.concatenate((self.F_ARG1, self.F_ARG2,
                                  self.EMB_CONN))
@@ -548,6 +598,24 @@ class LSTMBaseSenser(BaseSenser):
         """
         self.W_EMB = theano.shared(
             value=HE_UNIFORM((self.w_i, self.ndim)), name="W_EMB")
+        self._params.append(self.W_EMB)
+
+    def _init_w2v_emb(self):
+        """Initialize task-specific word embeddings.
+
+        Args:
+        (void)
+
+        Returns:
+        (void)
+
+        """
+        w_emb = np.empty((self.w_i, self.ndim))
+        for w, i in self.w2emb_i.iteritems():
+            if i == self.unk_w_i:
+                continue
+            w_emb[i] = self.w2v[w]
+        self.W_EMB = theano.shared(value=w_emb, name="W_EMB")
 
     def _init_conn_emb(self):
         """Initialize task-specific connective embeddings.
@@ -665,9 +733,8 @@ class LSTMBaseSenser(BaseSenser):
         outvars = []
         for iv, igbw in a_invars:
             m = iv.shape[0]
-            iv_do = self._init_dropout(iv)
             ret, _ = theano.scan(_step,
-                                 sequences=[iv_do],
+                                 sequences=[iv],
                                  outputs_info=[floatX(np.zeros((n,))),
                                                floatX(np.zeros((n,)))],
                                  non_sequences=[W, U, V, b, X_do, H_do],
@@ -725,12 +792,13 @@ class LSTMBaseSenser(BaseSenser):
 
         """
         if a_grads:
-            self._grad_shared, self._update = rmsprop(self._params, a_grads,
-                                                      [self.W_INDICES_ARG1,
-                                                       self.W_INDICES_ARG2,
-                                                       self.CONN_INDEX],
-                                                      self.Y_gold,
-                                                      self._cost)
+            self._grad_shared, self._update, \
+                self._rms_params = rmsprop(self._params, a_grads,
+                                           [self.W_INDICES_ARG1,
+                                            self.W_INDICES_ARG2,
+                                            self.CONN_INDEX],
+                                           self.Y_gold,
+                                           self._cost)
         if self._compute_cost is None:
             self._compute_cost = theano.function([self.W_INDICES_ARG1,
                                                   self.W_INDICES_ARG2,
@@ -744,6 +812,11 @@ class LSTMBaseSenser(BaseSenser):
                                                   self.CONN_INDEX],
                                                  self.Y_pred,
                                                  name="_predict_func")
+            self._predict_func_emb = theano.function([self.EMB_ARG1,
+                                                      self.EMB_ARG2,
+                                                      self.CONN_INDEX],
+                                                     self.Y_pred,
+                                                     name="_predict_func_emb")
         # initialize debug function
         if self._debug_nn is None:
             self._debug_nn = theano.function([self.W_INDICES_ARG1,
@@ -751,6 +824,41 @@ class LSTMBaseSenser(BaseSenser):
                                              [self.F_OUT_ARG1,
                                               self.F_OUT_ARG2],
                                              name="_debug_nn")
+
+    def _init_wemb_funcs(self):
+        """Initialize functions for obtaining word embeddings.
+
+        Args:
+        (void):
+
+        Returns:
+        (void):
+
+        """
+        if self._plain_w2v:
+            if self.w2v is None:
+                self.w2v = Word2Vec
+            self.ndim = self.w2v.ndim
+            self.get_train_w_emb_i = self._get_train_w2v_emb_i
+            if self._trained:
+                self.W_EMB = floatX(self.W_EMB.get_value())
+                self.get_test_w_emb_i = self._get_test_w2v_emb_i
+                self._predict_func = self._predict_func_emb
+            else:
+                self.get_test_w_emb_i = self._get_train_w2v_emb_i
+            self.init_w_emb = self._init_w2v_emb
+        elif self.lst_sq:
+            raise NotImplementedError
+            self.ndim = DFLT_VDIM
+            self.get_train_w_emb_i = self._get_train_w2v_emb_i
+            self.get_test_w_emb_i = self._get_test_w_lst_sq_emb_i
+            self.init_w_emb = self._init_w_emb
+        else:
+            # checked
+            self.ndim = DFLT_VDIM
+            self.get_train_w_emb_i = self._get_train_w_emb_i
+            self.get_test_w_emb_i = self._get_test_w_emb_i
+            self.init_w_emb = self._init_w_emb
 
     def _reset_funcs(self):
         """Set all compiled theano functions to None.
@@ -768,3 +876,6 @@ class LSTMBaseSenser(BaseSenser):
         self._compute_cost = None
         self._predict_func = None
         self._debug_nn = None
+        self.get_train_w_emb_i = None
+        self.get_test_w_emb_i = None
+        self.init_w_emb = None

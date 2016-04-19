@@ -11,7 +11,7 @@ from __future__ import print_function, unicode_literals
 
 from dsenser import DiscourseSenser, \
     DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
-    FFNN, LSTM, MJR, WANG, XGBOOST
+    SVD, LSTM, MJR, WANG, XGBOOST
 
 import argparse
 import codecs
@@ -182,12 +182,16 @@ def main():
     parser_train.add_argument("-d", "--dev", help=
                               "development directory with JSON data",
                               type=str)
+    parser_train.add_argument("--w2v", help="use word2vec embeddings",
+                              action="store_true")
+    parser_train.add_argument("--lst-sq", help="use least squares",
+                              action="store_true")
     parser_train.add_argument("--type", help=("type of the model to train"
-                               "({:d} - feed-forward, {:d} - bi-LSTM, {:d} - majority,"
+                                              "({:d} - SVD, {:d} - LSTM, {:d} - majority,"
                                               " {:d} - Wang, {:d} - XGBOOST), ".format(
-                                                  FFNN, LSTM, MJR, WANG, XGBOOST) +
+                                                  SVD, LSTM, MJR, WANG, XGBOOST) +
                                               "default = {:d}".format(DFLT_MODEL_TYPE)),
-                              type=int, action="append", choices=(FFNN, LSTM, MJR,
+                              type=int, action="append", choices=(SVD, LSTM, MJR,
                                                                   WANG, XGBOOST))
     _add_cmn_options(parser_train)
     parser_train.add_argument("input_dir", help="directories containing input data",
@@ -225,7 +229,8 @@ def main():
             mtype |= itype
         # initialize and train the model
         dsenser =  DiscourseSenser(None)
-        dsenser.train(train_set, mtype, args.model, dev_set)
+        dsenser.train(train_set, mtype, args.model, dev_set,
+                      a_w2v=args.w2v, a_lst_sq=args.lst_sq)
     else:
         if not os.path.exists(args.output_dir):
             os.makedirs(args.output_dir)

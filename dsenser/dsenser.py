@@ -14,7 +14,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from dsenser.constants import ARG1, ARG2, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
     SENSE, TOK_LIST, TOK_OFFS_IDX, TYPE, DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
-    DFLT_ECONN_PATH, ALT_LEX, EXPLICIT, IMPLICIT, FFNN, LSTM, MJR, WANG, \
+    DFLT_ECONN_PATH, ALT_LEX, EXPLICIT, IMPLICIT, SVD, LSTM, MJR, WANG, \
     XGBOOST
 from dsenser.utils import timeit
 
@@ -75,7 +75,8 @@ class DiscourseSenser(object):
             self._load(a_model)
 
     def train(self, a_train_data, a_type=DFLT_MODEL_TYPE,
-              a_path=DFLT_MODEL_PATH, a_dev_data=None):
+              a_path=DFLT_MODEL_PATH, a_dev_data=None,
+              a_w2v=False, a_lst_sq=False):
         """Train specified model(s) on the provided data.
 
         Args:
@@ -87,6 +88,10 @@ class DiscourseSenser(object):
           type of the model to be trained
         a_dev_data (list or None):
           development set
+        a_w2v (bool):
+          use word2vec embeddings
+        a_lst_sq (bool):
+          use least squares method
 
         Returns:
           (void)
@@ -97,9 +102,12 @@ class DiscourseSenser(object):
         if a_dev_data is None:
             a_dev_data = ([], {})
         # initialize
+        # if a_type & SVD:
+        #     from dsenser.svd import SVD
+        #     self.models.append(SVD(a_w2v, a_lst_sq))
         if a_type & LSTM:
             from dsenser.lstm import LSTMSenser
-            self.models.append(LSTMSenser())
+            self.models.append(LSTMSenser(a_w2v, a_lst_sq))
         if a_type & MJR:
             from dsenser.major import MajorSenser
             self.models.append(MajorSenser())

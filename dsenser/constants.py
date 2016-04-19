@@ -30,7 +30,7 @@ DFLT_LCSI_PATH = os.path.join(DATA_DIR, "LCSInfomerge.txt")
 DFLT_MPQA_PATH = os.path.join(DATA_DIR, "MPQA_Subjectivity_Lexicon.txt")
 DFLT_W2V_PATH = os.path.join(DATA_DIR, "GoogleNews-vectors-negative300.bin")
 
-FFNN = 1
+SVD = 1
 LSTM = 2
 MJR = 4
 WANG = 8

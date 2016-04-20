@@ -184,7 +184,7 @@ def main():
                               type=str)
     parser_train.add_argument("--w2v", help="use word2vec embeddings",
                               action="store_true")
-    parser_train.add_argument("--lst-sq", help="use least squares",
+    parser_train.add_argument("--lstsq", help="use least squares method",
                               action="store_true")
     parser_train.add_argument("--type", help=("type of the model to train"
                                               "({:d} - SVD, {:d} - LSTM, {:d} - majority,"
@@ -230,7 +230,7 @@ def main():
         # initialize and train the model
         dsenser =  DiscourseSenser(None)
         dsenser.train(train_set, mtype, args.model, dev_set,
-                      a_w2v=args.w2v, a_lst_sq=args.lst_sq)
+                      a_w2v=args.w2v, a_lstsq=args.lstsq)
     else:
         if not os.path.exists(args.output_dir):
             os.makedirs(args.output_dir)

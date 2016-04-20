@@ -82,26 +82,31 @@ class LSTMBaseSenser(BaseSenser):
 
     """
 
-    def __init__(self, a_w2v=False, a_lst_sq=False):
+    def __init__(self, a_w2v=False, a_lstsq=False):
         """Class constructor.
 
         Args:
         a_w2v (bool):
           use pre-trained word2vec instance
-        a_lst_sq (bool):
+        a_lstsq (bool):
           pre-train task-specific word embeddings, but use least-square method
           to generate embeddings for unknown words from generic word2vec
           vectors
 
         """
         # access to the original word2vec resource
+        if a_lstsq:
+            a_w2v = True
         if a_w2v:
-            self.w2v = Word2Vec
+            self.w2v = Word2Vec  # singleton object
         else:
             self.w2v = None
-        self.lst_sq = a_lst_sq
-        self._plain_w2v = self.w2v and not self.lst_sq
+        self.lstsq = a_lstsq
+        self._plain_w2v = self.w2v and not self.lstsq
         self._trained = False
+        self.ndim = -1    # vector dimensionality will be initialized later
+        # matrix mapping word2vec to task-specific embeddings
+        self.w2emb = None
         # initialize theano functions to None
         self._reset_funcs()
         # set up functions for obtaining word embeddings at train and test
@@ -110,6 +115,7 @@ class LSTMBaseSenser(BaseSenser):
         self.lstm_dim = -1
         # mapping from word to its embedding index
         self.unk_w_i = 0
+        self._aux_keys = set((0, ))
         self.w_i = 1
         self.w2emb_i = dict()
         # mapping from connective to its embedding index
@@ -225,6 +231,11 @@ class LSTMBaseSenser(BaseSenser):
         # reset function members to allow cPickle store this model
         self._reset_funcs()
         self._cleanup(self._rms_params)
+        if self.w2v:
+            self.W_EMB = floatX(self.W_EMB.get_value())
+        if self.lstsq:
+            self.w2v.load()
+            self._init_w2emb()
         if self.w2v is not None:
             self.w2v.unload()
             self.w2v = None
@@ -394,7 +405,8 @@ class LSTMBaseSenser(BaseSenser):
         toks = [t[0] for t in
                 self._get_toks_pos(a_parses[a_rel[DOC_ID]][SENTENCES],
                                    a_rel, a_arg)]
-        if a_get_emb_i == self._get_test_w2v_emb_i:
+        if a_get_emb_i == self._get_test_w2v_emb_i or \
+           a_get_emb_i == self._get_test_w2v_lstsq_emb_i:
             return np.asarray([a_get_emb_i(t) for t in toks])
         return np.asarray([a_get_emb_i(t) for t in toks], dtype="int32")
 
@@ -458,6 +470,36 @@ class LSTMBaseSenser(BaseSenser):
         else:
             return self.unk_w_i
 
+    def _init_w2emb(self):
+        """Compute a mapping from Word2Vec to embeddings.
+
+        Args:
+        (void)
+
+        Returns:
+        (void):
+        modifies instance variable in place
+
+        """
+        # construct two matrices - one with the original word2vec
+        # representations and another one with task-specific embeddings
+        m = len(self.w2emb_i)
+        n = self.ndim
+        j = len(self._aux_keys)
+        w2v_emb = np.empty((m, self.w2v.ndim))
+        task_emb = np.empty((m, n))
+        k = 0
+        for w, i in self.w2emb_i.iteritems():
+            k = i - j
+            w2v_emb[k] = self.w2v[w]
+            task_emb[k] = self.W_EMB[i]
+        print("Computing task-specific transform matrix...", end="",
+              file=sys.stderr)
+        self.w2emb, res, rank, _ = np.linalg.lstsq(w2v_emb,
+                                                   task_emb)
+        print(" done (residuals: {:f}, w2v rank: {:d})".format(sum(res), rank),
+              file=sys.stderr)
+
     def _get_test_w2v_emb_i(self, a_word):
         """Obtain embedding index for the given word.
 
@@ -478,7 +520,7 @@ class LSTMBaseSenser(BaseSenser):
             return self.W_EMB[self.unk_w_i]
         return self.W_EMB[emb_i]
 
-    def _get_test_w2v_lst_sq_emb_i(self, a_word):
+    def _get_test_w2v_lstsq_emb_i(self, a_word):
         """Obtain embedding index for the given word.
 
         Args:
@@ -494,7 +536,7 @@ class LSTMBaseSenser(BaseSenser):
         emb_i = self.w2emb_i.get(a_word)
         if emb_i is None:
             if a_word in self.w2v:
-                return self.w2v[a_word]
+                return floatX(np.dot(self.w2v[a_word], self.w2emb))
             return self.W_EMB[self.unk_w_i]
         return self.W_EMB[emb_i]
 
@@ -838,21 +880,27 @@ class LSTMBaseSenser(BaseSenser):
         if self._plain_w2v:
             if self.w2v is None:
                 self.w2v = Word2Vec
+            self.w2v.load()
             self.ndim = self.w2v.ndim
             self.get_train_w_emb_i = self._get_train_w2v_emb_i
+            self.init_w_emb = self._init_w2v_emb
             if self._trained:
-                self.W_EMB = floatX(self.W_EMB.get_value())
                 self.get_test_w_emb_i = self._get_test_w2v_emb_i
                 self._predict_func = self._predict_func_emb
             else:
                 self.get_test_w_emb_i = self._get_train_w2v_emb_i
-            self.init_w_emb = self._init_w2v_emb
-        elif self.lst_sq:
-            raise NotImplementedError
+        elif self.lstsq:
             self.ndim = DFLT_VDIM
             self.get_train_w_emb_i = self._get_train_w2v_emb_i
-            self.get_test_w_emb_i = self._get_test_w_lst_sq_emb_i
             self.init_w_emb = self._init_w_emb
+            if self._trained:
+                if self.w2v is None:
+                    self.w2v = Word2Vec
+                    self.w2v.load()
+                self.get_test_w_emb_i = self._get_test_w2v_lstsq_emb_i
+                self._predict_func = self._predict_func_emb
+            else:
+                self.get_test_w_emb_i = self._get_train_w2v_emb_i
         else:
             # checked
             self.ndim = DFLT_VDIM

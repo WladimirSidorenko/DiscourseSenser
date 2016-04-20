@@ -76,7 +76,7 @@ class DiscourseSenser(object):
 
     def train(self, a_train_data, a_type=DFLT_MODEL_TYPE,
               a_path=DFLT_MODEL_PATH, a_dev_data=None,
-              a_w2v=False, a_lst_sq=False):
+              a_w2v=False, a_lstsq=False):
         """Train specified model(s) on the provided data.
 
         Args:
@@ -90,7 +90,7 @@ class DiscourseSenser(object):
           development set
         a_w2v (bool):
           use word2vec embeddings
-        a_lst_sq (bool):
+        a_lstsq (bool):
           use least squares method
 
         Returns:
@@ -104,10 +104,10 @@ class DiscourseSenser(object):
         # initialize
         # if a_type & SVD:
         #     from dsenser.svd import SVD
-        #     self.models.append(SVD(a_w2v, a_lst_sq))
+        #     self.models.append(SVD(a_w2v, a_lstsq))
         if a_type & LSTM:
             from dsenser.lstm import LSTMSenser
-            self.models.append(LSTMSenser(a_w2v, a_lst_sq))
+            self.models.append(LSTMSenser(a_w2v, a_lstsq))
         if a_type & MJR:
             from dsenser.major import MajorSenser
             self.models.append(MajorSenser())

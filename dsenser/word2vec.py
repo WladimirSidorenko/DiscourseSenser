@@ -36,10 +36,8 @@ class Word2Vec(object):
 
         """
         self._w2v = a_w2v
-        self._w2v.load()
         self._cache = {}
-        self.ndim = self._w2v.resource.vector_size
-        self.default = np.ones(self.ndim)
+        self.ndim = -1
 
     def __contains__(self, a_word):
         """Proxy method for looking up a word in the resource.
@@ -89,6 +87,7 @@ class Word2Vec(object):
 
         """
         self._w2v.load()
+        self.ndim = self._w2v.resource.vector_size
 
     def unload(self):
         """Unload the word2vec resource.

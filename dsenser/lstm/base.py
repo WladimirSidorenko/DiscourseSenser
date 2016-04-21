@@ -16,12 +16,12 @@ from __future__ import absolute_import, print_function
 from dsenser.base import BaseSenser
 from dsenser.constants import ARG1, ARG2, CONNECTIVE, DOC_ID, \
     RAW_TEXT, SENTENCES, SENSE, TOK_IDX, WORDS
-from dsenser.resources import CHM, W2V
+from dsenser.resources import CHM
 from dsenser.theano_utils import config, floatX, rmsprop, theano, \
     CONV_EPS, HE_UNIFORM, MAX_ITERS, ORTHOGONAL, TT, TRNG, DFLT_VDIM
 from dsenser.word2vec import Word2Vec
 
-from collections import defaultdict, Counter
+from collections import Counter
 from datetime import datetime
 import numpy as np
 import re
@@ -768,6 +768,7 @@ class LSTMBaseSenser(BaseSenser):
             f = TT.nnet.sigmoid(_slice(xhb, 1, lstm_dim))
             # c \in R^{1 x 59}
             c = TT.tanh(_slice(xhb, 2, lstm_dim))
+            c = i * c + f * c_
             # V \in R^{59 x 59}
             # o \in R^{1 x 59}
             o = TT.nnet.sigmoid(_slice(xhb, 3, lstm_dim) +

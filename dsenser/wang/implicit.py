@@ -27,8 +27,6 @@ from collections import Counter, defaultdict
 from nltk import Tree
 from nltk.grammar import is_nonterminal
 from sklearn.feature_extraction import DictVectorizer
-# from sklearn.feature_selection import SelectKBest, chi2
-# from sklearn.feature_selection import VarianceThreshold
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 import re
@@ -75,9 +73,6 @@ class WangImplicitSenser(WangBaseSenser):
         classifier = a_clf or LinearSVC(C=DFLT_C, dual=False,
                                         multi_class="crammer_singer")
         self._model = Pipeline([('vectorizer', DictVectorizer()),
-                                # ('var_filter', SelectKBest(chi2,
-                                #                            k=1500)),
-                                # ('var_filter', VarianceThreshold()),
                                 ('classifier', classifier)])
 
     @timeit("Training implicit Wang classifier...")
@@ -108,7 +103,7 @@ class WangImplicitSenser(WangBaseSenser):
         self._get_first_last_toks(feats, toks_pos1, toks_pos2)
         self._get_modality(feats, toks_pos1, toks_pos2)
         self._get_vb_class(feats, toks_pos1, toks_pos2)
-        # self._get_brown_clusters(feats, toks_pos1, toks_pos2)
+        self._get_brown_clusters(feats, toks_pos1, toks_pos2)
         self._get_inquirer(feats, toks_pos1, toks_pos2)
         self._get_MPQA(feats, toks_pos1, toks_pos2)
         return feats

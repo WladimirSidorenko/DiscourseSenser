@@ -1,4 +1,4 @@
-#!/usr//bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
 """Module providing class for Wang sense disambiguation.
@@ -23,7 +23,6 @@ from dsenser.utils import timeit
 from collections import defaultdict
 from nltk import Tree
 from sklearn.feature_extraction import DictVectorizer
-# from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
@@ -70,8 +69,6 @@ class WangExplicitSenser(WangBaseSenser):
         classifier = a_clf or LinearSVC(C=DFLT_C, dual=False,
                                         multi_class="crammer_singer")
         self._model = Pipeline([('vectorizer', DictVectorizer()),
-                                # ('var_filter', SelectKBest(chi2,
-                                #                            k=1500)),
                                 ('classifier', classifier)])
 
     @timeit("Training explicit Wang classifier...")

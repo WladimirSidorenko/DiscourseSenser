@@ -1,7 +1,7 @@
 #!/usr//bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
-"""Module providing abstract interface class for Wang sense calssification.
+"""Module providing abstract interface class for Wang sense classification.
 
 Attributes:
 WangBaseSenser (class):
@@ -31,6 +31,7 @@ class WangBaseSenser(BaseSenser):
     Methods:
 
     """
+    __metaclass__ = abc.ABCMeta
 
     def train(self, a_train_data, a_dev_data=None, a_n_y=-1,
               a_i=-1, a_train_out=None, a_dev_out=None):

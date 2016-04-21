@@ -690,34 +690,43 @@ class LSTMBaseSenser(BaseSenser):
         """
         lstm_dim = self.lstm_dim
         # initialize transformation matrices and bias term
-        W_dim = (4, lstm_dim, self.ndim)
-        W = ORTHOGONAL(W_dim)
+        W_dim = (lstm_dim, self.ndim)
+        W = np.concatenate([ORTHOGONAL(W_dim), ORTHOGONAL(W_dim),
+                            ORTHOGONAL(W_dim), ORTHOGONAL(W_dim)],
+                           axis=0)
         W = theano.shared(value=W, name="W" + a_sfx)
 
-        U_dim = (4, lstm_dim, lstm_dim)
-        U = ORTHOGONAL(U_dim)
+        U_dim = (lstm_dim, lstm_dim)
+        U = np.concatenate([ORTHOGONAL(U_dim), ORTHOGONAL(U_dim),
+                            ORTHOGONAL(U_dim), ORTHOGONAL(U_dim)],
+                           axis=0)
         U = theano.shared(value=U, name="U" + a_sfx)
 
-        V_dim = (lstm_dim, lstm_dim)
-        V = ORTHOGONAL(V_dim)   # V for vendetta
+        V = ORTHOGONAL(U_dim)   # V for vendetta
         V = theano.shared(value=V, name="V" + a_sfx)
 
-        b_dim = (4, lstm_dim)
-        b = theano.shared(value=ORTHOGONAL(b_dim), name="b" + a_sfx)
-
-        # initialize dropout units
-        x_do = theano.shared(value=floatX(np.ones((4, self.ndim))),
-                             name="X_do")
-        X_do = self._init_dropout(x_do)
-        h_do = theano.shared(value=floatX(np.ones((4, lstm_dim))),
-                             name="H_do")
-        H_do = self._init_dropout(h_do)
+        b_dim = (1, lstm_dim * 4)
+        b = theano.shared(value=HE_UNIFORM(b_dim), name="b" + a_sfx)
 
         params = [W, U, V, b]
 
+        # initialize dropout units
+        w_do = theano.shared(value=floatX(np.ones((4 * lstm_dim,))),
+                             name="w_do")
+        w_do = self._init_dropout(w_do)
+        u_do = theano.shared(value=floatX(np.ones((4 * lstm_dim,))),
+                             name="u_do")
+        u_do = self._init_dropout(u_do)
+
+        # custom function for splitting up matrix parts
+        def _slice(_x, n, dim):
+            if _x.ndim == 3:
+                return _x[:, :, n * dim:(n + 1) * dim]
+            return _x[:, n * dim:(n + 1) * dim]
+
         # define recurrent LSTM unit
         def _step(x_, h_, c_,
-                  W, U, V, b, X_do, H_do):
+                  W, U, V, b, w_do, u_do):
             """Recurrent LSTM unit.
 
             Note:
@@ -733,8 +742,8 @@ class LSTMBaseSenser(BaseSenser):
             U (theano.shared): inner-state transform matrix
             V (theano.shared): output transform matrix
             b (theano.shared): bias vector
-            X_do (theano.shared): dropout mask of the input
-            H_do (theano.shared): dropout mask of the inner state
+            w_do (TT.col): dropout unit for the W matrix
+            u_do (TT.col): dropout unit for the U matrix
 
             Returns:
             (2-tuple(h, c))
@@ -742,28 +751,27 @@ class LSTMBaseSenser(BaseSenser):
 
             """
             # pre-compute common terms:
-            # W \in R^{4 x 236 x 100}
+            # W \in R^{236 x 100}
             # x \in R^{1 x 100}
-            # U \in R^{4 x 236 x 59}
+            # U \in R^{236 x 59}
             # h \in R^{1 x 59}
-            # b \in R^{4 x 59}
-            # X_do \in R^{4 x 100}
-            # H_do \in R^{4 x 59}
+            # b \in R^{1 x 236}
+            # w_do \in R^{236 x 1}
+            # u_do \in R^{236 x 1}
+
             # xhb \in R^{1 x 236}
-            # input gate (i \in R^{1 x 59})
-            i = TT.nnet.sigmoid((TT.dot(W[0], (x_ * X_do[0]).T) +
-                                 TT.dot(U[0], (h_ * H_do[0]).T)).T + b[0])
-            # forget gate (f \in R^{1 x 59})
-            f = TT.nnet.sigmoid((TT.dot(W[1], (x_ * X_do[1]).T) +
-                                 TT.dot(U[1], (h_ * H_do[1]).T)).T + b[1])
-            # current candidate state (c \in R^{1 x 59})
-            c = TT.tanh((TT.dot(W[2], (x_ * X_do[2]).T) +
-                         TT.dot(U[2], (h_ * H_do[2]).T)).T + b[2])
-            c = i * c + f * c_
-            # output state (o \in R^{1 x 59})
-            o = (TT.dot(W[3], (x_ * X_do[3]).T) +
-                 TT.dot(U[3], (h_ * H_do[3]).T)).T + b[3]
-            o = TT.nnet.sigmoid(o + TT.dot(V, c.T).T)
+            xhb = (TT.dot(W * w_do.dimshuffle((0, 'x')), x_.T) +
+                   TT.dot(U * u_do.dimshuffle((0, 'x')), h_.T)).T + b
+            # i \in R^{1 x 59}
+            i = TT.nnet.sigmoid(_slice(xhb, 0, lstm_dim))
+            # f \in R^{1 x 59}
+            f = TT.nnet.sigmoid(_slice(xhb, 1, lstm_dim))
+            # c \in R^{1 x 59}
+            c = TT.tanh(_slice(xhb, 2, lstm_dim))
+            # V \in R^{59 x 59}
+            # o \in R^{1 x 59}
+            o = TT.nnet.sigmoid(_slice(xhb, 3, lstm_dim) +
+                                TT.dot(V, c.T).T)
             # h \in R^{1 x 59}
             h = o * TT.tanh(c)
             # return current output and memory state
@@ -779,7 +787,7 @@ class LSTMBaseSenser(BaseSenser):
                                  sequences=[iv],
                                  outputs_info=[floatX(np.zeros((n,))),
                                                floatX(np.zeros((n,)))],
-                                 non_sequences=[W, U, V, b, X_do, H_do],
+                                 non_sequences=[W, U, V, b, w_do, u_do],
                                  name="LSTM" + str(iv) + a_sfx,
                                  n_steps=m,
                                  go_backwards=igbw)

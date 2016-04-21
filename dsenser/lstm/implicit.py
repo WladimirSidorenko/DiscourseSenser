@@ -13,7 +13,7 @@ LSTMImplicitSenser (class):
 # Imports
 from __future__ import absolute_import, print_function
 
-from dsenser.lstm.base import LSTMBaseSenser
+from dsenser.lstm.lstmbase import LSTMBaseSenser
 from dsenser.utils import timeit
 from dsenser.theano_utils import floatX, rmsprop
 

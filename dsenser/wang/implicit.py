@@ -20,7 +20,7 @@ from dsenser.resources import LCSI, BROWN_CLUSTERS, \
     INQUIRER, MPQA, STEMMED_INQUIRER, PSTEMMER, \
     POL_IDX, INTENS_IDX, NEGATIONS
 from dsenser.utils import timeit
-from dsenser.wang.base import WangBaseSenser
+from dsenser.wang.wangbase import WangBaseSenser
 
 
 from collections import Counter, defaultdict

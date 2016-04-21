@@ -17,7 +17,7 @@ from dsenser.constants import CONNECTIVE, DOC_ID, \
     TOK_LIST, SENTENCES, WORDS, POS, TOK_IDX, SNT_ID, \
     PARSE_TREE
 from dsenser.resources import CONNTOK2CONN, CONNTOKS, conn2str
-from dsenser.wang.base import WangBaseSenser
+from dsenser.wang.wangbase import WangBaseSenser
 from dsenser.utils import timeit
 
 from collections import defaultdict

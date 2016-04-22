@@ -59,7 +59,7 @@ setup(
     install_requires=INSTALL_REQUIRES,
     setup_requires=["pytest-runner"],
     tests_require=TESTS_REQUIRE,
-    scripts=[path.join("scripts", "discourse_senser")],
+    scripts=[path.join("scripts", "pdtb_senser")],
     entry_points={"console_scripts":
                   "pdtb_scorer=dsenser.scorer.scorer:main"},
     classifiers=["Development Status :: 2 - Pre-Alpha",

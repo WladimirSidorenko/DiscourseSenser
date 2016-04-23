@@ -158,7 +158,7 @@ class WangExplicitSenser(WangBaseSenser):
         if conn_ltok != WHEN:
             feats["NotWhen"] = 1
         ##########################
-        # Normalize feaatire names
+        # Normalize feature names
         return {self._escape_feat(k): v for k, v in feats.iteritems()}
 
     def _get_conn_txt(self, a_doc_id, a_rel, a_parses):

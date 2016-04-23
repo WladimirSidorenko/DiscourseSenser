@@ -44,7 +44,7 @@ DSENSER_DATA = [path.join(path.basename(path.basename(iroot)), ifname)
 # setup()
 setup(
     name="dsenser",
-    version="0.0.1",
+    version="0.0.2",
     description=("sense disambiguation for PDTB-style discourse parsing"),
     long_description=LONG_DESCRIPTION,
     author="Wladimir Sidorenko (Uladzimir Sidarenka)",
@@ -52,7 +52,8 @@ setup(
     license="MIT",
     url="https://github.com/WladimirSidorenko/DiscourseSenser",
     include_package_data=True,
-    packages=["dsenser", "dsenser.scorer", "dsenser.wang"],
+    packages=["dsenser", "dsenser.scorer", "dsenser.wang", "dsenser.lstm",
+              "dsenser.svd"],
     package_data={
         "dsenser": DSENSER_DATA
     },

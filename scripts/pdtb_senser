@@ -129,7 +129,7 @@ def _read_raw(a_dir, a_enc=ENCODING):
     return ret
 
 
-def _read_dataset(a_dir, a_train=False):
+def _read_dataset(a_dir, a_train=False, a_rel_file=None):
     """Read data from directory.
 
     Args:
@@ -137,15 +137,21 @@ def _read_dataset(a_dir, a_train=False):
       path to directory containing input data
     a_train (bool):
       flag indicating whether the dataset is used for training
+    a_rel_file (None or str):
+      relation file or None (if located in the input directory as
+      relations-no-senses.json)
 
     Returns:
-    2-tuple(dict, dict): training rel set and parses
+    2-tuple(dict, dict):
+      training rel set and parses
 
     """
     if not a_dir:
         return None
     # read relations
-    if a_train:
+    if a_rel_file is not None:
+        rels = _read_json(a_dir, a_rel_file)
+    elif a_train:
         rels = _read_json(a_dir, GOLD_FNAME)
     else:
         rels = _read_json(a_dir, ARGS_FNAME)
@@ -201,6 +207,8 @@ def main():
     parser_test = subparsers.add_parser(M_TEST, help="""determine senses
     using pre-trained models""")
     _add_cmn_options(parser_test)
+    parser_test.add_argument("--rel-file", help="file containing input relations "
+                             "without senses (if different from default)", type=str)
     parser_test.add_argument("input_dir", help="directories containing input data",
                               type=str)
     parser_test.add_argument("output_dir", help=
@@ -240,7 +248,8 @@ def main():
                     args.output_dir))
         # read test data
         dsenser =  DiscourseSenser(args.model)
-        test_set = _read_dataset(args.input_dir)
+        test_set = _read_dataset(args.input_dir,
+                                 a_rel_file=args.rel_file)
         dsenser.predict(test_set)
         # write results to file
         ofname = os.path.join(args.output_dir, OUT_FNAME)

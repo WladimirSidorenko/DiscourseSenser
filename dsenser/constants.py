@@ -51,6 +51,7 @@ POS = "PartOfSpeech"
 RAW_TEXT = "RawText"
 SENSE = "Sense"
 SENTENCES = "sentences"
+SSNT_ID = "SentenceId"
 TOK_IDX = 0
 TOK_LIST = "TokenList"
 TOK_OFFS_IDX = 2

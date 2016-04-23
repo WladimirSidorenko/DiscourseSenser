@@ -57,6 +57,8 @@ TOK_LIST = "TokenList"
 TOK_OFFS_IDX = 2
 TYPE = "Type"
 WORDS = "words"
+COB = "CharacterOffsetBegin"
+COE = "CharacterOffsetEnd"
 
 SNT_ID = 3
 TOK_ID = 4

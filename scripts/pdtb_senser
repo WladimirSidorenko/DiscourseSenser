@@ -12,6 +12,8 @@ from __future__ import print_function, unicode_literals
 from dsenser import DiscourseSenser, \
     DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
     SVD, LSTM, MJR, WANG, XGBOOST
+from dsenser.constants import ARG1, ARG2, COB, COE, \
+    CONNECTIVE, DOC_ID, SENTENCES, TOK_LIST, WORDS
 
 import argparse
 import codecs
@@ -128,8 +130,78 @@ def _read_raw(a_dir, a_enc=ENCODING):
         print("done", file=sys.stderr)
     return ret
 
+def _get_tok_pos(a_parses):
+    """Convert document token indices to 4-tuples.
 
-def _read_dataset(a_dir, a_train=False, a_rel_file=None):
+    Args:
+    a_parses (dict):
+      sentence parses for discourse relations
+
+    Returns:
+    (dict):
+    map document token index to 4-tuple
+
+    """
+    ret = {}
+    doc_w_i = 0
+    w_attrs = None
+    for doc_id, doc in a_parses.iteritems():
+        doc_w_i = 0
+        sentences = doc[SENTENCES]
+        for s_cnt, isent in enumerate(sentences):
+            for w_cnt, w in enumerate(isent[WORDS]):
+                w_attrs = w[-1]
+                ret[(doc_id, doc_w_i)] = \
+                    (w_attrs[COB], w_attrs[COE], doc_w_i, s_cnt, w_cnt)
+                doc_w_i += 1
+    return ret
+
+def _restore_toks(a_rel, a_key, a_doc_id, a_tok2tpl):
+    """Convert document token indices to 4-tuples.
+
+    Args:
+    a_rel (dict):
+      relation whose token indices should be restored
+    a_key (dict):
+      key of the field whose token indices should be restored
+    a_doc_id (str):
+      id of the document to which given item pertains
+    a_tok2tpl (dict):
+      map document token index to 4-tuple
+
+    Returns:
+    (void):
+      modifies relation in place
+
+    """
+    tlist = a_rel[a_key].get(TOK_LIST)
+    if tlist is not None:
+        a_rel[a_key][TOK_LIST] = [a_tok2tpl[(a_doc_id, t)] for t in tlist]
+
+
+def _restore_rel_fmt(a_rels, a_parses):
+    """Restore token index format from integers to 4-tuples.
+
+    Args:
+    a_rels (list):
+      input relations whose format should be restored
+    a_parses (dict):
+      sentence parses for discourse relations
+
+    Returns:
+    (void)
+
+    """
+    idocid = None
+    tok2tpl = _get_tok_pos(a_parses)
+    for irel in a_rels:
+        idocid = irel.get(DOC_ID)
+        _restore_toks(irel, ARG1, idocid, tok2tpl)
+        _restore_toks(irel, ARG2, idocid, tok2tpl)
+        _restore_toks(irel, CONNECTIVE, idocid, tok2tpl)
+
+
+def _read_dataset(a_dir, a_train=False, a_rel_file=None, a_int_tok=False):
     """Read data from directory.
 
     Args:
@@ -140,6 +212,8 @@ def _read_dataset(a_dir, a_train=False, a_rel_file=None):
     a_rel_file (None or str):
       relation file or None (if located in the input directory as
       relations-no-senses.json)
+    a_int_tok (bool):
+      token indices are specified as integer lists
 
     Returns:
     2-tuple(dict, dict):
@@ -148,6 +222,12 @@ def _read_dataset(a_dir, a_train=False, a_rel_file=None):
     """
     if not a_dir:
         return None
+    # read parses
+    with codecs.open(os.path.join(a_dir, PARSE_FNAME), 'r', ENCODING) as ifile:
+        print("Loading file '{:s}'... ".format(ifile.name), end="",
+              file=sys.stderr)
+        parses = json.load(ifile)
+        print("done", file=sys.stderr)
     # read relations
     if a_rel_file is not None:
         rels = _read_json(a_dir, a_rel_file)
@@ -155,12 +235,9 @@ def _read_dataset(a_dir, a_train=False, a_rel_file=None):
         rels = _read_json(a_dir, GOLD_FNAME)
     else:
         rels = _read_json(a_dir, ARGS_FNAME)
-    # read parses
-    with codecs.open(os.path.join(a_dir, PARSE_FNAME), 'r', ENCODING) as ifile:
-        print("Loading file '{:s}'... ".format(ifile.name), end="",
-              file=sys.stderr)
-        parses = json.load(ifile)
-        print("done", file=sys.stderr)
+    # convert format if necessary
+    if a_int_tok:
+        _restore_rel_fmt(rels, parses)
     return [rels, parses]
 
 
@@ -207,6 +284,8 @@ def main():
     parser_test = subparsers.add_parser(M_TEST, help="""determine senses
     using pre-trained models""")
     _add_cmn_options(parser_test)
+    parser_test.add_argument("--int-tok", help="tokens are specified as lists of integers",
+                             action="store_true")
     parser_test.add_argument("--rel-file", help="file containing input relations "
                              "without senses (if different from default)", type=str)
     parser_test.add_argument("input_dir", help="directories containing input data",
@@ -249,7 +328,8 @@ def main():
         # read test data
         dsenser =  DiscourseSenser(args.model)
         test_set = _read_dataset(args.input_dir,
-                                 a_rel_file=args.rel_file)
+                                 a_rel_file=args.rel_file,
+                                 a_int_tok=args.int_tok)
         dsenser.predict(test_set)
         # write results to file
         ofname = os.path.join(args.output_dir, OUT_FNAME)

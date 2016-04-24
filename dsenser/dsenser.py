@@ -104,8 +104,11 @@ class DiscourseSenser(object):
         # initialize
         if a_type & SVD:
             from dsenser.svd import SVDSenser
-            # since we cannot differentiate SVD yet, we can only use this
-            # option
+            # since we cannot differentiate SVD yet, we can only use word2vec
+            # embeddings
+            if not a_w2v or a_lstsq:
+                print("SVD senser does not support task-specific embeddings "
+                      "and least squares yet", file=sys.stderr)
             self.models.append(SVDSenser(a_w2v=True, a_lstsq=False))
         if a_type & LSTM:
             from dsenser.lstm import LSTMSenser

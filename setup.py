@@ -53,7 +53,7 @@ setup(
     url="https://github.com/WladimirSidorenko/DiscourseSenser",
     include_package_data=True,
     packages=["dsenser", "dsenser.scorer", "dsenser.wang", "dsenser.lstm",
-              "dsenser.svd"],
+              "dsenser.svd", "dsenser.xgboost", "dsenser.judge"],
     package_data={
         "dsenser": DSENSER_DATA
     },

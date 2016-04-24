@@ -102,9 +102,11 @@ class DiscourseSenser(object):
         if a_dev_data is None:
             a_dev_data = ([], {})
         # initialize
-        # if a_type & SVD:
-        #     from dsenser.svd import SVD
-        #     self.models.append(SVD(a_w2v, a_lstsq))
+        if a_type & SVD:
+            from dsenser.svd import SVDSenser
+            # since we cannot differentiate SVD yet, we can only use this
+            # option
+            self.models.append(SVDSenser(a_w2v=True, a_lstsq=False))
         if a_type & LSTM:
             from dsenser.lstm import LSTMSenser
             self.models.append(LSTMSenser(a_w2v, a_lstsq))

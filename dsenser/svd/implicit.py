@@ -1,10 +1,10 @@
-#!/usr//bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
-"""Module providing class for LSTM sense disambiguation.
+"""Module providing class for SVD sense disambiguation.
 
 Attributes:
-LSTMImplicitSenser (class):
+SVDImplicitSenser (class):
   class that predicts senses of implicit relations
 
 """
@@ -13,11 +13,8 @@ LSTMImplicitSenser (class):
 # Imports
 from __future__ import absolute_import, print_function
 
-from dsenser.lstm.lstmbase import LSTMBaseSenser
+from dsenser.svd.svdbase import SVDBaseSenser
 from dsenser.utils import timeit
-from dsenser.theano_utils import floatX, rmsprop
-
-import sys
 
 ##################################################################
 # Variables and Constants
@@ -25,7 +22,7 @@ import sys
 
 ##################################################################
 # Classes
-class LSTMImplicitSenser(LSTMBaseSenser):
+class SVDImplicitSenser(SVDBaseSenser):
     """Class for disambiguating explicit connectives.
 
     Attrs:
@@ -35,6 +32,6 @@ class LSTMImplicitSenser(LSTMBaseSenser):
 
     """
 
-    @timeit("Training implicit LSTM classifier...")
+    @timeit("Training implicit SVD classifier...")
     def train(self, *args, **kwargs):
-        super(LSTMImplicitSenser, self).train(*args, **kwargs)
+        super(SVDImplicitSenser, self).train(*args, **kwargs)

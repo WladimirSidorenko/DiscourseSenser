@@ -44,7 +44,7 @@ class LSTMBaseSenser(NNBaseSenser):
         (void)
 
         """
-        self.lstm_dim = max(100, self.ndim - (self.ndim - self.n_y) / 2)
+        self.intm_dim = max(100, self.ndim - (self.ndim - self.n_y) / 2)
         # indices of word embeddings
         self.W_INDICES_ARG1 = TT.ivector(name="W_INDICES_ARG1")
         self.W_INDICES_ARG2 = TT.ivector(name="W_INDICES_ARG2")
@@ -57,7 +57,6 @@ class LSTMBaseSenser(NNBaseSenser):
         self.EMB_ARG2 = self.W_EMB[self.W_INDICES_ARG2]
         # connective's embedding
         self._init_conn_emb()
-        self._params.append(self.CONN_EMB)
         self.EMB_CONN = self.CONN_EMB[self.CONN_INDEX]
         # initialize forward LSTM unit
         invars = ((self.EMB_ARG1, False), (self.EMB_ARG2, False))
@@ -70,7 +69,7 @@ class LSTMBaseSenser(NNBaseSenser):
         self.I = TT.concatenate((self.F_ARG1, self.F_ARG2,
                                  self.EMB_CONN))
         self.I2Y = theano.shared(value=HE_UNIFORM((self.n_y,
-                                                   self.lstm_dim * 3)),
+                                                   self.intm_dim * 3)),
                                  name="I2Y")
         self.y_bias = theano.shared(value=HE_UNIFORM((1, self.n_y)),
                                     name="y_bias")
@@ -97,15 +96,15 @@ class LSTMBaseSenser(NNBaseSenser):
         function
 
         """
-        lstm_dim = self.lstm_dim
+        intm_dim = self.intm_dim
         # initialize transformation matrices and bias term
-        W_dim = (lstm_dim, self.ndim)
+        W_dim = (intm_dim, self.ndim)
         W = np.concatenate([ORTHOGONAL(W_dim), ORTHOGONAL(W_dim),
                             ORTHOGONAL(W_dim), ORTHOGONAL(W_dim)],
                            axis=0)
         W = theano.shared(value=W, name="W" + a_sfx)
 
-        U_dim = (lstm_dim, lstm_dim)
+        U_dim = (intm_dim, intm_dim)
         U = np.concatenate([ORTHOGONAL(U_dim), ORTHOGONAL(U_dim),
                             ORTHOGONAL(U_dim), ORTHOGONAL(U_dim)],
                            axis=0)
@@ -114,16 +113,16 @@ class LSTMBaseSenser(NNBaseSenser):
         V = ORTHOGONAL(U_dim)   # V for vendetta
         V = theano.shared(value=V, name="V" + a_sfx)
 
-        b_dim = (1, lstm_dim * 4)
+        b_dim = (1, intm_dim * 4)
         b = theano.shared(value=HE_UNIFORM(b_dim), name="b" + a_sfx)
 
         params = [W, U, V, b]
 
         # initialize dropout units
-        w_do = theano.shared(value=floatX(np.ones((4 * lstm_dim,))),
+        w_do = theano.shared(value=floatX(np.ones((4 * intm_dim,))),
                              name="w_do")
         w_do = self._init_dropout(w_do)
-        u_do = theano.shared(value=floatX(np.ones((4 * lstm_dim,))),
+        u_do = theano.shared(value=floatX(np.ones((4 * intm_dim,))),
                              name="u_do")
         u_do = self._init_dropout(u_do)
 
@@ -172,15 +171,15 @@ class LSTMBaseSenser(NNBaseSenser):
             xhb = (TT.dot(W * w_do.dimshuffle((0, 'x')), x_.T) +
                    TT.dot(U * u_do.dimshuffle((0, 'x')), h_.T)).T + b
             # i \in R^{1 x 59}
-            i = TT.nnet.sigmoid(_slice(xhb, 0, lstm_dim))
+            i = TT.nnet.sigmoid(_slice(xhb, 0, intm_dim))
             # f \in R^{1 x 59}
-            f = TT.nnet.sigmoid(_slice(xhb, 1, lstm_dim))
+            f = TT.nnet.sigmoid(_slice(xhb, 1, intm_dim))
             # c \in R^{1 x 59}
-            c = TT.tanh(_slice(xhb, 2, lstm_dim))
+            c = TT.tanh(_slice(xhb, 2, intm_dim))
             c = i * c + f * c_
             # V \in R^{59 x 59}
             # o \in R^{1 x 59}
-            o = TT.nnet.sigmoid(_slice(xhb, 3, lstm_dim) +
+            o = TT.nnet.sigmoid(_slice(xhb, 3, intm_dim) +
                                 TT.dot(V, c.T).T)
             # h \in R^{1 x 59}
             h = o * TT.tanh(c)
@@ -188,7 +187,7 @@ class LSTMBaseSenser(NNBaseSenser):
             return h.flatten(), c.flatten()
 
         m = 0
-        n = lstm_dim
+        n = intm_dim
         ov = None
         outvars = []
         for iv, igbw in a_invars:

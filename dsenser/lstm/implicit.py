@@ -1,4 +1,4 @@
-#!/usr//bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
 """Module providing class for LSTM sense disambiguation.
@@ -15,9 +15,6 @@ from __future__ import absolute_import, print_function
 
 from dsenser.lstm.lstmbase import LSTMBaseSenser
 from dsenser.utils import timeit
-from dsenser.theano_utils import floatX, rmsprop
-
-import sys
 
 ##################################################################
 # Variables and Constants

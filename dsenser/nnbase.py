@@ -109,7 +109,7 @@ class NNBaseSenser(BaseSenser):
         # matrix mapping word2vec to task-specific embeddings
         self.w2emb = None
         self.ndim = -1    # vector dimensionality will be initialized later
-        self.lstm_dim = -1
+        self.intm_dim = -1
         # mapping from word to its embedding index
         self.unk_w_i = 0
         self._aux_keys = set((0, ))
@@ -193,6 +193,11 @@ class NNBaseSenser(BaseSenser):
             start_time = datetime.utcnow()
             # perform one training iteration
             for (_, (emb1, emb2, conn)), y in zip(x_train, y_train):
+                # print("emb1 =", repr(emb1), file=sys.stderr)
+                # print("emb2 =", repr(emb2), file=sys.stderr)
+                # print("self._debug_nn =", repr(self._debug_nn(emb1, emb2)),
+                #       file=sys.stderr)
+                # sys.exit(66)
                 train_cost += self._grad_shared(emb1, emb2, conn, y)
                 self._update()
             # estimate the model on the dev set
@@ -598,8 +603,9 @@ class NNBaseSenser(BaseSenser):
 
         """
         self.CONN_EMB = theano.shared(
-            value=HE_UNIFORM((self.c_i, self.lstm_dim)),
+            value=HE_UNIFORM((self.c_i, self.intm_dim)),
             name="CONN_EMB")
+        self._params.append(self.CONN_EMB)
 
     def get_train_c_emb_i(self, a_conn):
         """Obtain embedding index for the given connective.
@@ -699,9 +705,9 @@ class NNBaseSenser(BaseSenser):
         # initialize debug function
         if self._debug_nn is None:
             self._debug_nn = theano.function([self.W_INDICES_ARG1,
-                                              self.W_INDICES_ARG2],
-                                             [self.F_OUT_ARG1,
-                                              self.F_OUT_ARG2],
+                                              self.W_INDICES_ARG2,
+                                              self.CONN_INDEX],
+                                             [self.Y_pred],
                                              name="_debug_nn")
 
     def _init_wemb_funcs(self):

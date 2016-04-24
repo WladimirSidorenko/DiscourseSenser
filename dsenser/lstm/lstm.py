@@ -4,7 +4,7 @@
 """Module providing class for LSTM sense disambiguation.
 
 Attributes:
-WangSenser (class):
+LSTMSenser (class):
   class for predicting sense probabilities for explicit and implcit relations
 
 """
@@ -16,7 +16,6 @@ from __future__ import absolute_import, print_function
 from dsenser.base import BaseSenser
 from dsenser.lstm.explicit import LSTMExplicitSenser
 from dsenser.lstm.implicit import LSTMImplicitSenser
-from dsenser.utils import is_explicit
 
 
 ##################################################################

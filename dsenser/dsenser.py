@@ -15,7 +15,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from dsenser.constants import ARG1, ARG2, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
     SENSE, TOK_LIST, TOK_OFFS_IDX, TYPE, DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
     DFLT_ECONN_PATH, ALT_LEX, EXPLICIT, IMPLICIT, SVD, LSTM, MJR, WANG, \
-    XGBOOST
+    XGBOOST, PARSE_TREE, DEPS, WORDS, SENTENCES
 from dsenser.utils import timeit
 
 from collections import Iterable
@@ -102,17 +102,6 @@ class DiscourseSenser(object):
         if a_dev_data is None:
             a_dev_data = ([], {})
         # initialize
-        if a_type & SVD:
-            from dsenser.svd import SVDSenser
-            # since we cannot differentiate SVD yet, we can only use word2vec
-            # embeddings
-            if not a_w2v or a_lstsq:
-                print("SVD senser does not support task-specific embeddings "
-                      "and least squares yet", file=sys.stderr)
-            self.models.append(SVDSenser(a_w2v=True, a_lstsq=False))
-        if a_type & LSTM:
-            from dsenser.lstm import LSTMSenser
-            self.models.append(LSTMSenser(a_w2v, a_lstsq))
         if a_type & MJR:
             from dsenser.major import MajorSenser
             self.models.append(MajorSenser())
@@ -122,6 +111,19 @@ class DiscourseSenser(object):
         if a_type & XGBOOST:
             from dsenser.xgboost import XGBoostSenser
             self.models.append(XGBoostSenser())
+        # NN models have to go last, since we are pruning the parses for them
+        # to free some memory
+        if a_type & LSTM:
+            from dsenser.lstm import LSTMSenser
+            self.models.append(LSTMSenser(a_w2v, a_lstsq))
+        if a_type & SVD:
+            from dsenser.svd import SVDSenser
+            # since we cannot differentiate SVD yet, we can only use word2vec
+            # embeddings
+            if not a_w2v or a_lstsq:
+                print("SVD senser does not support task-specific embeddings "
+                      "and least squares yet", file=sys.stderr)
+            self.models.append(SVDSenser(a_w2v=True, a_lstsq=False))
         # convert classes to indices
         self._sense2idx(a_train_data[0])
         # train models and remember their predictions
@@ -129,7 +131,13 @@ class DiscourseSenser(object):
                             len(self.cls2idx)))
         x_dev = np.zeros((len(a_dev_data[0] if a_dev_data else ()),
                           len(self.models), len(self.cls2idx)))
+        pruned = False
         for i, imodel in enumerate(self.models):
+            if (isinstance(imodel, LSTMSenser) or
+                    isinstance(imodel, SVDSenser)) and not pruned:
+                a_train_data = self._prune_data(*a_train_data)
+                a_dev_data = self._prune_data(*a_dev_data)
+                pruned = True
             imodel.train(a_train_data, a_dev_data, len(self.cls2idx),
                          i, x_train, x_dev)
         # convert training and development sets to the appropriate format for
@@ -410,3 +418,38 @@ class DiscourseSenser(object):
         for i, imodel in enumerate(self.models):
             imodel.predict(a_rel, a_data, self.wbench, i)
         return self.wbench
+
+    def _prune_data(self, a_rels, a_parses):
+        """Remove unnecessary information from data.
+
+        Args:
+        a_rels (list):
+          list of input discourse relations
+        a_parses (dict):
+          parse trees
+
+        Returns:
+        2-tuple(list, dict):
+          abridged input data
+
+        """
+        arg = None
+        # clean-up relations
+        for irel in a_rels:
+            irel.pop("ID")
+            irel[CONNECTIVE].pop(CHAR_SPAN)
+            arg = irel[ARG1]
+            arg.pop(CHAR_SPAN)
+            arg.pop(RAW_TEXT)
+            arg = irel[ARG2]
+            arg.pop(CHAR_SPAN)
+            arg.pop(RAW_TEXT)
+        # clean-up parses
+        w_attrs = None
+        for isentences in a_parses.itervalues():
+            for isent in isentences[SENTENCES]:
+                isent.pop(PARSE_TREE)
+                isent.pop(DEPS)
+                for iword in isent[WORDS]:
+                    iword[-1].clear()
+        return (a_rels, a_parses)

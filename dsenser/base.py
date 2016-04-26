@@ -177,7 +177,7 @@ class BaseSenser(object):
             snt = a_parses[s_id][WORDS]
             for w_id in w_ids:
                 wrd = snt[w_id]
-                ret.append((wrd[TOK_IDX].lower(), wrd[1][POS]))
+                ret.append((wrd[TOK_IDX].lower(), wrd[1].get(POS)))
         return ret
 
     def _get_snt2tok(self, a_tok_list):

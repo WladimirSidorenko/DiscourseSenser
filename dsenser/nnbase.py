@@ -459,7 +459,7 @@ class NNBaseSenser(BaseSenser):
         for w, i in self.w2emb_i.iteritems():
             if i == self.unk_w_i:
                 continue
-            w_emb[i] = self.w2v[w]
+            w_emb[i] = floatX(self.w2v[w])
         self.W_EMB = theano.shared(value=w_emb, name="W_EMB")
 
     def _init_w2emb(self):

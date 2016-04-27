@@ -459,8 +459,9 @@ class NNBaseSenser(BaseSenser):
         for w, i in self.w2emb_i.iteritems():
             if i == self.unk_w_i:
                 continue
-            w_emb[i] = floatX(self.w2v[w])
-        self.W_EMB = theano.shared(value=w_emb, name="W_EMB")
+            w_emb[i] = self.w2v[w]
+        self.W_EMB = theano.shared(value=floatX(w_emb),
+                                   name="W_EMB")
 
     def _init_w2emb(self):
         """Compute a mapping from Word2Vec to embeddings.
@@ -478,17 +479,18 @@ class NNBaseSenser(BaseSenser):
         m = len(self.w2emb_i)
         n = self.ndim
         j = len(self._aux_keys)
-        w2v_emb = np.empty((m, self.w2v.ndim))
-        task_emb = np.empty((m, n))
+        w2v_emb = floatX(np.empty((m, self.w2v.ndim)))
+        task_emb = floatX(np.empty((m, n)))
         k = 0
         for w, i in self.w2emb_i.iteritems():
             k = i - j
-            w2v_emb[k] = self.w2v[w]
-            task_emb[k] = self.W_EMB[i]
+            w2v_emb[k] = floatX(self.w2v[w])
+            task_emb[k] = floatX(self.W_EMB[i])
         print("Computing task-specific transform matrix...", end="",
               file=sys.stderr)
         self.w2emb, res, rank, _ = np.linalg.lstsq(w2v_emb,
                                                    task_emb)
+        self.w2emb = floatX(self.w2emb)
         print(" done (residuals: {:f}, w2v rank: {:d})".format(sum(res), rank),
               file=sys.stderr)
 

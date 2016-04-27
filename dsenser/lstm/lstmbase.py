@@ -184,7 +184,7 @@ class LSTMBaseSenser(NNBaseSenser):
             # h \in R^{1 x 59}
             h = o * TT.tanh(c)
             # return current output and memory state
-            return floatX(h.flatten()), floatX(c.flatten())
+            return h.flatten(), c.flatten()
 
         m = 0
         n = intm_dim

@@ -661,7 +661,7 @@ class NNBaseSenser(BaseSenser):
         output = TT.switch(self.use_dropout,
                            a_input * (TRNG.binomial(a_input.shape, p=0.5, n=1,
                                                     dtype=a_input.dtype)),
-                           a_input * 0.5)
+                           a_input * floatX(0.5))
         return output
 
     def _init_funcs(self, a_grads=None):

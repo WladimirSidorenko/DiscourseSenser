@@ -13,24 +13,25 @@ Judge (class):
 # Imports
 from __future__ import absolute_import, print_function
 
-from dsenser.judge.base import BaseJudge
+# from dsenser.judge.base import BaseJudge
 from dsenser.utils import is_explicit, timeit
 
+import numpy as np
 
 ##################################################################
 # Classes
-class ExplicitJudge(BaseJudge):
+# class ExplicitJudge(BaseJudge):
 
-    @timeit("Training explicit judge...")
-    def train(self, *args, **kwargs):
-        super(ExplicitJudge, self).train(*args, **kwargs)
+#     @timeit("Training explicit judge...")
+#     def train(self, *args, **kwargs):
+#         super(ExplicitJudge, self).train(*args, **kwargs)
 
 
-class ImplicitJudge(BaseJudge):
+# class ImplicitJudge(BaseJudge):
 
-    @timeit("Training implicit judge...")
-    def train(self, *args, **kwargs):
-        super(ImplicitJudge, self).train(*args, **kwargs)
+#     @timeit("Training implicit judge...")
+#     def train(self, *args, **kwargs):
+#         super(ImplicitJudge, self).train(*args, **kwargs)
 
 
 class Judge(object):
@@ -56,8 +57,9 @@ class Judge(object):
 
 
         """
-        self.explicit = ImplicitJudge(a_n_x, a_n_y)
-        self.implicit = ExplicitJudge(a_n_x, a_n_y)
+        pass
+        # self.explicit = ImplicitJudge(a_n_x, a_n_y)
+        # self.implicit = ExplicitJudge(a_n_x, a_n_y)
 
     def train(self, a_train, a_dev=()):
         """Method for training the model.
@@ -72,13 +74,14 @@ class Judge(object):
         (void)
 
         """
-        # divide training set into explicit and implicit relations
-        exp_train, imp_train = self._divide_data(a_train)
-        exp_dev, imp_dev = self._divide_data(a_dev)
-        # train explicit judge
-        self.explicit.train(exp_train, exp_dev)
-        # train implicit judge
-        self.implicit.train(imp_train, imp_dev)
+        return
+        # # divide training set into explicit and implicit relations
+        # exp_train, imp_train = self._divide_data(a_train)
+        # exp_dev, imp_dev = self._divide_data(a_dev)
+        # # train explicit judge
+        # self.explicit.train(exp_train, exp_dev)
+        # # train implicit judge
+        # self.implicit.train(imp_train, imp_dev)
 
     def predict(self, a_rel, a_x):
         """Method for predicting sense of single relation.
@@ -94,6 +97,8 @@ class Judge(object):
           most probable sense of discourse relation
 
         """
+        ret = np.mean(a_x, axis=0)
+        return (np.argmax(ret), ret)
         if is_explicit(a_rel):
             return self.explicit.predict(a_x)
         return self.implicit.predict(a_x)

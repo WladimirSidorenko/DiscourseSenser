@@ -142,7 +142,7 @@ class DiscourseSenser(object):
                 from dsenser.svd import SVDSenser
                 from dsenser.lstm import LSTMSenser
                 if not isinstance(imodel, LSTMSenser) or \
-                   not isinstance(imodel, LSTMSenserSVDSenser):
+                   not isinstance(imodel, SVDSenser):
                     continue
                 a_train_data = self._prune_data(*a_train_data)
                 a_dev_data = self._prune_data(*a_dev_data)

@@ -13,8 +13,8 @@ WangExplicitSenser (class):
 # Imports
 from __future__ import absolute_import, print_function
 
-from dsenser.constants import CONNECTIVE, DOC_ID, \
-    TOK_LIST, SENTENCES, WORDS, POS, TOK_IDX, SNT_ID, \
+from dsenser.constants import ARG1, ARG2, CONNECTIVE, DOC_ID, \
+    TOK_ID, TOK_LIST, SENTENCES, WORDS, POS, TOK_IDX, SNT_ID, \
     PARSE_TREE
 from dsenser.resources import CONNTOK2CONN, CONNTOKS, conn2str
 from dsenser.wang.wangbase import WangBaseSenser
@@ -42,6 +42,12 @@ DFLT_PRNT = "SBAR"
 AS = "as"
 WHEN = "when"
 DFLT_C = 0.3
+NEGATION = ("not", "n't")
+MODALITY = {"can": 0, "may": 1, "must": 2, "need": 3, "shall": 4,
+            "will": 5, "could": 0, "would": 5, "might": 1,
+            "should": 4, "'ll": 4, "wo": 5, "sha": 4, "ca": 0,
+            "have to": 6, "had to": 6, "'d to": 6, "'ve to": 6
+            }
 
 
 ##################################################################
@@ -128,10 +134,10 @@ class WangExplicitSenser(WangBaseSenser):
 
         ################
         # joint features
-        feats[conn_lstr + '|' + scat] = 1
-        feats[conn_lstr + '|' + prnt_cat] = 1
-        feats[conn_lstr + '|' + left_sib] = 1
-        feats[conn_lstr + '|' + right_sib] = 1
+        feats[conn_ltok + '|' + scat] = 1
+        feats[conn_ltok + '|' + prnt_cat] = 1
+        feats[conn_ltok + '|' + left_sib] = 1
+        feats[conn_ltok + '|' + right_sib] = 1
 
         feats[scat + '|' + prnt_cat] = 1
         feats[scat + '|' + left_sib] = 1
@@ -157,6 +163,25 @@ class WangExplicitSenser(WangBaseSenser):
             feats["NotAs"] = 1
         if conn_ltok != WHEN:
             feats["NotWhen"] = 1
+
+        #########################
+        # Own features (TS)
+
+        toks_pos1 = self._get_toks_pos(a_parses[doc_id][SENTENCES],
+                                       a_rel, ARG1)
+        toks_pos2 = self._get_toks_pos(a_parses[doc_id][SENTENCES],
+                                       a_rel, ARG2)
+        # modality (copied from implicit)
+        self._get_modality(feats, toks_pos1, toks_pos2)
+
+        # negation
+        self._get_negation(feats, toks_pos1, toks_pos2)
+
+        # obtain token (and pos) following the connective
+        (succ_tok, succ_pos) = self._get_conn_succ(doc_id, a_rel, a_parses)
+        feats["succtok-" + succ_tok] = 1
+        feats["succpos-" + succ_pos] = 1
+
         ##########################
         # Normalize feature names
         return {self._escape_feat(k): v for k, v in feats.iteritems()}
@@ -201,7 +226,7 @@ class WangExplicitSenser(WangBaseSenser):
             for _, _, _, snt_id, tok_id in a_rel[CONNECTIVE][TOK_LIST]])
 
     def _get_conn_prev(self, a_doc_id, a_rel, a_parses):
-        """Obtain raw text of the connective.
+        """Obtain token preceding the connective.
 
         Args:
         a_doc_id (str):
@@ -224,6 +249,32 @@ class WangExplicitSenser(WangBaseSenser):
         else:
             return PREV_NONE
         return a_parses[a_doc_id][SENTENCES][snt_id][WORDS][tok_id][TOK_IDX]
+
+    def _get_conn_succ(self, a_doc_id, a_rel, a_parses):
+        """Obtain the token and POS following the connective
+
+        Args:
+        a_doc_id (str):
+          id of the document containing the connectiv
+        a_rel (dict):
+          discourse relation to extract features for
+        a_parses (dict):
+          parsed data
+
+        Returns:
+        (str, pos): next token and pos
+
+        """
+        _, _, _, snt_id, tok_id = a_rel[CONNECTIVE][TOK_LIST][0]
+        if len(a_parses[a_doc_id][SENTENCES][snt_id][WORDS]) >= tok_id:
+            tok_id += 1
+        elif len(a_parses[a_doc_id][SENTENCES]) >= snt_id:
+            snt_id += 1
+            tok_id = 0
+        else:
+            return ("succ_none", "succ_tok_none")
+        return (a_parses[a_doc_id][SENTENCES][snt_id][WORDS][tok_id][TOK_IDX],
+                a_parses[a_doc_id][SENTENCES][snt_id][WORDS][tok_id][1][POS])
 
     def _get_cat(self, a_conn_toks, a_tree):
         """Obtain syntactic category of a connective.
@@ -432,6 +483,141 @@ class WangExplicitSenser(WangBaseSenser):
             elif len(path) > 1:
                 path = path[:-1]
             return path
+
+    def _get_negation(self, a_feats, a_toks1, a_toks2):
+        """Estimate polarity values of the given relation.
+
+        Args:
+        a_feats (dict):
+          target feature dictionary
+        a_toks1 (list(str)):
+          list of tokens from the 1-st argument
+        a_toks2 (list(str)):
+          list of tokens from the 2-nd argument
+
+        Returns:
+        (void):
+          updates `a_feats` dictionary in place
+
+        """
+        neg1 = self._get_arg_negation(a_toks1)
+        neg2 = self._get_arg_negation(a_toks2)
+        #add negation features
+        a_feats["Neg1-" + neg1] = 1.
+        a_feats["Neg2-" + neg2] = 1.
+        a_feats["JointNeg-" + neg1 + "|" + neg2] = 1
+
+    def _get_arg_negation(self, a_toks):
+        """Estimate polarity of the given relation argument.
+
+        Args:
+        a_toks (list(str)):
+          argument's tokens
+
+        Returns:
+        (list(int)):
+
+        """
+        ret = "pos"
+        bigram = None
+        for i, itok in enumerate(a_toks):
+            itok = itok[0]
+            if itok in NEGATION:
+                ret = "neg"
+        return ret
+
+    def _get_modality(self, a_feats, a_toks1, a_toks2):
+        """Estimate modality of the given relation.
+
+        Args:
+        a_feats (dict):
+          target feature dictionary
+        a_toks1 (list(str)):
+          list of tokens from the 1-st argument
+        a_toks2 (list(str)):
+          list of tokens from the 2-nd argument
+
+        Returns:
+        (void):
+          updates `a_feats` dictionary in place
+
+        """
+        mod1 = self._get_arg_modality(a_toks1)
+        mod2 = self._get_arg_modality(a_toks2)
+        joint_mod = [i * j for i in mod1 for j in mod2]
+        # add modality features
+        a_feats["Mod1-" + ''.join(str(i) for i in mod1)] = 1.
+        a_feats["Mod2-" + ''.join(str(i) for i in mod2)] = 1.
+        a_feats["JointMod-" + ''.join(str(i) for i in joint_mod)] = 1.
+
+    def _get_arg_modality(self, a_toks):
+        """Estimate modality of the given relation argument.
+
+        Args:
+        a_toks (list(str)):
+          argument's tokens
+
+        Returns:
+        (list(int)):
+
+        """
+        ret = [0] * 7
+        bigram = None
+        max_i = len(a_toks) - 1
+        for i, itok in enumerate(a_toks):
+            itok = itok[0]
+            if itok in MODALITY:
+                ret[MODALITY[itok]] = 1.
+            if i < max_i:
+                bigram = itok + ' ' + a_toks[i + 1][0]
+                if bigram in MODALITY:
+                    ret[MODALITY[bigram]] = 1.
+        return ret
+
+    def _get_toks_pos(self, a_parses, a_rel, a_arg):
+        """Method for getting raw tokens with their parts of speech.
+
+        Args:
+        a_parses (dict):
+          parsed sentences
+        a_rel (dict):
+          discourse relation whose tokens should be obtained
+        a_arg (str):
+          relation argument to obtain senses for
+
+        Returns:
+        (list(tuple(str, str))):
+          list of tokens and their parts of speech
+
+        """
+        ret = []
+        snt = wrd = None
+        for s_id, w_ids in \
+                self._get_snt2tok(a_rel[a_arg][TOK_LIST]).iteritems():
+            snt = a_parses[s_id][WORDS]
+            for w_id in w_ids:
+                wrd = snt[w_id]
+                ret.append((wrd[TOK_IDX].lower(), wrd[1][POS]))
+        return ret
+
+    def _get_snt2tok(self, a_tok_list):
+        """Generate mapping from sentence indices to token lists.
+
+        Args:
+        a_tok_list (list(tuple(int, int))):
+          list of sentence and token indices pertaining to the argument
+
+        Returns:
+        defaultdict(set):
+          mapping from sentence indices to token lists
+
+        """
+        snt2tok_pos = defaultdict(set)
+        for el in a_tok_list:
+            snt_id = el[SNT_ID]
+            snt2tok_pos[snt_id].add(el[TOK_ID])
+        return snt2tok_pos
+
 
     def _escape_feat(self, a_feat):
         """Replace characters that might confuse dict vectorize.

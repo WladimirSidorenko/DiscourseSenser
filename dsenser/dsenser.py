@@ -113,17 +113,20 @@ class DiscourseSenser(object):
             self.models.append(XGBoostSenser())
         # NN models have to go last, since we are pruning the parses for them
         # to free some memory
+        nn_used = False
         if a_type & LSTM:
             from dsenser.lstm import LSTMSenser
             self.models.append(LSTMSenser(a_w2v, a_lstsq))
+            nn_used = True
         if a_type & SVD:
             from dsenser.svd import SVDSenser
             # since we cannot differentiate SVD yet, we can only use word2vec
             # embeddings
             if not a_w2v or a_lstsq:
                 print("SVD senser does not support task-specific embeddings "
-                      "and least squares yet", file=sys.stderr)
+                      "and least squares yet.", file=sys.stderr)
             self.models.append(SVDSenser(a_w2v=True, a_lstsq=False))
+            nn_used = True
         # convert classes to indices
         self._sense2idx(a_train_data[0])
         # train models and remember their predictions
@@ -131,13 +134,12 @@ class DiscourseSenser(object):
                             len(self.cls2idx)))
         x_dev = np.zeros((len(a_dev_data[0] if a_dev_data else ()),
                           len(self.models), len(self.cls2idx)))
-        pruned = False
+        data_pruned = False
         for i, imodel in enumerate(self.models):
-            if (isinstance(imodel, LSTMSenser) or
-                    isinstance(imodel, SVDSenser)) and not pruned:
+            if nn_used and not data_pruned:
                 a_train_data = self._prune_data(*a_train_data)
                 a_dev_data = self._prune_data(*a_dev_data)
-                pruned = True
+                data_pruned = True
             imodel.train(a_train_data, a_dev_data, len(self.cls2idx),
                          i, x_train, x_dev)
         # convert training and development sets to the appropriate format for

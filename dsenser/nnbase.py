@@ -188,18 +188,20 @@ class NNBaseSenser(BaseSenser):
         min_dev_cost = INF
         prev_train_cost = train_cost = dev_cost = 0.
         best_params = []
+        err_seen = False
         for i in xrange(MAX_ITERS):
             train_cost = 0.
             start_time = datetime.utcnow()
             # perform one training iteration
             for (_, (emb1, emb2, conn)), y in zip(x_train, y_train):
-                # print("emb1 =", repr(emb1), file=sys.stderr)
-                # print("emb2 =", repr(emb2), file=sys.stderr)
-                # print("self._debug_nn =", repr(self._debug_nn(emb1, emb2)),
-                #       file=sys.stderr)
-                # sys.exit(66)
-                train_cost += self._grad_shared(emb1, emb2, conn, y)
-                self._update()
+                try:
+                    train_cost += self._grad_shared(emb1, emb2, conn, y)
+                    self._update()
+                except e:
+                    print("ERROR: '{:s}'".format(e.message))
+                    err_seen = True
+            if err_seen:
+                break
             # estimate the model on the dev set
             dev_cost = 0.
             # temporarily deactivate dropout
@@ -224,6 +226,8 @@ class NNBaseSenser(BaseSenser):
         if best_params:
             for p, val in zip(self._params, best_params):
                 p.set_value(val)
+        else:
+            raise RuntimeError("Network could not be trained.")
         # make predictions for the judge
         if a_i >= 0:
             # deactivate dropout once again

@@ -124,7 +124,7 @@ class DiscourseSenser(object):
             # embeddings
             if not a_w2v or a_lstsq:
                 print("SVD senser does not support task-specific embeddings "
-                      "and least squares yet", file=sys.stderr)
+                      "and least squares yet.", file=sys.stderr)
             self.models.append(SVDSenser(a_w2v=True, a_lstsq=False))
             nn_used = True
         # convert classes to indices

@@ -52,7 +52,6 @@ class SVDBaseSenser(NNBaseSenser):
         self.CONN_INDEX = TT.iscalar(name="CONN_INDEX")
         # initialize the matrix of word embeddings
         self.init_w_emb()
-        self._params.pop()
         # word embeddings of the arguments
         self.EMB_ARG1 = self.W_EMB[self.W_INDICES_ARG1]
         self.EMB_ARG2 = self.W_EMB[self.W_INDICES_ARG2]

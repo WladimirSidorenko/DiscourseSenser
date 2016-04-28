@@ -136,12 +136,17 @@ class DiscourseSenser(object):
                           len(self.models), len(self.cls2idx)))
         data_pruned = False
         for i, imodel in enumerate(self.models):
+            imodel.train(a_train_data, a_dev_data, len(self.cls2idx),
+                         i, x_train, x_dev)
             if nn_used and not data_pruned:
+                from dsenser.svd import SVDSenser
+                from dsenser.lstm import LSTMSenser
+                if not isinstance(imodel, LSTMSenser) or \
+                   not isinstance(imodel, LSTMSenserSVDSenser):
+                    continue
                 a_train_data = self._prune_data(*a_train_data)
                 a_dev_data = self._prune_data(*a_dev_data)
                 data_pruned = True
-            imodel.train(a_train_data, a_dev_data, len(self.cls2idx),
-                         i, x_train, x_dev)
         # convert training and development sets to the appropriate format for
         # the judge
         x_train = [(x_i, irel, irel[SENSE])

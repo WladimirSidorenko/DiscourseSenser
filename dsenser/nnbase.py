@@ -197,7 +197,7 @@ class NNBaseSenser(BaseSenser):
                 try:
                     train_cost += self._grad_shared(emb1, emb2, conn, y)
                     self._update()
-                except e:
+                except Exception as e:
                     print("ERROR: '{:s}'".format(e.message))
                     err_seen = True
             if err_seen:

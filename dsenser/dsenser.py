@@ -123,7 +123,8 @@ class DiscourseSenser(object):
             if not a_w2v or a_lstsq:
                 print("SVD senser does not support task-specific embeddings "
                       "and least squares yet.", file=sys.stderr)
-            self.models.append(SVDSenser(a_w2v=True, a_lstsq=False))
+            self.models.append(SVDSenser(a_w2v=True, a_lstsq=False,
+                                         a_max_iters=256))
             nn_used = True
         if a_type & LSTM:
             from dsenser.lstm import LSTMSenser
@@ -141,13 +142,10 @@ class DiscourseSenser(object):
         data_pruned = False
         imodel = x_train = x_dev = None
         imodel_name = imodel_path = ""
-        print("self.models =", repr(self.models))
         while i < len(self.models):
             imodel = self.models[i]
             imodel_name = imodel.__class__.__name__
             imodel_path = a_path + '.' + imodel_name
-            print("imodel_name =", repr(imodel_name))
-            print("imodel_path =", repr(imodel_path))
             if nn_used and not data_pruned:
                 from dsenser.svd import SVDSenser
                 from dsenser.lstm import LSTMSenser

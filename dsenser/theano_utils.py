@@ -95,7 +95,7 @@ def rmsprop(tparams, grads, x, y, cost):
 
 ##################################################################
 # Variables and Constants
-MAX_ITERS = 2  # 00  # 450
+MAX_ITERS = 200  # 450
 CONV_EPS = 1e-5
 DFLT_VDIM = 100
 

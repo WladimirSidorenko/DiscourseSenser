@@ -15,7 +15,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from dsenser.constants import ARG1, ARG2, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
     SENSE, TOK_LIST, TOK_OFFS_IDX, TYPE, DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
     DFLT_ECONN_PATH, ALT_LEX, EXPLICIT, IMPLICIT, SVD, LSTM, MJR, WANG, \
-    XGBOOST, PARSE_TREE, DEPS, WORDS, SENTENCES
+    XGBOOST, PARSE_TREE, DEPS, WORDS, SENTENCES, SHORT2FULL
 from dsenser.utils import timeit
 
 from collections import Iterable
@@ -175,7 +175,7 @@ class DiscourseSenser(object):
         if not self.models:
             raise RuntimeError(
                 "No trained models are provided to make predictions.")
-        arg1 = arg2 = None
+        arg1 = arg2 = isense = None
         for irel in a_data[0]:
             arg1 = irel[ARG1]
             arg1.pop(CHAR_SPAN, None)
@@ -192,7 +192,8 @@ class DiscourseSenser(object):
             if not TYPE in irel or not irel[TYPE]:
                 irel[TYPE] = self._get_type(irel)
 
-            irel[SENSE].append(self._predict(irel, a_data)[0])
+            isense = self._predict(irel, a_data)[0]
+            irel[SENSE].append(SHORT2FULL.get(isense, isense))
 
             irel[CONNECTIVE].pop(CHAR_SPAN, None)
             if irel[TYPE] != EXPLICIT:
@@ -245,6 +246,7 @@ class DiscourseSenser(object):
         for irel in a_rels:
             isenses = irel[SENSE]
             for isense in isenses:
+                isense = SHORT2FULL.get(isense, isense)
                 if isense not in self.cls2idx:
                     self.cls2idx[isense] = n_senses
                     self.idx2cls[n_senses] = isense

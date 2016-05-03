@@ -63,3 +63,6 @@ COE = "CharacterOffsetEnd"
 SNT_ID = 3
 TOK_ID = 4
 PARSE_TREE = "parsetree"
+
+SHORT2FULL = {"Expansion": "Expansion.Conjunction",
+              "Comparison": "Comparison.COntrast"}

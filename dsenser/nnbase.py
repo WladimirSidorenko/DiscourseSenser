@@ -123,8 +123,8 @@ class NNBaseSenser(BaseSenser):
         self._trained = False
         self._params = []
         self._w_stat = None
-        self.W_EMB = self.CONN_EMB = self._cost = None
         self.use_dropout = theano.shared(floatX(0.))
+        self.W_EMB = self.CONN_EMB = self._cost = self._dev_cost = None
         # initialize theano functions to None
         self._reset_funcs()
         # set up functions for obtaining word embeddings at train and test
@@ -207,7 +207,7 @@ class NNBaseSenser(BaseSenser):
             # temporarily deactivate dropout
             self.use_dropout.set_value(0.)
             for (_, (emb1, emb2, conn)), y in zip(x_dev, y_dev):
-                dev_cost += self._compute_cost(emb1, emb2, conn, y)
+                dev_cost += self._compute_dev_cost(emb1, emb2, conn, y)
             # switch dropout on again
             self.use_dropout.set_value(1.)
             end_time = datetime.utcnow()
@@ -690,12 +690,13 @@ class NNBaseSenser(BaseSenser):
                                             self.CONN_INDEX],
                                            self.Y_gold,
                                            self._cost)
-        if self._compute_cost is None:
-            self._compute_cost = theano.function([self.W_INDICES_ARG1,
-                                                  self.W_INDICES_ARG2,
-                                                  self.CONN_INDEX,
-                                                  self.Y_gold], self._cost,
-                                                 name="_compute_cost")
+        if self._compute_dev_cost is None:
+            self._compute_dev_cost = theano.function([self.W_INDICES_ARG1,
+                                                      self.W_INDICES_ARG2,
+                                                      self.CONN_INDEX,
+                                                      self.Y_gold],
+                                                     self._dev_cost,
+                                                     name="_compute_dev_cost")
         # initialize prediction function
         if self._predict_func is None:
             self._predict_func = theano.function([self.W_INDICES_ARG1,
@@ -770,7 +771,7 @@ class NNBaseSenser(BaseSenser):
         """
         self._grad_shared = None
         self._update = None
-        self._compute_cost = None
+        self._compute_dev_cost = None
         self._predict_func = None
         self._debug_nn = None
         self.get_train_w_emb_i = None

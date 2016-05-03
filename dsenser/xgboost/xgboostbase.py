@@ -41,15 +41,6 @@ class XGBoostBaseSenser(object):
         classifier to use or None for default
 
         """
-
-    def __init__(self, a_clf=None):
-        """Class constructor.
-
-        Args:
-        a_clf (classifier or None):
-        classifier to use or None for default
-
-        """
         self.n_y = self.eps = -1
         self.one = 1. - EPS
         classifier = a_clf or XGBClassifier(max_depth=MAX_DEPTH,

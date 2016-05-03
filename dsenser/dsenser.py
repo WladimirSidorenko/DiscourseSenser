@@ -129,15 +129,15 @@ class DiscourseSenser(object):
             nn_used = True
         # convert classes to indices
         self._sense2idx(a_train_data[0])
-        # train models and remember their predictions
-        x_train = np.zeros((len(a_train_data[0]), len(self.models),
-                            len(self.cls2idx)))
-        x_dev = np.zeros((len(a_dev_data[0] if a_dev_data else ()),
-                          len(self.models), len(self.cls2idx)))
+        # train models and remember their predictions (commented for memory
+        # optimization, since we are not using the judge yet)
+        # x_train = np.zeros((len(a_train_data[0]), len(self.models),
+        #                     len(self.cls2idx)))
+        # x_dev = np.zeros((len(a_dev_data[0] if a_dev_data else ()),
+        #                   len(self.models), len(self.cls2idx)))
         data_pruned = False
+        x_train = x_dev = None
         for i, imodel in enumerate(self.models):
-            imodel.train(a_train_data, a_dev_data, len(self.cls2idx),
-                         i, x_train, x_dev)
             if nn_used and not data_pruned:
                 from dsenser.svd import SVDSenser
                 from dsenser.lstm import LSTMSenser
@@ -147,12 +147,17 @@ class DiscourseSenser(object):
                 a_train_data = self._prune_data(*a_train_data)
                 a_dev_data = self._prune_data(*a_dev_data)
                 data_pruned = True
-        # convert training and development sets to the appropriate format for
+            # i = -1 (means do not make predictions)
+            # imodel.train(a_train_data, a_dev_data, len(self.cls2idx),
+            #              i, x_train, x_dev)
+            imodel.train(a_train_data, a_dev_data, len(self.cls2idx),
+                         -1, x_train, x_dev)
+        # convert training and development sets to the format appropriate for
         # the judge
-        x_train = [(x_i, irel, irel[SENSE])
-                   for x_i, irel in zip(x_train, a_train_data[0])]
-        x_dev = [(x_i, irel, irel[SENSE])
-                 for x_i, irel in zip(x_dev, a_dev_data[0])]
+        # x_train = [(x_i, irel, irel[SENSE])
+        #            for x_i, irel in zip(x_train, a_train_data[0])]
+        # x_dev = [(x_i, irel, irel[SENSE])
+        #          for x_i, irel in zip(x_dev, a_dev_data[0])]
         # train the judge (defer the import due to slow theano loading)
         # from dsenser.judge import Judge
         # self.judge = Judge(len(self.models), len(self.cls2idx))

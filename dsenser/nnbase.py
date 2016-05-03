@@ -163,6 +163,7 @@ class NNBaseSenser(BaseSenser):
             n_dev = max(n_docs / 10, 1)
             # sample without replacement
             dev_docs = set(np.random.choice(docs, n_dev, False))
+            print("dev_docs =", repr(dev_docs), file=sys.stderr)
             new_train_rels, dev_rels = [], []
             for irel in train_rels:
                 # relations are numbered at this place

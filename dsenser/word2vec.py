@@ -100,4 +100,5 @@ class Word2Vec(object):
         load the resource in place
 
         """
+        self._cache.clear()
         self._w2v.unload()

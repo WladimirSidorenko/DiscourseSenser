@@ -1,4 +1,4 @@
-#!/usr//bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
 """Module providing class for sense disambiguation of connectives.
@@ -22,6 +22,7 @@ from collections import Iterable
 from cPickle import dump, load
 
 import codecs
+import gc
 import numpy as np
 import os
 import sys
@@ -65,6 +66,7 @@ class DiscourseSenser(object):
 
         """
         self.models = []
+        self.model_paths = []
         self.judge = None
         self.cls2idx = {}
         self.idx2cls = {}
@@ -114,10 +116,6 @@ class DiscourseSenser(object):
         # NN models have to go last, since we are pruning the parses for them
         # to free some memory
         nn_used = False
-        if a_type & LSTM:
-            from dsenser.lstm import LSTMSenser
-            self.models.append(LSTMSenser(a_w2v, a_lstsq))
-            nn_used = True
         if a_type & SVD:
             from dsenser.svd import SVDSenser
             # since we cannot differentiate SVD yet, we can only use word2vec
@@ -127,43 +125,60 @@ class DiscourseSenser(object):
                       "and least squares yet.", file=sys.stderr)
             self.models.append(SVDSenser(a_w2v=True, a_lstsq=False))
             nn_used = True
+        if a_type & LSTM:
+            from dsenser.lstm import LSTMSenser
+            self.models.append(LSTMSenser(a_w2v, a_lstsq))
+            nn_used = True
         # convert classes to indices
         self._sense2idx(a_train_data[0])
-        # train models and remember their predictions (commented for memory
-        # optimization, since we are not using the judge yet)
+        # train models and remember their predictions (temporarly commented due
+        # to memory optimization, since we are not using the judge now)
         # x_train = np.zeros((len(a_train_data[0]), len(self.models),
         #                     len(self.cls2idx)))
         # x_dev = np.zeros((len(a_dev_data[0] if a_dev_data else ()),
         #                   len(self.models), len(self.cls2idx)))
+        i = 0
         data_pruned = False
-        x_train = x_dev = None
-        for i, imodel in enumerate(self.models):
+        imodel = x_train = x_dev = None
+        imodel_name = imodel_path = ""
+        print("self.models =", repr(self.models))
+        while i < len(self.models):
+            imodel = self.models[i]
+            imodel_name = imodel.__class__.__name__
+            imodel_path = a_path + '.' + imodel_name
+            print("imodel_name =", repr(imodel_name))
+            print("imodel_path =", repr(imodel_path))
             if nn_used and not data_pruned:
                 from dsenser.svd import SVDSenser
                 from dsenser.lstm import LSTMSenser
-                if not isinstance(imodel, LSTMSenser) or \
-                   not isinstance(imodel, SVDSenser):
-                    continue
-                a_train_data = self._prune_data(*a_train_data)
-                a_dev_data = self._prune_data(*a_dev_data)
-                data_pruned = True
-            # i = -1 (means do not make predictions)
+                if isinstance(imodel, LSTMSenser) or \
+                   isinstance(imodel, SVDSenser):
+                    a_train_data = self._prune_data(*a_train_data)
+                    a_dev_data = self._prune_data(*a_dev_data)
+                    data_pruned = True
+            # i = -1 (means do not make predictions for the judge)
             # imodel.train(a_train_data, a_dev_data, len(self.cls2idx),
             #              i, x_train, x_dev)
             imodel.train(a_train_data, a_dev_data, len(self.cls2idx),
                          -1, x_train, x_dev)
+            self._dump(imodel, imodel_path)
+            self.model_paths.append(imodel_path)
+            self.models[i] = imodel = None
+            gc.collect()
+            i += 1
         # convert training and development sets to the format appropriate for
         # the judge
         # x_train = [(x_i, irel, irel[SENSE])
         #            for x_i, irel in zip(x_train, a_train_data[0])]
         # x_dev = [(x_i, irel, irel[SENSE])
         #          for x_i, irel in zip(x_dev, a_dev_data[0])]
-        # train the judge (defer the import due to slow theano loading)
+        # train the judge
         # from dsenser.judge import Judge
         # self.judge = Judge(len(self.models), len(self.cls2idx))
         # self.judge.train(x_train, x_dev)
-        # dump model
-        self._dump(a_path)
+        # dump model (clean the model list before)
+        self.models = []
+        self._dump(self, a_path)
 
     def predict(self, a_data):
         """Determine senses of discourse connectives.
@@ -266,6 +281,7 @@ class DiscourseSenser(object):
             isenses = irel[SENSE]
             vsense = np.zeros(n_senses)
             for isense in isenses:
+                isense = SHORT2FULL.get(isense, isense)
                 vsense[self.cls2idx[isense]] = 1
             irel[SENSE] = vsense / sum(vsense)
 
@@ -320,10 +336,12 @@ class DiscourseSenser(object):
         """
         return a_conn.strip().lower()
 
-    def _dump(self, a_path=None):
+    def _dump(self, a_obj, a_path=None):
         """Dump this model to disc at the given path.
 
         Args:
+        a_obj (object):
+          object being dumped
         a_path (str or None):
           path to file in which to store the model
 
@@ -347,7 +365,7 @@ class DiscourseSenser(object):
                 raise RuntimeError("Cannot write to file '{:s}'.".format(
                     a_path))
         with open(a_path, "wb") as ofile:
-            dump(self, ofile)
+            dump(a_obj, ofile)
 
     def _load(self, a_path):
         """Load serialized model from disc.
@@ -360,8 +378,13 @@ class DiscourseSenser(object):
         (void)
 
         """
+        # load paths to serialized models
         with open(a_path, "rb") as ifile:
             self._move(load(ifile))
+        # load serialized models
+        for imodel_path in self.model_paths:
+            with open(imodel_path, "rb") as ifile:
+                self.models.append(load(ifile))
 
     def _move(self, a_senser):
         """Load serialized model from disc.
@@ -390,6 +413,7 @@ class DiscourseSenser(object):
         """
         self.wbench = a_senser.wbench
         self.models = a_senser.models
+        self.model_paths = a_senser.model_paths
         self.judge = a_senser.judge
         self.cls2idx = a_senser.cls2idx
         self.idx2cls = a_senser.idx2cls

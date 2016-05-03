@@ -84,5 +84,6 @@ class SVDBaseSenser(NNBaseSenser):
         # initialize cost and optimization functions
         self.Y_gold = TT.vector(name="Y_gold")
         self._cost = TT.sum((self.Y_pred - self.Y_gold) ** 2)
+        self._pred_class = TT.argmax(self.Y_pred)
         grads = TT.grad(self._cost, wrt=self._params)
         self._init_funcs(grads)

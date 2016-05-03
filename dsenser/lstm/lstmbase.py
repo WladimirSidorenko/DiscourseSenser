@@ -20,6 +20,7 @@ import numpy as np
 
 ##################################################################
 # Variables and Constants
+TRUNCATE_GRADIENTS = 20
 
 
 ##################################################################
@@ -199,6 +200,7 @@ class LSTMBaseSenser(NNBaseSenser):
                                  non_sequences=[W, U, V, b, w_do, u_do],
                                  name="LSTM" + str(iv) + a_sfx,
                                  n_steps=m,
+                                 truncate_gradients=TRUNCATE_GRADIENTS,
                                  go_backwards=igbw)
             ov = ret[0]
             outvars.append(ov)

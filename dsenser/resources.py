@@ -32,6 +32,7 @@ from dsenser.scorer.conn_head_mapper import ConnHeadMapper
 from collections import defaultdict
 from nltk.stem.porter import PorterStemmer
 import codecs
+import gc
 import re
 import sys
 
@@ -314,8 +315,12 @@ class LoadOnDemand(object):
         load the resource
 
         """
-        del self.resource
-        self.resource = None
+        if self.resource is not None:
+            print("Unloading resource '{:s}'...".format(repr(self.resource)),
+                  file=sys.stderr)
+            del self.resource
+            self.resource = None
+            gc.collect()
 
 
 ##################################################################

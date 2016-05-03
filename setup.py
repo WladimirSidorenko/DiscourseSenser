@@ -44,7 +44,7 @@ DSENSER_DATA = [path.join(path.basename(path.basename(iroot)), ifname)
 # setup()
 setup(
     name="dsenser",
-    version="0.0.2",
+    version="0.0.3",
     description=("sense disambiguation for PDTB-style discourse parsing"),
     long_description=LONG_DESCRIPTION,
     author="Wladimir Sidorenko (Uladzimir Sidarenka)",

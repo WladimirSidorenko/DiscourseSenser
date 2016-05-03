@@ -1,4 +1,4 @@
-#!/usr//bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
 """Module containing constants for dsenser package.
@@ -63,3 +63,6 @@ COE = "CharacterOffsetEnd"
 SNT_ID = 3
 TOK_ID = 4
 PARSE_TREE = "parsetree"
+
+SHORT2FULL = {"Expansion": "Expansion.Conjunction",
+              "Comparison": "Comparison.COntrast"}

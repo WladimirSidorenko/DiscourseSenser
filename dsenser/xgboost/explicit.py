@@ -15,7 +15,7 @@ from __future__ import absolute_import, print_function
 
 from dsenser.utils import timeit
 from dsenser.wang.explicit import WangExplicitSenser
-from dsenser.xgboost.base import XGBoostBaseSenser
+from dsenser.xgboost.xgboostbase import XGBoostBaseSenser
 
 
 ##################################################################

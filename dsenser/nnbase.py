@@ -15,7 +15,7 @@ NNBaseSenser (class):
 from __future__ import absolute_import, print_function
 
 from dsenser.base import BaseSenser
-from dsenser.constants import ARG1, ARG2, CONNECTIVE, DOC_ID, \
+from dsenser.constants import ARG1, ARG2, CONNECTIVE, DOC_ID, ENCODING, \
     RAW_TEXT, SENTENCES, SENSE, TOK_IDX, WORDS
 from dsenser.resources import CHM
 from dsenser.theano_utils import config, floatX, rmsprop, theano, \
@@ -85,7 +85,7 @@ class NNBaseSenser(BaseSenser):
     """
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, a_w2v=False, a_lstsq=False):
+    def __init__(self, a_w2v=False, a_lstsq=False, a_max_iters=MAX_ITERS):
         """Class constructor.
 
         Args:
@@ -95,6 +95,8 @@ class NNBaseSenser(BaseSenser):
           pre-train task-specific word embeddings, but use least-square method
           to generate embeddings for unknown words from generic word2vec
           vectors
+        a_max_iters (int):
+          maximum number of iterations
 
         """
         # access to the original word2vec resource
@@ -107,6 +109,7 @@ class NNBaseSenser(BaseSenser):
         self.lstsq = a_lstsq
         self._plain_w2v = self.w2v and not self.lstsq
         # matrix mapping word2vec to task-specific embeddings
+        self.max_iters = a_max_iters
         self.w2emb = None
         self.ndim = -1    # vector dimensionality will be initialized later
         self.intm_dim = -1
@@ -122,9 +125,9 @@ class NNBaseSenser(BaseSenser):
         # variables needed for training
         self._trained = False
         self._params = []
-        self._w_stat = None
-        self.W_EMB = self.CONN_EMB = self._cost = None
+        self._w_stat = self._pred_class = None
         self.use_dropout = theano.shared(floatX(0.))
+        self.W_EMB = self.CONN_EMB = self._cost = self._dev_cost = None
         # initialize theano functions to None
         self._reset_funcs()
         # set up functions for obtaining word embeddings at train and test
@@ -163,6 +166,9 @@ class NNBaseSenser(BaseSenser):
             n_dev = max(n_docs / 10, 1)
             # sample without replacement
             dev_docs = set(np.random.choice(docs, n_dev, False))
+            for ddname in dev_docs:
+                print("dev_doc = '{:s}'".format(ddname).encode(ENCODING),
+                      file=sys.stderr)
             new_train_rels, dev_rels = [], []
             for irel in train_rels:
                 # relations are numbered at this place
@@ -185,49 +191,52 @@ class NNBaseSenser(BaseSenser):
         self.use_dropout.set_value(1.)
 
         # perform the training
-        min_dev_cost = INF
-        prev_train_cost = train_cost = dev_cost = 0.
         best_params = []
-        err_seen = False
-        for i in xrange(MAX_ITERS):
-            train_cost = 0.
-            start_time = datetime.utcnow()
-            # perform one training iteration
-            for (_, (emb1, emb2, conn)), y in zip(x_train, y_train):
-                try:
+        dev_cost = aux_dev_cost = 0.
+        prev_train_cost = train_cost = 0.
+        min_dev_cost = min_aux_dev_cost = INF
+        try:
+            for i in xrange(self.max_iters):
+                train_cost = 0.
+                start_time = datetime.utcnow()
+                # perform one training iteration
+                for (_, (emb1, emb2, conn)), y in zip(x_train, y_train):
                     train_cost += self._grad_shared(emb1, emb2, conn, y)
                     self._update()
-                except e:
-                    print("ERROR: '{:s}'".format(e.message))
-                    err_seen = True
-            if err_seen:
-                break
-            # estimate the model on the dev set
-            dev_cost = 0.
-            # temporarily deactivate dropout
-            self.use_dropout.set_value(0.)
-            for (_, (emb1, emb2, conn)), y in zip(x_dev, y_dev):
-                dev_cost += self._compute_cost(emb1, emb2, conn, y)
-            # switch dropout on again
-            self.use_dropout.set_value(1.)
-            end_time = datetime.utcnow()
-            time_delta = (end_time - start_time).seconds
-            if min_dev_cost == INF or dev_cost < min_dev_cost:
-                best_params = [p.get_value() for p in self._params]
-                min_dev_cost = dev_cost
-            print("Iteration {:d}:\ttrain_cost = {:f}\t"
-                  "dev_cost={:f}\t({:.2f} sec)".format(
-                      i, train_cost, dev_cost, time_delta), file=sys.stderr)
-            if abs(prev_train_cost - train_cost) < CONV_EPS:
-                break
-            prev_train_cost = train_cost
+                # estimate the model on the dev set
+                dev_cost = aux_dev_cost = 0.
+                # temporarily deactivate dropout
+                self.use_dropout.set_value(0.)
+                for (_, (emb1, emb2, conn)), y in zip(x_dev, y_dev):
+                    dev_cost += (y[self._predict_class(emb1, emb2, conn)] == 0)
+                    aux_dev_cost += self._compute_dev_cost(emb1, emb2, conn, y)
+                # switch dropout on again
+                self.use_dropout.set_value(1.)
+                end_time = datetime.utcnow()
+                time_delta = (end_time - start_time).seconds
+                if min_dev_cost == INF or dev_cost < min_dev_cost or \
+                   (dev_cost == min_dev_cost and
+                        aux_dev_cost < min_aux_dev_cost):
+                    best_params = [p.get_value() for p in self._params]
+                    min_dev_cost = dev_cost
+                    min_aux_dev_cost = aux_dev_cost
+                print("Iteration {:d}:\ttrain_cost = {:f}\t"
+                      "dev_err={:d}\tdev_cost={:f}\t({:.2f} sec)".format(
+                          i, train_cost, int(dev_cost),
+                          aux_dev_cost, time_delta),
+                      file=sys.stderr)
+                if abs(prev_train_cost - train_cost) < CONV_EPS:
+                    break
+                prev_train_cost = train_cost
+        except BaseException as e:
+            print("ERROR: '{:s}'".format(e.message))
         # deactivate dropout
         self.use_dropout.set_value(0.)
         if best_params:
             for p, val in zip(self._params, best_params):
                 p.set_value(val)
         else:
-            raise RuntimeError("Network could not be trained.")
+            raise RuntimeErrorx("Network could not be trained.")
         # make predictions for the judge
         if a_i >= 0:
             # deactivate dropout once again
@@ -460,12 +469,17 @@ class NNBaseSenser(BaseSenser):
 
         """
         w_emb = np.empty((self.w_i, self.ndim))
+        w_emb[self.unk_w_i, :] = 1e-2  # prevent zeros in this row
         for w, i in self.w2emb_i.iteritems():
             if i == self.unk_w_i:
                 continue
             w_emb[i] = self.w2v[w]
         self.W_EMB = theano.shared(value=floatX(w_emb),
                                    name="W_EMB")
+        # We unload embeddings every time before the training to free more
+        # memory.  Feel free to comment the line below, if you have plenty of
+        # RAM.
+        self.w2v.unload()
 
     def _init_w2emb(self):
         """Compute a mapping from Word2Vec to embeddings.
@@ -690,12 +704,20 @@ class NNBaseSenser(BaseSenser):
                                             self.CONN_INDEX],
                                            self.Y_gold,
                                            self._cost)
-        if self._compute_cost is None:
-            self._compute_cost = theano.function([self.W_INDICES_ARG1,
-                                                  self.W_INDICES_ARG2,
-                                                  self.CONN_INDEX,
-                                                  self.Y_gold], self._cost,
-                                                 name="_compute_cost")
+        if self._predict_class is None:
+            self._predict_class = theano.function([self.W_INDICES_ARG1,
+                                                   self.W_INDICES_ARG2,
+                                                   self.CONN_INDEX],
+                                                  self._pred_class,
+                                                  name="_predict_class")
+        if self._compute_dev_cost is None:
+            self._compute_dev_cost = theano.function([self.W_INDICES_ARG1,
+                                                      self.W_INDICES_ARG2,
+                                                      self.CONN_INDEX,
+                                                      self.Y_gold],
+                                                     self._dev_cost,
+                                                     name="_compute_dev_cost")
+
         # initialize prediction function
         if self._predict_func is None:
             self._predict_func = theano.function([self.W_INDICES_ARG1,
@@ -770,8 +792,9 @@ class NNBaseSenser(BaseSenser):
         """
         self._grad_shared = None
         self._update = None
-        self._compute_cost = None
+        self._predict_class = None
         self._predict_func = None
+        self._compute_dev_cost = None
         self._debug_nn = None
         self.get_train_w_emb_i = None
         self.get_test_w_emb_i = None

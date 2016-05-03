@@ -20,6 +20,7 @@ import numpy as np
 
 ##################################################################
 # Variables and Constants
+TRUNCATE_GRADIENT = 20
 
 
 ##################################################################
@@ -78,6 +79,8 @@ class LSTMBaseSenser(NNBaseSenser):
         # initialize cost and optimization functions
         self.Y_gold = TT.vector(name="Y_gold")
         self._cost = TT.sum((self.Y_pred - self.Y_gold) ** 2)
+        self._dev_cost = TT.sum((self.Y_pred - self.Y_gold) ** 2)
+        self._pred_class = TT.argmax(self.Y_pred)
         grads = TT.grad(self._cost, wrt=self._params)
         self._init_funcs(grads)
 
@@ -199,6 +202,7 @@ class LSTMBaseSenser(NNBaseSenser):
                                  non_sequences=[W, U, V, b, w_do, u_do],
                                  name="LSTM" + str(iv) + a_sfx,
                                  n_steps=m,
+                                 truncate_gradient=TRUNCATE_GRADIENT,
                                  go_backwards=igbw)
             ov = ret[0]
             outvars.append(ov)

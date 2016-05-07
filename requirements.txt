@@ -1,7 +1,9 @@
 pip>=8.0.2
 gensim>=0.12.4
+memory_profiler>=0.41
 nltk>=3.2
 numpy>=1.11
+psutil>=4.1
 scipy>=0.17
 scikit-learn>=0.17.1
 theano>=0.8.0

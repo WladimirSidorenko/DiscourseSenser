@@ -1,0 +1,9 @@
+* DONE Remove SVD and MajorSenser
+
+* DONE Replace Absolute Paths with Relative ones
+
+* TODO Optimize Memory
+
+* TODO Build Package
+
+* TODO Deploy Package on Server

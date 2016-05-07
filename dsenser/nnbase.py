@@ -192,9 +192,9 @@ class NNBaseSenser(BaseSenser):
 
         # perform the training
         best_params = []
-        dev_cost = aux_dev_cost = 0.
+        dev_err = dev_cost = 0.
         prev_train_cost = train_cost = 0.
-        min_dev_cost = min_aux_dev_cost = INF
+        min_dev_err = min_dev_cost = INF
         try:
             for i in xrange(self.max_iters):
                 train_cost = 0.
@@ -204,26 +204,25 @@ class NNBaseSenser(BaseSenser):
                     train_cost += self._grad_shared(emb1, emb2, conn, y)
                     self._update()
                 # estimate the model on the dev set
-                dev_cost = aux_dev_cost = 0.
+                dev_err = dev_cost = 0.
                 # temporarily deactivate dropout
                 self.use_dropout.set_value(0.)
                 for (_, (emb1, emb2, conn)), y in zip(x_dev, y_dev):
-                    dev_cost += (y[self._predict_class(emb1, emb2, conn)] == 0)
-                    aux_dev_cost += self._compute_dev_cost(emb1, emb2, conn, y)
+                    dev_err += (y[self._predict_class(emb1, emb2, conn)] == 0)
+                    dev_cost += self._compute_dev_cost(emb1, emb2, conn, y)
                 # switch dropout on again
                 self.use_dropout.set_value(1.)
                 end_time = datetime.utcnow()
                 time_delta = (end_time - start_time).seconds
-                if min_dev_cost == INF or dev_cost < min_dev_cost or \
-                   (dev_cost == min_dev_cost and
-                        aux_dev_cost < min_aux_dev_cost):
+                if min_dev_err == INF or dev_err < min_dev_err or \
+                   (dev_err == min_dev_err and
+                        dev_cost < min_dev_cost):
                     best_params = [p.get_value() for p in self._params]
+                    min_dev_err = dev_err
                     min_dev_cost = dev_cost
-                    min_aux_dev_cost = aux_dev_cost
                 print("Iteration {:d}:\ttrain_cost = {:f}\t"
                       "dev_err={:d}\tdev_cost={:f}\t({:.2f} sec)".format(
-                          i, train_cost, int(dev_cost),
-                          aux_dev_cost, time_delta),
+                          i, train_cost, int(dev_err), dev_cost, time_delta),
                       file=sys.stderr)
                 if abs(prev_train_cost - train_cost) < CONV_EPS:
                     break

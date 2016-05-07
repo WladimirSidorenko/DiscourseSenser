@@ -17,7 +17,8 @@ import os
 # Variables and Constants
 ENCODING = "utf-8"
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+DIRNAME = os.path.dirname(__file__)
+DATA_DIR = os.path.join(DIRNAME, "data")
 
 MODEL_DIR = os.path.join(DATA_DIR, "models")
 DFLT_MODEL_PATH = os.path.join(MODEL_DIR, "pdtb.sense.model")

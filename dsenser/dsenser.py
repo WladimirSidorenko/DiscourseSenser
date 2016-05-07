@@ -12,10 +12,10 @@ DiscourseSenser (class): class for sense disambiguation of connectives
 # Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
-from dsenser.constants import ARG1, ARG2, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
-    SENSE, TOK_LIST, TOK_OFFS_IDX, TYPE, DFLT_MODEL_PATH, DFLT_MODEL_TYPE, \
-    DFLT_ECONN_PATH, ALT_LEX, EXPLICIT, IMPLICIT, SVD, LSTM, MJR, WANG, \
-    XGBOOST, PARSE_TREE, DEPS, WORDS, SENTENCES, SHORT2FULL
+from dsenser.constants import ARG1, ARG2, CHAR_SPAN, CONNECTIVE, ENCODING, \
+    RAW_TEXT, SENSE, TOK_LIST, TOK_OFFS_IDX, TYPE, DFLT_MODEL_PATH, \
+    DFLT_MODEL_TYPE, DFLT_ECONN_PATH, ALT_LEX, EXPLICIT, IMPLICIT, SVD, \
+    LSTM, MJR, WANG, XGBOOST, PARSE_TREE, DEPS, WORDS, SENTENCES, SHORT2FULL
 from dsenser.utils import timeit
 
 from collections import Iterable
@@ -29,7 +29,6 @@ import sys
 
 ##################################################################
 # Variables and Constants
-ENCODING = "utf-8"
 # load default explicit discourse connectives
 DFLT_CONN = set(["upon"])
 with codecs.open(DFLT_ECONN_PATH, 'r', ENCODING) as ifile:
@@ -145,7 +144,8 @@ class DiscourseSenser(object):
         while i < len(self.models):
             imodel = self.models[i]
             imodel_name = imodel.__class__.__name__
-            imodel_path = a_path + '.' + imodel_name
+            imodel_path = os.path.relname(a_path + '.' + imodel_name,
+                                          a_path)
             if nn_used and not data_pruned:
                 from dsenser.svd import SVDSenser
                 from dsenser.lstm import LSTMSenser
@@ -379,8 +379,10 @@ class DiscourseSenser(object):
         # load paths to serialized models
         with open(a_path, "rb") as ifile:
             self._move(load(ifile))
+        bfname = os.path.dirname(a_path)
         # load serialized models
         for imodel_path in self.model_paths:
+            imodel_path = os.path.join(bfname, imodel_path)
             with open(imodel_path, "rb") as ifile:
                 self.models.append(load(ifile))
 

@@ -242,10 +242,10 @@ class DiscourseSenser(object):
         idx = np.argmax(x_mean)
         lbl = self.idx2cls[int(idx)]
         return (lbl, x_mean[idx])
-        # earlier we were using a pre-trained tensor
-        idx, iprob = self.judge.predict(a_rel, self._prejudge(a_rel, a_data))
-        lbl = self.idx2cls[int(idx)]
-        return (lbl, iprob)
+        # earlier we were using a pre-trained judge tensor
+        # idx, iprob = self.judge.predict(a_rel, self._prejudge(a_rel, a_data))
+        # lbl = self.idx2cls[int(idx)]
+        # return (lbl, iprob)
 
     def _sense2idx(self, a_rels):
         """Convert symbolic senses to vectors.

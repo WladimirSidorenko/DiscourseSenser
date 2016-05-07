@@ -88,3 +88,22 @@ class SVDBaseSenser(NNBaseSenser):
         self._pred_class = TT.argmax(self.Y_pred)
         grads = TT.grad(self._cost, wrt=self._params)
         self._init_funcs(grads)
+
+    def _predict(self, a_args, a_ret, a_i):
+        """Method for predicting sense of single relation.
+
+        Args:
+        a_args (list):
+          list of input arguments to the prediction function
+        a_ret (np.array):
+          output prediction vector
+        a_i (int):
+          row index in the output vector
+
+        Returns:
+        (void):
+          updates ``a_ret`` in place
+
+        """
+        # obtain model's estimates
+        a_ret[a_i] = 0.

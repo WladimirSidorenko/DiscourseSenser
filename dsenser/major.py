@@ -123,7 +123,7 @@ class MajorSenser(BaseSenser):
         iconn = self._normalize_conn(a_rel[CONNECTIVE][RAW_TEXT])
         isense = self.conn2sense.get(iconn, self.dflt_sense)
         for i in xrange(len(isense)):
-            a_ret[a_i][i] = isense[i]
+            a_ret[a_i][i] += isense[i]
 
     def _get_sense_stat(self, a_stat):
         """Generate sense statistcs.

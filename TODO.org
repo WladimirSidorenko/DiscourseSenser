@@ -2,7 +2,7 @@
 
 * DONE Replace Absolute Paths with Relative ones
 
-* TODO Optimize Memory
+* IN-PROGRESS Optimize Memory
 
 * TODO Build Package
 

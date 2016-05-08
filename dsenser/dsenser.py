@@ -181,6 +181,9 @@ class DiscourseSenser(object):
     def predict(self, a_data):
         """Determine senses of discourse connectives.
 
+        This is a memory-optimized version of prediction function.  Due to
+        these optimizations, however, it does not support the judge model.
+
         Args:
         a_data (list):
           input data to be analyzed
@@ -190,36 +193,40 @@ class DiscourseSenser(object):
           updates input set in place
 
         """
-        if not self.models:
+        if not self.model_paths:
             raise RuntimeError(
-                "No trained models are provided to make predictions.")
-        arg1 = arg2 = isense = None
-        for irel in a_data[0]:
-            arg1 = irel[ARG1]
-            arg1.pop(CHAR_SPAN, None)
-            arg1.pop(RAW_TEXT, None)
+                "No paths to trained models are provided to make predictions.")
 
-            arg2 = irel[ARG2]
-            arg2.pop(CHAR_SPAN, None)
-            arg2.pop(RAW_TEXT, None)
-
-            if len(irel[CONNECTIVE][TOK_LIST]) == 0:
-                irel[CONNECTIVE][RAW_TEXT] = ""
-            if not SENSE in irel:
-                irel[SENSE] = []
-            if not TYPE in irel or not irel[TYPE]:
-                irel[TYPE] = self._get_type(irel)
-
-            isense = self._predict(irel, a_data)[0]
+        rels = a_data[0]
+        # normalize input relations
+        self._preprocess_rels(rels)
+        # predict sense
+        imodel = isense = None
+        # allocate space for predictions
+        self.wbench = np.zeros((len(rels), len(self.cls2idx)))
+        # iterate over each trained model and sum up their predictions
+        for ipath in self.model_paths:
+            print("ipath =", repr(ipath), file=sys.stderr)
+            with open(ipath, "rb") as ifile:
+                imodel = load(ifile)
+            for i, irel in enumerate(rels):
+                imodel.predict(irel, a_data, self.wbench, i)
+            del imodel
+            imodel = None
+            gc.collect()
+        # make final judgements
+        idx = -1
+        isense = None
+        for i, irel in enumerate(rels):
+            idx = int(np.argmax(self.wbench[i]))
+            isense = self.idx2cls[idx]
             irel[SENSE].append(SHORT2FULL.get(isense, isense))
-
-            irel[CONNECTIVE].pop(CHAR_SPAN, None)
-            if irel[TYPE] != EXPLICIT:
-                irel[CONNECTIVE].pop(RAW_TEXT, None)
-            arg1[TOK_LIST] = self._normalize_tok_list(arg1[TOK_LIST])
-            arg2[TOK_LIST] = self._normalize_tok_list(arg2[TOK_LIST])
-            irel[CONNECTIVE][TOK_LIST] = self._normalize_tok_list(
-                irel[CONNECTIVE][TOK_LIST])
+        # free memory occupied by workbench
+        del self.wbench
+        self.wbench = None
+        gc.collect()
+        # postprocess input relations
+        self._postprocess_rels(rels)
 
     def _predict(self, a_rel, a_data):
         """Determine sense of discourse relation.
@@ -246,6 +253,115 @@ class DiscourseSenser(object):
         # idx, iprob = self.judge.predict(a_rel, self._prejudge(a_rel, a_data))
         # lbl = self.idx2cls[int(idx)]
         # return (lbl, iprob)
+
+    def _prejudge(self, a_rel, a_data):
+        """Collect judgments of single classifiers.
+
+        Args:
+        a_rel (dict):
+          discourse relation whose sense should be predicted
+        a_data (2-tuple(dict, dict)):
+          list of input JSON data
+
+        Returns:
+        (np.array):
+          modified ``a_ret``
+
+        """
+        if self.wbench is None:
+            self.wbench = np.zeros((len(self.models), len(self.cls2idx)))
+        for i, imodel in enumerate(self.models):
+            imodel.predict(a_rel, a_data, self.wbench, i)
+        return self.wbench
+
+    def _prune_data(self, a_rels, a_parses):
+        """Remove unnecessary information from data.
+
+        Args:
+        a_rels (list):
+          list of input discourse relations
+        a_parses (dict):
+          parse trees
+
+        Returns:
+        2-tuple(list, dict):
+          abridged input data
+
+        """
+        arg = None
+        # clean-up relations
+        for irel in a_rels:
+            irel.pop("ID")
+            irel[CONNECTIVE].pop(CHAR_SPAN)
+            arg = irel[ARG1]
+            arg.pop(CHAR_SPAN)
+            arg.pop(RAW_TEXT)
+            arg = irel[ARG2]
+            arg.pop(CHAR_SPAN)
+            arg.pop(RAW_TEXT)
+        # clean-up parses
+        w_attrs = None
+        for isentences in a_parses.itervalues():
+            for isent in isentences[SENTENCES]:
+                isent.pop(PARSE_TREE)
+                isent.pop(DEPS)
+                for iword in isent[WORDS]:
+                    iword[-1].clear()
+        return (a_rels, a_parses)
+
+    def _preprocess_rels(self, a_rels):
+        """Preprocess input relations.
+
+        Args:
+        a_rels (list):
+          input relations to be preprocessed
+
+        Returns:
+        (void):
+          modifies ``a_rels`` in place
+
+        """
+        arg1 = arg2 = None
+        for irel in a_rels:
+            arg1 = irel[ARG1]
+            arg1.pop(CHAR_SPAN, None)
+            arg1.pop(RAW_TEXT, None)
+
+            arg2 = irel[ARG2]
+            arg2.pop(CHAR_SPAN, None)
+            arg2.pop(RAW_TEXT, None)
+
+            if len(irel[CONNECTIVE][TOK_LIST]) == 0:
+                irel[CONNECTIVE][RAW_TEXT] = ""
+            if not SENSE in irel:
+                irel[SENSE] = []
+            if not TYPE in irel or not irel[TYPE]:
+                irel[TYPE] = self._get_type(irel)
+
+    def _postprocess_rels(self, a_rels):
+        """Postprocess input relations.
+
+        Args:
+        a_rels (list):
+          input relations to be preprocessed
+
+        Returns:
+        (void):
+          modifies ``a_rels`` in place
+
+        """
+        arg1 = arg2 = None
+        for irel in a_rels:
+            arg1 = irel[ARG1]
+            arg2 = irel[ARG2]
+
+            irel[CONNECTIVE].pop(CHAR_SPAN, None)
+            if irel[TYPE] != EXPLICIT:
+                irel[CONNECTIVE].pop(RAW_TEXT, None)
+            arg1[TOK_LIST] = self._normalize_tok_list(arg1[TOK_LIST])
+            arg2[TOK_LIST] = self._normalize_tok_list(arg2[TOK_LIST])
+            irel[CONNECTIVE][TOK_LIST] = self._normalize_tok_list(
+                irel[CONNECTIVE][TOK_LIST])
 
     def _sense2idx(self, a_rels):
         """Convert symbolic senses to vectors.
@@ -380,11 +496,9 @@ class DiscourseSenser(object):
         with open(a_path, "rb") as ifile:
             self._move(load(ifile))
         bfname = os.path.dirname(a_path)
-        # load serialized models
-        for imodel_path in self.model_paths:
-            imodel_path = os.path.join(bfname, imodel_path)
-            with open(imodel_path, "rb") as ifile:
-                self.models.append(load(ifile))
+        # normalize paths to serialized models
+        self.model_paths = [os.path.join(bfname, ipath)
+                            for ipath in self.model_paths]
 
     def _move(self, a_senser):
         """Load serialized model from disc.
@@ -436,58 +550,3 @@ class DiscourseSenser(object):
         del self.cls2idx
         del self.idx2cls
         del self.econn
-
-    def _prejudge(self, a_rel, a_data):
-        """Collect judgments of single classifiers.
-
-        Args:
-        a_rel (dict):
-          discourse relation whose sense should be predicted
-        a_data (2-tuple(dict, dict)):
-          list of input JSON data
-
-        Returns:
-        (np.array):
-          modified ``a_ret``
-
-        """
-        if self.wbench is None:
-            self.wbench = np.zeros((len(self.models), len(self.cls2idx)))
-        for i, imodel in enumerate(self.models):
-            imodel.predict(a_rel, a_data, self.wbench, i)
-        return self.wbench
-
-    def _prune_data(self, a_rels, a_parses):
-        """Remove unnecessary information from data.
-
-        Args:
-        a_rels (list):
-          list of input discourse relations
-        a_parses (dict):
-          parse trees
-
-        Returns:
-        2-tuple(list, dict):
-          abridged input data
-
-        """
-        arg = None
-        # clean-up relations
-        for irel in a_rels:
-            irel.pop("ID")
-            irel[CONNECTIVE].pop(CHAR_SPAN)
-            arg = irel[ARG1]
-            arg.pop(CHAR_SPAN)
-            arg.pop(RAW_TEXT)
-            arg = irel[ARG2]
-            arg.pop(CHAR_SPAN)
-            arg.pop(RAW_TEXT)
-        # clean-up parses
-        w_attrs = None
-        for isentences in a_parses.itervalues():
-            for isent in isentences[SENTENCES]:
-                isent.pop(PARSE_TREE)
-                isent.pop(DEPS)
-                for iword in isent[WORDS]:
-                    iword[-1].clear()
-        return (a_rels, a_parses)

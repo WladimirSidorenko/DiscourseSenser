@@ -74,6 +74,6 @@ class XGBoostBaseSenser(object):
         # map model's classes to original indices
         for i in xrange(self.n_y):
             if i == dec:
-                a_ret[a_i][i] = self.one
+                a_ret[a_i][i] += self.one
             else:
-                a_ret[a_i][i] = self.eps
+                a_ret[a_i][i] += self.eps

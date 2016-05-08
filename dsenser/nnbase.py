@@ -325,7 +325,7 @@ class NNBaseSenser(BaseSenser):
         if len(dec.shape) > 1:
             dec = np.mean(dec, axis=0)
         for i, ival in enumerate(dec):
-            a_ret[a_i][i] = ival
+            a_ret[a_i][i] += ival
 
     def _free(self):
         """Free resources used by the model.
@@ -441,7 +441,8 @@ class NNBaseSenser(BaseSenser):
         if a_get_emb_i == self._get_test_w2v_emb_i or \
            a_get_emb_i == self._get_test_w2v_lstsq_emb_i:
             return np.asarray([a_get_emb_i(t) for t in toks])
-        return np.asarray([a_get_emb_i(t) for t in toks], dtype="int32")
+        return np.asarray([a_get_emb_i(t) for t in toks],
+                          dtype="int32")
 
     def _init_w_emb(self):
         """Initialize task-specific word embeddings.

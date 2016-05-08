@@ -126,12 +126,12 @@ class WangBaseSenser(BaseSenser):
         dec = self._model.decision_function(a_feats)
         if len(dec.shape) > 1:
             dec = np.mean(dec, axis=0)
+        # normalize using softmax
+        exp_ret = np.exp(sum(dec)) or 1e10
+        dec /= exp_ret
         # map model's classes to original indices
         for i, ival in enumerate(dec):
-            a_ret[a_i][self._model.classes_[i]] = ival
-        # normalize using softmax
-        exp_ret = np.exp(a_ret[a_i])
-        a_ret[a_i] = exp_ret / (sum(exp_ret) or 1e10)
+            a_ret[a_i][self._model.classes_[i]] += ival
 
     def _free(self):
         """Free resources used by the model.

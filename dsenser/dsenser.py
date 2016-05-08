@@ -209,8 +209,7 @@ class DiscourseSenser(object):
             print("ipath =", repr(ipath), file=sys.stderr)
             with open(ipath, "rb") as ifile:
                 imodel = load(ifile)
-            for i, irel in enumerate(rels):
-                imodel.predict(irel, a_data, self.wbench, i)
+            imodel.batch_predict(rels, a_data, self.wbench)
             del imodel
             imodel = None
             gc.collect()

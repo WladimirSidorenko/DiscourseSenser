@@ -66,4 +66,5 @@ TOK_ID = 4
 PARSE_TREE = "parsetree"
 
 SHORT2FULL = {"Expansion": "Expansion.Conjunction",
-              "Comparison": "Comparison.COntrast"}
+              "Comparison": "Comparison.Contrast",
+              "Comparison.COntrast": "Comparison.Contrast"}

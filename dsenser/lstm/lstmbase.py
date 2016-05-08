@@ -16,6 +16,7 @@ from __future__ import absolute_import, print_function
 from dsenser.nnbase import NNBaseSenser
 from dsenser.theano_utils import floatX, theano, HE_UNIFORM, ORTHOGONAL, TT
 
+import gc
 import numpy as np
 
 ##################################################################
@@ -34,6 +35,42 @@ class LSTMBaseSenser(NNBaseSenser):
     Methods:
 
     """
+
+    def batch_predict(self, a_rels, a_data, a_ret):
+        """Method for predicting sense of multiple relations.
+
+        Args:
+        a_rels (list):
+          list of input relations
+        a_data (2-tuple(dict, dict)):
+          list of input JSON data
+        a_ret (np.array):
+          prediction matrix
+        a_i (int):
+          row index in the output vector
+
+        Returns:
+        (void):
+          update a_ret in place
+
+        """
+        rels, parses = a_data
+        # convert input relations to embedding indices
+        if self.get_test_w_emb_i is None:
+            self._init_wemb_funcs()
+        irels = [self._rel2x(irel, parses, self.get_test_w_emb_i,
+                             self.get_test_c_emb_i)
+                 for irel in rels]
+        if self.w2v:
+            self.w2v.unload()
+            self.w2v = None
+            gc.collect()
+        # initialize prediction functions
+        if self._predict_func is None:
+            self._init_funcs()
+        # make predictions
+        for i, irel in enumerate(irels):
+            self._predict(irel, a_ret, a_i)
 
     def _init_nn(self):
         """Initialize neural network.

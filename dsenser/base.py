@@ -77,6 +77,27 @@ class BaseSenser(object):
         self.explicit.train(explicit_train, explicit_dev, a_n_y,
                             a_i, a_train_out, a_dev_out)
 
+    def batch_predict(self, a_rels, a_data, a_ret):
+        """Method for predicting sense of multiple relations.
+
+        Args:
+        a_rels (list):
+          list of input relations
+        a_data (2-tuple(dict, dict)):
+          list of input JSON data
+        a_ret (np.array):
+          prediction matrix
+        a_i (int):
+          row index in the output vector
+
+        Returns:
+        (void):
+          update a_ret in place
+
+        """
+        for i, irel in enumerate(a_rels):
+            self.predict(irel, a_data, a_ret, i)
+
     def predict(self, a_rel, a_data, a_ret, a_i):
         """Method for predicting sense of single relation.
 

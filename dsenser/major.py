@@ -102,13 +102,13 @@ class MajorSenser(BaseSenser):
                 for i, irel in enumerate(a_dev_data[0]):
                     self.predict(irel, a_dev_data, a_dev_out[i], a_i)
 
-    def predict(self, a_rel, a_test_data, a_ret, a_i):
+    def predict(self, a_rel, a_data, a_ret, a_i):
         """Method for predicting sense of single relation.
 
         Args:
         a_rel (dict):
           discourse relation whose sense should be predicted
-        a_test_data (2-tuple(dict, dict)):
+        a_data (2-tuple(dict, dict)):
           list of input JSON data
         a_ret (np.array):
           prediction matrix

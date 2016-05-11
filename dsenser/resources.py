@@ -78,7 +78,8 @@ def load_conns(a_fname):
     """
     ret = set()
     iconn = None
-    with codecs.open(a_fname, 'r', ENCODING) as ifile:
+    with codecs.open(a_fname, 'r', ENCODING,
+                     errors="replace") as ifile:
         for iline in ifile:
             iline = iline.strip().lower()
             if not iline:
@@ -116,7 +117,8 @@ def load_LCSI(a_fname):
     """
     ret = dict()
     iword = iclasses = iclass_str = None
-    with codecs.open(a_fname, 'r', ENCODING) as ifile:
+    with codecs.open(a_fname, 'r', ENCODING,
+                     errors="replace") as ifile:
         for iline in ifile:
             iline = iline.strip()
             if not iline:
@@ -142,7 +144,8 @@ def load_BROWN(a_fname):
     ret = defaultdict(set)
     iword = iclass = None
     print("Loading {:s}... ".format(a_fname), end="", file=sys.stderr)
-    with codecs.open(a_fname, 'r', ENCODING) as ifile:
+    with codecs.open(a_fname, 'r', ENCODING,
+                     errors="replace") as ifile:
         for iline in ifile:
             iline = iline.strip()
             if not iline:
@@ -170,7 +173,8 @@ def load_INQUIRER(a_fname):
     ret = dict()
     stem_ret = dict()
     iword = iclass = None
-    with codecs.open(a_fname, 'r', ENCODING) as ifile:
+    with codecs.open(a_fname, 'r', ENCODING,
+                     errors="replace") as ifile:
         for iline in ifile:
             iline = iline.strip()
             if not iline:
@@ -198,7 +202,8 @@ def load_MPQA(a_fname):
     """
     ret = defaultdict(lambda: [None] * 3)
     attrs = None
-    with codecs.open(a_fname, 'r', ENCODING) as ifile:
+    with codecs.open(a_fname, 'r', ENCODING,
+                     errors="replace") as ifile:
         for iline in ifile:
             iline = iline.strip()
             if not iline:

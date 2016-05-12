@@ -11,7 +11,7 @@ WangExplicitSenser (class):
 
 ##################################################################
 # Imports
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, unicode_literals
 
 from dsenser.constants import ARG1, ARG2, CONNECTIVE, DOC_ID, \
     TOK_ID, TOK_LIST, SENTENCES, WORDS, POS, TOK_IDX, SNT_ID, \

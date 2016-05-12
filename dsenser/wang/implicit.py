@@ -11,7 +11,7 @@ WangImplicitSenser (class):
 
 ##################################################################
 # Imports
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, unicode_literals
 
 from dsenser.constants import ARG1, ARG2, DEPS, \
     DOC_ID, PARSE_TREE, POS, SENTENCES, \

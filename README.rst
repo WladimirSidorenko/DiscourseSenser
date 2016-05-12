@@ -16,7 +16,7 @@ Description
 
 This package provides core functionality for sense disambiguation of
 explicit and implicit discourse connectives for PDTB-like discourse
-parsing.  It is being created for the CoNLL-2016 shared task.
+parsing.  It has been created for the CoNLL-2016 shared task.
 
 The main package **dsenser** currently comprises the following
 classifiers which can be trained either separately or bundled into

@@ -4,6 +4,7 @@ Simple LSTM (10 iterations over dev set):
 Iteration I
 -----------
 
+```
 ================================================
 Evaluation for all discourse relations
 Overall parser performance --------------
@@ -18,10 +19,12 @@ Precision 0.9211 Recall 0.9211 F1 0.9211
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.5888 Recall 0.5888 F1 0.5888
+```
 
 Iteration II
 ------------
 
+```
 ================================================
 Evaluation for all discourse relations
 Overall parser performance --------------
@@ -36,10 +39,12 @@ Precision 0.9014 Recall 0.9014 F1 0.9014
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.5848 Recall 0.5848 F1 0.5848
+```
 
 Iteration III
 -------------
 
+```
 ================================================
 Evaluation for all discourse relations
 Overall parser performance --------------
@@ -54,10 +59,12 @@ Precision 0.8953 Recall 0.8953 F1 0.8953
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.5634 Recall 0.5634 F1 0.5634
+```
 
 Iteration IV (evaluate on train set)
 ------------------------------------
 
+```
 ================================================
 Evaluation for all discourse relations
 Overall parser performance --------------
@@ -72,10 +79,12 @@ Precision 0.7943 Recall 0.7804 F1 0.7873
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.2582 Recall 0.2620 F1 0.2601
+```
 
 Iteration V (evaluate on train set after 200 iterations with no dropout)
 ------------------------------------------------------------------------
 
+```
 ================================================
 Evaluation for all discourse relations
 Overall parser performance --------------
@@ -90,13 +99,14 @@ Precision 0.7600 Recall 0.7224 F1 0.7408
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.2311 Recall 0.2330 F1 0.2321
-
+```
 
 Iteration VI (evaluate on train set after 200 iterations, Gal's
 ----------------------------------------------------------------
 dropout (* with error)
 ----------------------
 
+```
 ================================================
 Evaluation for all discourse relations
 Overall parser performance --------------
@@ -111,10 +121,12 @@ Precision 0.8165 Recall 0.8021 F1 0.8092
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.2513 Recall 0.2550 F1 0.2531
+```
 
 Iteration VII (evaluate on train set after 200 iterations, na\"ive dropout)
 ---------------------------------------------------------------------------
 
+```
 ================================================
 Evaluation for all discourse relations
 Overall parser performance --------------
@@ -129,10 +141,12 @@ Precision 0.8029 Recall 0.7888 F1 0.7958
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.2486 Recall 0.2522 F1 0.2504
+```
 
 Iteration VIII (evaluate on train set after 200 iterations, no dropout)
 -----------------------------------------------------------------------
 
+```
 ================================================
 Evaluation for all discourse relations
 Overall parser performance --------------
@@ -147,10 +161,12 @@ Precision 0.7752 Recall 0.7474 F1 0.7611
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.2380 Recall 0.2414 F1 0.2397
+```
 
 Iteration IX (evaluate on train set after 200 iterations, Gal's dropout)
 ---------------------------------------------------------------------
 
+```
 ================================================
 Evaluation for all discourse relations
 Overall parser performance --------------
@@ -165,7 +181,7 @@ Precision 0.7779 Recall 0.7642 F1 0.7710
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.2525 Recall 0.2561 F1 0.2543
-
+```
 
 Bi-directional LSTM (10 iterations over dev set):
 =================================================
@@ -173,6 +189,7 @@ Bi-directional LSTM (10 iterations over dev set):
 Iteration I
 -----------
 
+```
 ================================================
 Evaluation for all discourse relations
 Overall parser performance --------------
@@ -187,10 +204,12 @@ Precision 0.8938 Recall 0.8938 F1 0.8938
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.3992 Recall 0.3992 F1 0.3992
+```
 
 Iteration IV (evaluate on train set)
 ------------------------------------
 
+```
 ================================================
 Evaluation for all discourse relations
 Overall parser performance --------------
@@ -205,6 +224,7 @@ Precision 0.8079 Recall 0.7937 F1 0.8007
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.2382 Recall 0.2416 F1 0.2399
+```
 
 Bi-directional LSTM (with separate parameters, 10 iterations over dev set):
 ===========================================================================
@@ -212,6 +232,7 @@ Bi-directional LSTM (with separate parameters, 10 iterations over dev set):
 Iteration IV (evaluate on train set)
 ------------------------------------
 
+```
 ================================================
 Evaluation for all discourse relations
 Overall parser performance --------------
@@ -226,6 +247,7 @@ Precision 0.8007 Recall 0.7866 F1 0.7936
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
 Overall parser performance --------------
 Precision 0.2366 Recall 0.2400 F1 0.2382
+```
 
 TEST RUNS ON DEV
 ================
@@ -233,6 +255,7 @@ TEST RUNS ON DEV
 
 Wang XGBoost + Wang LinearSVC
 ================================================
+```
 Evaluation for all discourse relations
 
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -331,7 +354,6 @@ Overall parser performance --------------
 
 Precision 0.9105 Recall 0.9105 F1 0.9105
 
-
 ================================================
 
 Evaluation for non-explicit discourse relations only (Implicit, EntRel, AltLex)
@@ -381,10 +403,12 @@ Temporal.Synchrony                        precision 1.0000	recall 0.1667	F1 0.28
 Overall parser performance --------------
 
 Precision 0.4345 Recall 0.4339 F1 0.4342
+```
 
 Wang XGBoost + Wang LinearSVC + Majority
 ================================================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -462,10 +486,11 @@ Temporal.Asynchronous.Succession          precision 1.0000	recall 0.3333	F1 0.50
 Temporal.Synchrony                        precision 1.0000	recall 0.1667	F1 0.2857
 Overall parser performance --------------
 Precision 0.4318 Recall 0.4312 F1 0.4315
-
+```
 
 OPTIONS: --w2v
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -537,11 +562,12 @@ Temporal.Asynchronous.Succession          precision 1.0000	recall 0.0000	F1 0.00
 Temporal.Synchrony                        precision 1.0000	recall 0.0000	F1 0.0000
 Overall parser performance --------------
 Precision 0.3405 Recall 0.3405 F1 0.3405
-
+```
 
 
 OPTIONS: --w2v --lstsq
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -613,11 +639,11 @@ Temporal.Asynchronous.Succession          precision 1.0000	recall 0.0000	F1 0.00
 Temporal.Synchrony                        precision 1.0000	recall 0.0000	F1 0.0000
 Overall parser performance --------------
 Precision 0.3057 Recall 0.3057 F1 0.3057
+```
 
 
-
-OPTIONS: 
-
+OPTIONS:
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -689,11 +715,11 @@ Temporal.Asynchronous.Succession          precision 0.0000	recall 0.0000	F1 0.00
 Temporal.Synchrony                        precision 1.0000	recall 0.0000	F1 0.0000
 Overall parser performance --------------
 Precision 0.2964 Recall 0.2964 F1 0.2964
-
+```
 
 
 OPTIONS: --w2v
-
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -765,11 +791,11 @@ Temporal.Asynchronous.Succession          precision 0.0000	recall 0.0000	F1 0.00
 Temporal.Synchrony                        precision 1.0000	recall 0.0000	F1 0.0000
 Overall parser performance --------------
 Precision 0.3298 Recall 0.3298 F1 0.3298
-
+```
 
 
 OPTIONS: --w2v --lstsq
-
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -841,11 +867,11 @@ Temporal.Asynchronous.Succession          precision 0.0000	recall 0.0000	F1 0.00
 Temporal.Synchrony                        precision 1.0000	recall 0.0000	F1 0.0000
 Overall parser performance --------------
 Precision 0.3351 Recall 0.3351 F1 0.3351
+```
 
 
-
-OPTIONS: 
-
+OPTIONS:
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -917,11 +943,11 @@ Temporal.Asynchronous.Succession          precision 1.0000	recall 0.0000	F1 0.00
 Temporal.Synchrony                        precision 1.0000	recall 0.0000	F1 0.0000
 Overall parser performance --------------
 Precision 0.3605 Recall 0.3605 F1 0.3605
-
+```
 
 
 OPTIONS: --w2v
-
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -993,11 +1019,10 @@ Temporal.Asynchronous.Succession          precision 1.0000	recall 0.0000	F1 0.00
 Temporal.Synchrony                        precision 1.0000	recall 0.0000	F1 0.0000
 Overall parser performance --------------
 Precision 0.3097 Recall 0.3097 F1 0.3097
-
-
+```
 
 OPTIONS: --w2v --lstsq
-
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -1069,11 +1094,11 @@ Temporal.Asynchronous.Succession          precision 1.0000	recall 0.0000	F1 0.00
 Temporal.Synchrony                        precision 1.0000	recall 0.0000	F1 0.0000
 Overall parser performance --------------
 Precision 0.3244 Recall 0.3244 F1 0.3244
+```
 
 
-
-OPTIONS: 
-
+OPTIONS:
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -1145,4 +1170,4 @@ Temporal.Asynchronous.Succession          precision 1.0000	recall 0.0000	F1 0.00
 Temporal.Synchrony                        precision 1.0000	recall 0.0000	F1 0.0000
 Overall parser performance --------------
 Precision 0.3445 Recall 0.3445 F1 0.3445
-
+```

@@ -1,24 +1,28 @@
 MD5 SUMS ORIG
 =============
+```
 fd1f57f032b92c904f47280cb07bf8e6  Projects/DiscourseSenserBkp.2016.05.07/dsenser/data/models/pdtb.sense.model
 8c564ed6b99b20e4b9313bca0b3fa6be  Projects/DiscourseSenserBkp.2016.05.07/dsenser/data/models/pdtb.sense.model.LSTMSenser
 7ded99f5d2f96f2ae4c0ae401110874f  Projects/DiscourseSenserBkp.2016.05.07/dsenser/data/models/pdtb.sense.model.MajorSenser
 c852915080e526141beeec0fd02d9085  Projects/DiscourseSenserBkp.2016.05.07/dsenser/data/models/pdtb.sense.model.SVDSenser
 7ecb67c8c3fea11a93f2a15aa7e0e29f  Projects/DiscourseSenserBkp.2016.05.07/dsenser/data/models/pdtb.sense.model.WangSenser
 da54f403c0ddf6ecdc890b7889e0c142  Projects/DiscourseSenserBkp.2016.05.07/dsenser/data/models/pdtb.sense.model.XGBoostSenser
+```
 
 MD5 SUMS RECAST
 ===============
+```
 99f8ed08c0494658e211f3467fdbd19d  dsenser/data/models/pdtb.sense.model
 3f777a9786673ba01387ba65aa0b013c  dsenser/data/models/pdtb.sense.model.LSTMSenser
 7ded99f5d2f96f2ae4c0ae401110874f  dsenser/data/models/pdtb.sense.model.MajorSenser
 c852915080e526141beeec0fd02d9085  dsenser/data/models/pdtb.sense.model.SVDSenser
 7ecb67c8c3fea11a93f2a15aa7e0e29f  dsenser/data/models/pdtb.sense.model.WangSenser
 da54f403c0ddf6ecdc890b7889e0c142  dsenser/data/models/pdtb.sense.model.XGBoostSenser
+```
 
 Recast Procedure:
 =================
-```
+```python
         from theano.sandbox.cuda.var import CudaNdarraySharedVariable
         from theano.compile.sharedvalue import SharedVariable
 
@@ -52,6 +56,7 @@ Recast Procedure:
 DEV SET (all models)
 ====================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -123,10 +128,12 @@ Temporal.Asynchronous.Succession          precision 0.0000	recall 0.0000	F1 0.00
 Temporal.Synchrony                        precision 1.0000	recall 0.4000	F1 0.5714
 Overall parser performance --------------
 Precision 0.5207 Recall 0.5207 F1 0.5207
+```
 
 TRAIN SET (all models)
 ======================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 0.9986 Recall 1.0000 F1 0.9993
@@ -203,10 +210,12 @@ Temporal.Asynchronous.Succession          precision 0.8125	recall 0.0909	F1 0.16
 Temporal.Synchrony                        precision 1.0000	recall 0.0863	F1 0.1589
 Overall parser performance --------------
 Precision 0.4523 Recall 0.4518 F1 0.4521
+```
 
 DEV SET (no LSTM)
 =================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -278,10 +287,12 @@ Temporal.Asynchronous.Succession          precision 1.0000	recall 0.3333	F1 0.50
 Temporal.Synchrony                        precision 1.0000	recall 0.4000	F1 0.5714
 Overall parser performance --------------
 Precision 0.5100 Recall 0.5100 F1 0.5100
+```
 
 TRAIN SET (no LSTM)
 ===================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 0.9986 Recall 1.0000 F1 0.9993
@@ -358,10 +369,12 @@ Temporal.Asynchronous.Succession          precision 0.9688	recall 0.2183	F1 0.35
 Temporal.Synchrony                        precision 1.0000	recall 0.1314	F1 0.2323
 Overall parser performance --------------
 Precision 0.4499 Recall 0.4494 F1 0.4497
+```
 
 DEV SET (no explicit LSTM)
 ==========================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -433,10 +446,12 @@ Temporal.Asynchronous.Succession          precision 1.0000	recall 0.0000	F1 0.00
 Temporal.Synchrony                        precision 1.0000	recall 0.4000	F1 0.5714
 Overall parser performance --------------
 Precision 0.5194 Recall 0.5194 F1 0.5194
+```
 
 TRAIN SET (no explicit LSTM)
 ============================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 0.9986 Recall 1.0000 F1 0.9993
@@ -513,10 +528,12 @@ Temporal.Asynchronous.Succession          precision 1.0000	recall 0.0629	F1 0.11
 Temporal.Synchrony                        precision 1.0000	recall 0.0863	F1 0.1589
 Overall parser performance --------------
 Precision 0.4515 Recall 0.4509 F1 0.4512
+```
 
 DEV SET (no SVD)
 ================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -588,11 +605,12 @@ Temporal.Asynchronous.Succession          precision 0.3333	recall 0.3333	F1 0.33
 Temporal.Synchrony                        precision 1.0000	recall 0.4000	F1 0.5714
 Overall parser performance --------------
 Precision 0.5407 Recall 0.5407 F1 0.5407
+```
 
 TRAIN SET (no SVD)
 ==================
 
-
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 0.9986 Recall 1.0000 F1 0.9993
@@ -669,10 +687,12 @@ Temporal.Asynchronous.Succession          precision 0.8333	recall 0.1761	F1 0.29
 Temporal.Synchrony                        precision 1.0000	recall 0.1185	F1 0.2119
 Overall parser performance --------------
 Precision 0.4728 Recall 0.4722 F1 0.4725
+```
 
 DEV SET (no explicit SVD)
 =========================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -744,10 +764,12 @@ Temporal.Asynchronous.Succession          precision 0.0000	recall 0.0000	F1 0.00
 Temporal.Synchrony                        precision 1.0000	recall 0.4000	F1 0.5714
 Overall parser performance --------------
 Precision 0.5207 Recall 0.5207 F1 0.5207
+```
 
 TRAIN SET (no explicit SVD)
 ===========================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 0.9986 Recall 1.0000 F1 0.9993
@@ -824,10 +846,12 @@ Temporal.Asynchronous.Succession          precision 0.7222	recall 0.0909	F1 0.16
 Temporal.Synchrony                        precision 1.0000	recall 0.0863	F1 0.1589
 Overall parser performance --------------
 Precision 0.4524 Recall 0.4519 F1 0.4522
+```
 
 DEV SET (no SVD, no MAJOR)
 ==========================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -899,10 +923,12 @@ Temporal.Asynchronous.Succession          precision 0.3333	recall 0.3333	F1 0.33
 Temporal.Synchrony                        precision 1.0000	recall 0.4000	F1 0.5714
 Overall parser performance --------------
 Precision 0.5581 Recall 0.5581 F1 0.5581
+```
 
 TRAIN SET (no SVD, no MAJOR)
 ============================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 0.9986 Recall 1.0000 F1 0.9993
@@ -979,10 +1005,12 @@ Temporal.Asynchronous.Succession          precision 0.8537	recall 0.2465	F1 0.38
 Temporal.Synchrony                        precision 0.6207	recall 0.1333	F1 0.2195
 Overall parser performance --------------
 Precision 0.4942 Recall 0.4936 F1 0.4939
+```
 
 LAST RUNS ORIG (DEV SET: Wang, XGBoost, LSTM)
 =============================================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -1054,10 +1082,12 @@ Temporal.Asynchronous.Succession          precision 0.6667	recall 0.6667	F1 0.66
 Temporal.Synchrony                        precision 1.0000	recall 0.7500	F1 0.8571
 Overall parser performance --------------
 Precision 0.8852 Recall 0.8852 F1 0.8852
+```
 
 LAST RUNS ORIG (TRAIN SET: Wang, XGBoost, LSTM)
 ===============================================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 0.9986 Recall 1.0000 F1 0.9993
@@ -1134,10 +1164,12 @@ Temporal.Asynchronous.Succession          precision 0.9877	recall 0.5797	F1 0.73
 Temporal.Synchrony                        precision 0.9844	recall 0.5294	F1 0.6885
 Overall parser performance --------------
 Precision 0.8386 Recall 0.8376 F1 0.8381
+```
 
 LAST RUNS RECAST (DEV SET: Wang, XGBoost, LSTM)
 ===============================================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -1209,10 +1241,12 @@ Temporal.Asynchronous.Succession          precision 0.6667	recall 0.6667	F1 0.66
 Temporal.Synchrony                        precision 1.0000	recall 0.7500	F1 0.8571
 Overall parser performance --------------
 Precision 0.8852 Recall 0.8852 F1 0.8852
+```
 
 LAST RUNS RECAST (TRAIN SET: Wang, XGBoost, LSTM)
 =================================================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 0.9986 Recall 1.0000 F1 0.9993
@@ -1289,10 +1323,12 @@ Temporal.Asynchronous.Succession          precision 0.9877	recall 0.5797	F1 0.73
 Temporal.Synchrony                        precision 0.9844	recall 0.5294	F1 0.6885
 Overall parser performance --------------
 Precision 0.8386 Recall 0.8376 F1 0.8381
+```
 
 LAST RUNS RECAST CPU (DEV SET: Wang, XGBoost, LSTM)
 ===================================================
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -1364,14 +1400,16 @@ Temporal.Asynchronous.Succession          precision 0.6667	recall 0.6667	F1 0.66
 Temporal.Synchrony                        precision 1.0000	recall 0.7500	F1 0.8571
 Overall parser performance --------------
 Precision 0.8852 Recall 0.8852 F1 0.8852
+```
 
 ==================================================================
-==================================================================
-==================================================================
 
+```
 3f777a9786673ba01387ba65aa0b013c  dsenser/data/models/pdtb.sense.model.LSTMSenser
 c852915080e526141beeec0fd02d9085  dsenser/data/models/pdtb.sense.model.SVDSenser
+```
 
+```
 ================================================
 Evaluation for all discourse relations
 Explicit connectives         : Precision 1.0000 Recall 1.0000 F1 1.0000
@@ -1443,9 +1481,11 @@ Temporal.Asynchronous.Succession          precision 0.6667	recall 0.6667	F1 0.66
 Temporal.Synchrony                        precision 1.0000	recall 0.7500	F1 0.8571
 Overall parser performance --------------
 Precision 0.8852 Recall 0.8852 F1 0.8852
+```
 
 ==================================================================
-==================================================================
-==================================================================
+
+```
 acdd91a9ce7bf8e1f990acd4b8cca1b2  dsenser/data/models/pdtb.sense.model.LSTMSenser
 c852915080e526141beeec0fd02d9085  dsenser/data/models/pdtb.sense.model.SVDSenser
+```

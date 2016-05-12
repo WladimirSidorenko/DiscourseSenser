@@ -22,7 +22,7 @@ The main package **dsenser** currently comprises the following
 classifiers which can be trained either separately or bundled into
 ensembles:
 
-**dsenser.major**
+**dsenser.major.MajorSenser**
   a simplistic classifier which returns the conditional probabilities
   of senses given the connective;
 
@@ -55,15 +55,17 @@ its submodules and subsequently run the following commands:
     git submodule init
     git submodule update
 
-    # download the `Skip-gram Neural Word Embeddings`_ and store the
-    # unpacked archive at `dsenser/data/GoogleNews-vectors-negative300.bin`
+    # download the Skip-gram Neural Word Embeddings at
+    # https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing
+    # and store the unpacked archive at
+    # `dsenser/data/GoogleNews-vectors-negative300.bin`
 
-    pip install -r requirements.txt . --user
+    pip install -r requirements.txt -E . --user
 
-Beware, that this package will not include any pre-trained models.
-Due to a big size of the serialized files, we cannot include them in
-this project, but feel free to contact the author of this program to
-obtain the PDTB models from him.
+Beware, that this package does not include any pre-trained models.
+Due to a big size of the serialized files, we cannot add them all to
+this git project, but feel free to contact `the author`_ of this
+program to obtain the PDTB models from him directly.
 
 Usage
 =====
@@ -74,7 +76,9 @@ After installation, you can import the module in your python scripts, e.g.:
 
     from dsenser import DiscoureSenser
 
-    senser = DSenser(None)
+    ...
+
+    senser = DiscoureSenser(None)
     senser.train(train_set, dsenser.WANG | dsenser.XGBOOST | dsenser.LSTM,
                  path_to_model, dev_set)
 
@@ -87,5 +91,14 @@ or, alternatively, you can also use the delivered front-end script
 
     pdtb_senser test path/to/input_dir path/to/output_dir
 
+Acknowledgment
+==============
+
+We gratefuly acknowledge the contribution of
+
+* `Tatjana Scheffler`_ , who extended Wang's original features.
+
+.. _`the author`: http://angcl.ling.uni-potsdam.de/people/sidarenka.html
 .. _`Wang. et al.`: https://github.com/lanmanok/conll2015_discourse
 .. _`Skip-gram Neural Word Embeddings`: https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing
+.. _`Tatjana Scheffler`: http://www.ling.uni-potsdam.de/~scheffler/

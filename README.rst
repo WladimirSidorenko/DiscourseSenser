@@ -27,11 +27,11 @@ ensembles:
   of senses given the connective;
 
 **dsenser.wang.WangSenser**
- an optimized reimplementation of `Wang. et al.`_'s sense classification
+ an optimized reimplementation of `Wang et al.`_'s sense classification
  system using the LinearSVC classifier;
 
 **dsenser.xgboost.XGBoostSenser**
- an optimized reimplementation of `Wang. et al.`_'s sense classification
+ an optimized reimplementation of `Wang et al.`_'s sense classification
  system using the XGBoost decision forrest classifier;
 
 **dsenser.svd.SVDSenser**
@@ -96,10 +96,10 @@ Acknowledgment
 
 We gratefuly acknowledge the contribution of
 
-* `Tatjana Scheffler`_ , who extended the original features of `Wang et al.`_ .
+* `Tatjana Scheffler`_ , who extended the original features of `Wang et al.`_.
 
 .. _`the author`: mailto:sidarenk@uni-potsdam.de
-.. _`Wang. et al.`: https://github.com/lanmanok/conll2015_discourse
+.. _`Wang et al.`: https://github.com/lanmanok/conll2015_discourse
 .. _`Yarin Gal`: http://arxiv.org/abs/1512.05287
 .. _`Skip-gram Neural Word Embeddings`: https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing
 .. _`Tatjana Scheffler`: http://www.ling.uni-potsdam.de/~scheffler/

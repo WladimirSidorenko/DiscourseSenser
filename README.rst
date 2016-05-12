@@ -99,6 +99,6 @@ We gratefuly acknowledge the contribution of
 
 .. _`the author`: http://angcl.ling.uni-potsdam.de/people/sidarenka.html
 .. _`Wang. et al.`: https://github.com/lanmanok/conll2015_discourse
-.. `Yarin Gal`_: http://arxiv.org/abs/1512.05287
+.. _`Yarin Gal`: http://arxiv.org/abs/1512.05287
 .. _`Skip-gram Neural Word Embeddings`: https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing
 .. _`Tatjana Scheffler`: http://www.ling.uni-potsdam.de/~scheffler/

@@ -38,9 +38,8 @@ ensembles:
  a neural network classifier which uses the SVD decomposition of word
  embedding matrices of the arguments;
 
-**dsenser.lstm.LSTMSenser**
- a neural network classifier which uses the SVD decomposition of word
- embedding matrices of the arguments;
+**dsenser.lstm.LSTMSenser** a neural network classifier which uses an
+ LSTM recurrence with Bayesian dropout (cf. `Yarin Gal`_);
 
 Installation
 ============
@@ -100,5 +99,6 @@ We gratefuly acknowledge the contribution of
 
 .. _`the author`: http://angcl.ling.uni-potsdam.de/people/sidarenka.html
 .. _`Wang. et al.`: https://github.com/lanmanok/conll2015_discourse
+.. `Yarin Gal`_: http://arxiv.org/abs/1512.05287
 .. _`Skip-gram Neural Word Embeddings`: https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing
 .. _`Tatjana Scheffler`: http://www.ling.uni-potsdam.de/~scheffler/

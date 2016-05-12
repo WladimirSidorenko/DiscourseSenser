@@ -97,7 +97,7 @@ We gratefuly acknowledge the contribution of
 
 * `Tatjana Scheffler`_ , who extended Wang's original features.
 
-.. _`the author`: http://angcl.ling.uni-potsdam.de/people/sidarenka.html
+.. _`the author`: mailto:sidarenk@uni-potsdam.de
 .. _`Wang. et al.`: https://github.com/lanmanok/conll2015_discourse
 .. _`Yarin Gal`: http://arxiv.org/abs/1512.05287
 .. _`Skip-gram Neural Word Embeddings`: https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing

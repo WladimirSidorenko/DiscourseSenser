@@ -38,8 +38,9 @@ ensembles:
  a neural network classifier which uses the SVD decomposition of word
  embedding matrices of the arguments;
 
-**dsenser.lstm.LSTMSenser** a neural network classifier which uses an
- LSTM recurrence with Bayesian dropout (cf. `Yarin Gal`_);
+**dsenser.lstm.LSTMSenser**
+ a neural network classifier which uses an LSTM recurrence with
+ Bayesian dropout (cf. `Yarin Gal`_);
 
 Installation
 ============

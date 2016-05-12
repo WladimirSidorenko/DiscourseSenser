@@ -19,11 +19,28 @@ explicit and implicit discourse connectives for PDTB-like discourse
 parsing.  It is being created for the CoNLL-2016 shared task.
 
 The main package **dsenser** currently comprises the following
-subpackages:
+classifiers which can be trained either separately or bundled into
+ensembles:
 
-**scorer**
- a collection of standard CoNLL scorers for estimating the quality of
- sense disambiguation (is retrieved as submodule).
+**dsenser.major**
+  a simplistic classifier which returns the conditional probabilities
+  of senses given the connective;
+
+**dsenser.wang.WangSenser**
+ an optimized reimplementation of Wang. et al.'s sense classification
+ system using the LinearSVC classifier;
+
+**dsenser.xgboost.XGBoostSenser**
+ an optimized reimplementation of `Wang. et al.`_ 's sense classification
+ system using the XGBoost decision forrest classifier;
+
+**dsenser.svd.SVDSenser**
+ a neural network classifier which uses the SVD decomposition of word
+ embedding matrices of the arguments;
+
+**dsenser.lstm.LSTMSenser**
+ a neural network classifier which uses the SVD decomposition of word
+ embedding matrices of the arguments;
 
 Installation
 ============
@@ -43,6 +60,10 @@ its submodules and subsequently run the following commands:
 
     pip install -r requirements.txt . --user
 
+Beware, that this package will not include any pre-trained models.
+Due to a big size of the serialized files, we cannot include them in
+this project, but feel free to contact the author of this program to
+obtain the PDTB models from him.
 
 Usage
 =====
@@ -53,23 +74,18 @@ After installation, you can import the module in your python scripts, e.g.:
 
     from dsenser import DiscoureSenser
 
-    senser = DSenser()
+    senser = DSenser(None)
+    senser.train(train_set, dsenser.WANG | dsenser.XGBOOST | dsenser.LSTM,
+                 path_to_model, dev_set)
 
-or, alternatively, also use the delivered front-end script
-`discourse_senser` to process your input data, e.g.:
+or, alternatively, you can also use the delivered front-end script
+`pdtb_senser` to process your input data, e.g.:
 
 .. code-block:: shell
 
-    discourse_senser path/to/data_dir path/to/model_dir path/to/output_dir
+    pdtb_senser train path/to/train_dir
 
-Note that this script requires three mandatory arguments:
+    pdtb_senser test path/to/input_dir path/to/output_dir
 
-1. path to the directory with input PDTB data;
-2. path to directory contaning pre-built models and auxiliary data;
-3. path to the output directory.
-
-See the official `CoNLL instructions`_ for complete specification of
-the input and output format.
-
-.. _`CoNLL instructions`: https://github.com/attapol/conll16st/blob/master/README.md
+.. _`Wang. et al.`: https://github.com/lanmanok/conll2015_discourse
 .. _`Skip-gram Neural Word Embeddings`: https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing

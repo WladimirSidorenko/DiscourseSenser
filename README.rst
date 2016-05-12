@@ -27,11 +27,11 @@ ensembles:
   of senses given the connective;
 
 **dsenser.wang.WangSenser**
- an optimized reimplementation of Wang. et al.'s sense classification
+ an optimized reimplementation of `Wang. et al.`_'s sense classification
  system using the LinearSVC classifier;
 
 **dsenser.xgboost.XGBoostSenser**
- an optimized reimplementation of `Wang. et al.`_ 's sense classification
+ an optimized reimplementation of `Wang. et al.`_'s sense classification
  system using the XGBoost decision forrest classifier;
 
 **dsenser.svd.SVDSenser**

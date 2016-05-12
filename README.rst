@@ -95,7 +95,7 @@ Acknowledgment
 
 We gratefuly acknowledge the contribution of
 
-* `Tatjana Scheffler`_ , who extended Wang's original features.
+* `Tatjana Scheffler`_ , who extended the original features of `Wang et al.`_.
 
 .. _`the author`: mailto:sidarenk@uni-potsdam.de
 .. _`Wang. et al.`: https://github.com/lanmanok/conll2015_discourse

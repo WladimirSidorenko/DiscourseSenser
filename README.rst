@@ -46,7 +46,7 @@ Installation
 ============
 
 To install this package, you need to checkout this git-project with
-its submodules and subsequently run the following commands:
+its submodules by subsequently running the following commands:
 
 .. code-block:: shell
 

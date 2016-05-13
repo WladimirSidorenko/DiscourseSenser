@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
-"""Module providing common heano utils.
+"""Module providing common theano utils.
 
 Attributes:
 floatX (method): force float type expected by theano

@@ -1,4 +1,4 @@
-#!/usr//bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
 """Module providing class for XGBoost sense disambiguation.
@@ -11,7 +11,8 @@ WangSenser (class):
 
 ##################################################################
 # Imports
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, \
+    unicode_literals
 
 from dsenser.wang import WangSenser
 from dsenser.xgboost.explicit import XGBoostExplicitSenser

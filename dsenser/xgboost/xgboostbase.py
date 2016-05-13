@@ -1,4 +1,4 @@
-#!/usr//bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
 """Module providing abstract interface class for XGBoost sense calssification.

@@ -41,24 +41,26 @@ with codecs.open(DFLT_ECONN_PATH, 'r', ENCODING) as ifile:
 ##################################################################
 # Class
 class DiscourseSenser(object):
-    """Class for sense disambiguation of connectives.
+    """
+    Class for sense disambiguation of connectives.
 
     Attributes:
-    models (list(BaseSenser)):
-      sense disambiguation models
-    judge (dsenser.Judge):
-      meta-classifier
-    cls2idx (dict):
-      mapping from class to index
-    idx2cls (dict):
-      mapping from index to class
-    econn (set):
-      connectives marking explicit relations
+      models (list(BaseSenser)):
+        sense disambiguation models
+      judge (dsenser.Judge):
+        meta-classifier
+      cls2idx (dict):
+        mapping from class to index
+      idx2cls (dict):
+        mapping from index to class
+      econn (set):
+        connectives marking explicit relations
 
     """
 
     def __init__(self, a_model=None):
-        """Class constructor.
+        """
+        Class constructor.
 
         Args:
         a_model (str or None): path to serialized model or None

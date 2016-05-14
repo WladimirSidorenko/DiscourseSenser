@@ -64,8 +64,9 @@ its submodules by subsequently running the following commands:
 
 Beware, that this package does not include any pre-trained models.
 Due to a big size of the serialized files, we cannot add them all to
-this git project, but feel free to contact `the author`_ of this
-program to obtain the PDTB models from him directly.
+the git project and default source distribution, but feel free to
+contact `the author`_ of this program to obtain the PDTB models from
+him directly.
 
 Usage
 =====
@@ -87,9 +88,17 @@ or, alternatively, you can also use the delivered front-end script
 
 .. code-block:: shell
 
-    pdtb_senser train path/to/train_dir
+    pdtb_senser train --type=2 --type=8 path/to/train_dir
 
     pdtb_senser test path/to/input_dir path/to/output_dir
+
+The data in the specified folders should be in the ConNLL JSON format,
+and include the files ``parses.json`` and ``relations.json`` for
+training, and ``parses.json`` and ``relations-no-senses.json`` for the
+testing mode.  Alternatively, you can also specify a different input
+relations file whose senses need to be predicted by using the option
+``pdtb_senser test --rel-file=REL_FILE INPUT_DIR OUTPUT_DIR``.
+
 
 Acknowledgment
 ==============

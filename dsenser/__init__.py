@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
-"""Package providing modules for sense disambiguation of connectives.
+"""
+Package providing modules for sense disambiguation of connectives.
 
 Attributes:
 __all__ (list): variables and modules provided for export

@@ -23,7 +23,7 @@ from dsenser.svd.implicit import SVDImplicitSenser
 class SVDSenser(BaseSenser):
     """Class using LSTM classification for disambiguating connectives.
 
-    Attrs:
+    Attributes:
     explicit (SVDImplicitSenser): classifier for implicit discourse relations
     implicit (SVDExplicitSenser): classifier for explicit discourse relations
     n_y (int): number of distinct classes
@@ -33,13 +33,12 @@ class SVDSenser(BaseSenser):
     """
 
     def __init__(self, *args, **kwargs):
-        """Class constructor.
+        """
+        Class constructor.
 
         Args:
-        args (list):
-        list of arguments
-        kwargs (dict):
-        list of keyword arguments
+        args (list): list of arguments
+        kwargs (dict): list of keyword arguments
 
         """
         self.explicit = SVDExplicitSenser(*args, **kwargs)

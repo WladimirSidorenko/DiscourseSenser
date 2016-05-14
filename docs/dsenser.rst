@@ -10,3 +10,8 @@ dsenser
 
 .. toctree::
    :maxdepth: 2
+
+   dsenser.lstm.rst
+   dsenser.svd.rst
+   dsenser.wang.rst
+   dsenser.xgboost.rst

@@ -143,11 +143,11 @@ class DiscourseSenser(object):
         data_pruned = False
         imodel = x_train = x_dev = None
         imodel_name = imodel_path = ""
+        imodel_dir = os.path.dirname(a_path)
         while i < len(self.models):
             imodel = self.models[i]
             imodel_name = imodel.__class__.__name__
-            imodel_path = os.path.relpath(a_path + '.' + imodel_name,
-                                          a_path)
+            imodel_path = a_path + '.' + imodel_name
             if nn_used and not data_pruned:
                 from dsenser.svd import SVDSenser
                 from dsenser.lstm import LSTMSenser
@@ -162,7 +162,8 @@ class DiscourseSenser(object):
             imodel.train(a_train_data, a_dev_data, len(self.cls2idx),
                          -1, x_train, x_dev)
             self._dump(imodel, imodel_path)
-            self.model_paths.append(imodel_path)
+            self.model_paths.append(os.path.relpath(imodel_path,
+                                                    imodel_dir))
             self.models[i] = imodel = None
             gc.collect()
             i += 1

@@ -146,7 +146,7 @@ class DiscourseSenser(object):
         while i < len(self.models):
             imodel = self.models[i]
             imodel_name = imodel.__class__.__name__
-            imodel_path = os.path.relname(a_path + '.' + imodel_name,
+            imodel_path = os.path.relpath(a_path + '.' + imodel_name,
                                           a_path)
             if nn_used and not data_pruned:
                 from dsenser.svd import SVDSenser

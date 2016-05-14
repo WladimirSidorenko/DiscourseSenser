@@ -84,7 +84,7 @@ After installation, you can import the module in your python scripts, e.g.:
                  path_to_model, dev_set)
 
 or, alternatively, you can also use the delivered front-end script
-`pdtb_senser` to process your input data, e.g.:
+``pdtb_senser`` to process your input data, e.g.:
 
 .. code-block:: shell
 

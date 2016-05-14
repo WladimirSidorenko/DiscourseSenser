@@ -4,7 +4,7 @@
 """Module providing class for sense disambiguation of connectives.
 
 Attributes:
-DiscourseSenser (class): class for sense disambiguation of connectives
+  DiscourseSenser (class): class for sense disambiguation of connectives
 
 """
 
@@ -63,7 +63,7 @@ class DiscourseSenser(object):
         Class constructor.
 
         Args:
-        a_model (str or None): path to serialized model or None
+          a_model (str or None): path to serialized model or None
 
         """
         self.models = []
@@ -83,21 +83,21 @@ class DiscourseSenser(object):
         """Train specified model(s) on the provided data.
 
         Args:
-        a_train_data (list or None):
-          training set
-        a_path (str):
-          path for storing the model
-        a_type (str):
-          type of the model to be trained
-        a_dev_data (list or None):
-          development set
-        a_w2v (bool):
-          use word2vec embeddings
-        a_lstsq (bool):
-          use least squares method
+          a_train_data (list or None):
+            training set
+          a_path (str):
+            path for storing the model
+          a_type (str):
+            type of the model to be trained
+          a_dev_data (list or None):
+            development set
+          a_w2v (bool):
+            use word2vec embeddings
+          a_lstsq (bool):
+            use least squares method
 
         Returns:
-          (void)
+          void:
 
         """
         if a_type == 0:
@@ -188,12 +188,11 @@ class DiscourseSenser(object):
         these optimizations, however, it does not support the judge model.
 
         Args:
-        a_data (list):
-          input data to be analyzed
+          a_data (list):
+            input data to be analyzed
 
         Returns:
-        (void):
-          updates input set in place
+          void: updates input set in place
 
         """
         if not self.model_paths:
@@ -234,14 +233,13 @@ class DiscourseSenser(object):
         """Determine sense of discourse relation.
 
         Args:
-        a_rel (dict):
-          JSON instance representing discourse relation
-        a_data (list):
-          2-tuple(dict, dict): input rels and parses
+          a_rel (dict):
+            JSON instance representing discourse relation
+          a_data (list):
+            2-tuple(dict, dict): input rels and parses
 
         Returns:
-        (tuple(str, float)):
-          predicted label and its probability
+          tuple(str, float): predicted label and its probability
 
         """
         # the best performing strategy so far is to return the highest mean

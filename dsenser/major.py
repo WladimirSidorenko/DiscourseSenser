@@ -4,8 +4,8 @@
 """Module providing class for majority class sense disambiguation.
 
 Attributes:
-MajorSenser (class):
-  class that always chooses majority category  for sense disambiguation
+  MajorSenser (class):
+    class that always chooses majority category  for sense disambiguation
 
 """
 
@@ -31,10 +31,10 @@ import sys
 class MajorSenser(BaseSenser):
     """Class making majority predictions for connective senses.
 
-    Attrs:
-    dflt_sense (str or None): most frequent sense in corpus
-    conn2sense (dict): mapping from connective to its most frequent sense
-    n_y (int): number of distinct classes
+    Attributes:
+      dflt_sense (str or None): most frequent sense in corpus
+      conn2sense (dict): mapping from connective to its most frequent sense
+      n_y (int): number of distinct classes
 
     Methods:
 
@@ -56,22 +56,24 @@ class MajorSenser(BaseSenser):
         """Method for training the model.
 
         Args:
-        a_train_data (2-tuple(dict, dict)):
-          list of training JSON data
-        a_dev_data (2-tuple(dict, dict) or None):
-          list of development JSON data
-        a_n_y (int):
-          number of distinct classes
-        a_i (int):
-          row index for the output predictions
-        a_train_out (np.array or None):
-          predictions for the training set
-        a_dev_out (np.array or None):
-          predictions for the training set
+          a_train_data (2-tuple(dict, dict)):
+            list of training JSON data
+          a_dev_data (2-tuple(dict, dict) or None):
+            list of development JSON data
+          a_n_y (int):
+            number of distinct classes
+          a_i (int):
+            row index for the output predictions
+          a_train_out (np.array or None):
+            predictions for the training set
+          a_dev_out (np.array or None):
+            predictions for the development set
 
         Returns:
-        (void):
-        updates ``a_train_out`` and ``a_dev_out`` in place
+          void:
+
+        Note:
+          updates `a_train_out` and `a_dev_out` in place
 
         """
         self.n_y = a_n_y
@@ -106,18 +108,20 @@ class MajorSenser(BaseSenser):
         """Method for predicting sense of single relation.
 
         Args:
-        a_rel (dict):
-          discourse relation whose sense should be predicted
-        a_data (2-tuple(dict, dict)):
-          list of input JSON data
-        a_ret (np.array):
-          prediction matrix
-        a_i (int):
-          row index in the output vector
+          a_rel (dict):
+            discourse relation whose sense should be predicted
+          a_data (2-tuple(dict, dict)):
+            list of input JSON data
+          a_ret (np.array):
+            prediction matrix
+          a_i (int):
+            row index in the output vector
 
         Returns:
-        (void):
-          update a_ret in place
+          void:
+
+        Note:
+          updates `a_train_out` and `a_dev_out` in place
 
         """
         iconn = self._normalize_conn(a_rel[CONNECTIVE][RAW_TEXT])
@@ -129,12 +133,10 @@ class MajorSenser(BaseSenser):
         """Generate sense statistcs.
 
         Args:
-        a_stat (dict(str -> int)):
-          statistics on senses
+          a_stat (dict(str -> int)): statistics on senses
 
         Returns:
-        (np.array):
-          prior probabilities of senses
+          (np.array): prior probabilities of senses
 
         """
         ret = np.zeros(self.n_y)
@@ -145,12 +147,6 @@ class MajorSenser(BaseSenser):
 
     def _free(self):
         """Free resources used by the model.
-
-        Args:
-        (void):
-
-        Returns:
-        (void):
 
         """
         del self.dflt_sense

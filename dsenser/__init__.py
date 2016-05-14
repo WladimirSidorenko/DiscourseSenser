@@ -5,11 +5,11 @@
 Package providing modules for sense disambiguation of connectives.
 
 Attributes:
-__all__ (list): variables and modules provided for export
-__version__ (str): version of this package
-constants (module): module containing package constants
-scorer (module): module containing CoNLL evaluation scripts
-senser (module): module containing methods for sense disambiguation
+  __all__ (list): variables and modules provided for export
+  __version__ (str): version of this package
+  constants (module): module containing package constants
+  scorer (module): module containing CoNLL evaluation scripts
+  senser (module): module containing methods for sense disambiguation
 
 """
 
@@ -28,4 +28,4 @@ from dsenser.dsenser import DiscourseSenser
 __all__ = ["DiscourseSenser", "MajorSenser", "WangSenser",
            "DFLT_MODEL_PATH", "DFLT_MODEL_TYPE",
            "SVD", "LSTM", "MJR", "WANG", "XGBOOST"]
-__version__ = "0.0.1"
+__version__ = "0.0.3"

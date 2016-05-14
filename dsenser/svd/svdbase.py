@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
-"""Module providing abstract interface class for SVD sense calssification.
+"""Module providing abstract interface class for SVD sense classification.
 
 Attributes:
 SVDBaseSenser (class):

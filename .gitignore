@@ -65,3 +65,4 @@ venv/
 data/en.out/
 dsenser/data/models/pdtb.sense.model*
 dsenser/data/GoogleNews-vectors-negative300.bin
+data/

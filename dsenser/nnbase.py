@@ -302,6 +302,9 @@ class NNBaseSenser(BaseSenser):
         input_args = self._rel2x(a_rel, parses,
                                  self.get_test_w_emb_i,
                                  self.get_test_c_emb_i)
+        if input_args is None:
+            a_ret[a_i] = 0.
+            return
         return self._predict(input_args, a_ret, a_i)
 
     def _predict(self, a_args, a_ret, a_i):
@@ -410,6 +413,8 @@ class NNBaseSenser(BaseSenser):
         # print("rel2x: a_rel =", repr(a_rel))
         emb1 = self._arg2emb_idx(a_parses, a_rel, ARG1, a_get_w_emb_i)
         emb2 = self._arg2emb_idx(a_parses, a_rel, ARG2, a_get_w_emb_i)
+        if emb1 is None or emb2 is None:
+            return None
         # print("emb_2 =", repr(emb2))
         conn_toks = a_rel[CONNECTIVE][RAW_TEXT]
         # print("conn_toks =", repr(conn_toks))
@@ -431,13 +436,15 @@ class NNBaseSenser(BaseSenser):
           custom method for retrieving the embedding index
 
         Returns:
-        (np.array):
+        (np.array or None):
         convert input relation to word embedding matrix
 
         """
         toks = [t[0] for t in
                 self._get_toks_pos(a_parses[a_rel[DOC_ID]][SENTENCES],
                                    a_rel, a_arg)]
+        if not toks:
+            return None
         if a_get_emb_i == self._get_test_w2v_emb_i or \
            a_get_emb_i == self._get_test_w2v_lstsq_emb_i:
             return np.asarray([a_get_emb_i(t) for t in toks])

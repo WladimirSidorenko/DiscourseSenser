@@ -4,12 +4,14 @@
 """Package providing modules for SVD sense classification.
 
 Attributes:
-__all__ (list): variables and modules provided for export
-__version__ (str): version of this package
-svd (module): main module providing SVDSenser
-base (module): module providing base SVDSenser
-explicit (module): module providing explicit SVDSenser
-implicit (module): module providing implicit SVDSenser
+  __all__ (list): variables and modules provided for export
+  __version__ (str): version of this package
+  svd (module): main module providing SVDSenser
+  base (module): module providing base abstract SVDSenser
+  explicit (module): module providing explicit SVDSenser
+  implicit (module): module providing implicit SVDSenser
+
+:noindex:
 
 """
 

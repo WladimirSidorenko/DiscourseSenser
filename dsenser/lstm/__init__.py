@@ -4,12 +4,12 @@
 """Package providing modules for LSTM sense classification.
 
 Attributes:
-__all__ (list): variables and modules provided for export
-__version__ (str): version of this package
-lstm (module): main module providing LSTMSenser
-base (module): module providing base LSTMSenser
-explicit (module): module providing explicit LSTMSenser
-implicit (module): module providing implicit LSTMSenser
+  __all__ (list): variables and modules provided for export
+  __version__ (str): version of this package
+  lstm (module): main module providing LSTMSenser
+  lstmbase (module): module providing base abstract LSTMSenser
+  explicit (module): module providing explicit LSTMSenser
+  implicit (module): module providing implicit LSTMSenser
 
 """
 

@@ -32,18 +32,16 @@ class MajorSenser(BaseSenser):
     """Class making majority predictions for connective senses.
 
     Attributes:
-      dflt_sense (str or None): most frequent sense in corpus
-      conn2sense (dict): mapping from connective to its most frequent sense
+      dflt_sense (np.array or None): probabilities of all senses in
+                         the corpus
+      conn2sense (dict): mapping from connective to the conditional
+                         probabilities of its senses
       n_y (int): number of distinct classes
-
-    Methods:
 
     """
 
     def __init__(self):
         """Class constructor.
-
-        Args:
 
         """
         self.dflt_sense = None
@@ -56,24 +54,24 @@ class MajorSenser(BaseSenser):
         """Method for training the model.
 
         Args:
-          a_train_data (2-tuple(dict, dict)):
-            list of training JSON data
-          a_dev_data (2-tuple(dict, dict) or None):
-            list of development JSON data
+          a_train_data (tuple(list, dict)):
+            training JSON data
+          a_dev_data (tuple(list, dict) or None):
+            development JSON data
           a_n_y (int):
             number of distinct classes
           a_i (int):
             row index for the output predictions
-          a_train_out (np.array or None):
+          a_train_out (numpy.array or None):
             predictions for the training set
-          a_dev_out (np.array or None):
+          a_dev_out (numpy.array or None):
             predictions for the development set
 
         Returns:
           void:
 
         Note:
-          updates `a_train_out` and `a_dev_out` in place
+          updates ``a_train_out`` and ``a_dev_out`` in place if not None
 
         """
         self.n_y = a_n_y
@@ -109,7 +107,7 @@ class MajorSenser(BaseSenser):
 
         Args:
           a_rel (dict):
-            discourse relation whose sense should be predicted
+            discourse relation whose sense need to be predicted
           a_data (2-tuple(dict, dict)):
             list of input JSON data
           a_ret (np.array):
@@ -121,7 +119,7 @@ class MajorSenser(BaseSenser):
           void:
 
         Note:
-          updates `a_train_out` and `a_dev_out` in place
+          updates ``a_ret[a_i]`` in place
 
         """
         iconn = self._normalize_conn(a_rel[CONNECTIVE][RAW_TEXT])
@@ -133,7 +131,7 @@ class MajorSenser(BaseSenser):
         """Generate sense statistcs.
 
         Args:
-          a_stat (dict(str -> int)): statistics on senses
+          a_stat (dict): statistics on senses
 
         Returns:
           (np.array): prior probabilities of senses

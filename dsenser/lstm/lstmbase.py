@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
-"""Module providing abstract interface class for Wang sense calssification.
+"""Module providing abstract interface class for LSTM sense calssification.
 
 Attributes:
-WangBaseSenser (class):
-  abstract class defining interface for explicit and implicit classifier
+  LSTMBaseSenser (class):
+    abstract class defining interface for explicit and implicit classifier
 
 """
 
@@ -27,10 +27,10 @@ TRUNCATE_GRADIENT = 20
 ##################################################################
 # Class
 class LSTMBaseSenser(NNBaseSenser):
-    """Abstract class for disambiguating relation senses.
+    """Abstract class for LSTM disambiguation of relation senses.
 
     Attrs:
-    n_y (int): number of distinct classes
+      n_y (int): number of distinct classes
 
     Methods:
 
@@ -40,18 +40,17 @@ class LSTMBaseSenser(NNBaseSenser):
         """Method for predicting sense of multiple relations.
 
         Args:
-        a_rels (list):
-          list of input relations
-        a_data (2-tuple(dict, dict)):
-          list of input JSON data
-        a_ret (np.array):
-          prediction matrix
-        a_i (int):
-          row index in the output vector
+          a_rels (list):
+            list of input relations
+          a_data (2-tuple(dict, dict)):
+            list of input JSON data
+          a_ret (np.array):
+            prediction matrix
+          a_i (int):
+            row index in the output vector
 
         Returns:
-        (void):
-          update a_ret in place
+          (void): update a_ret in place
 
         """
         rels, parses = a_data

@@ -4,8 +4,8 @@
 """Module providing class for LSTM sense disambiguation.
 
 Attributes:
-LSTMSenser (class):
-  class for predicting sense probabilities for explicit and implcit relations
+  LSTMSenser (class):
+    class for predicting sense probabilities for explicit and implcit relations
 
 """
 
@@ -23,12 +23,12 @@ from dsenser.lstm.implicit import LSTMImplicitSenser
 class LSTMSenser(BaseSenser):
     """Class using LSTM classification for disambiguating connectives.
 
-    Attrs:
-    explicit (LSTMImplicitSenser): classifier for implicit discourse relations
-    implicit (LSTMExplicitSenser): classifier for explicit discourse relations
-    n_y (int): number of distinct classes
-
-    Methods:
+    Attributes:
+      explicit (LSTMImplicitSenser): classifier for implicit discourse
+                                     relations
+      implicit (LSTMExplicitSenser): classifier for explicit discourse
+                                     relations
+      n_y (int): number of distinct classes
 
     """
 
@@ -36,10 +36,8 @@ class LSTMSenser(BaseSenser):
         """Class constructor.
 
         Args:
-        args (list):
-        list of arguments
-        kwargs (dict):
-        list of keyword arguments
+          args (list): list of arguments
+          kwargs (dict): list of keyword arguments
 
         """
         self.explicit = LSTMExplicitSenser(*args, **kwargs)

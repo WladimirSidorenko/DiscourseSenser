@@ -1,6 +1,10 @@
 dsenser.lstm
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 .. automodule:: dsenser.lstm
+.. autoclass:: dsenser.lstm.LSTMSenser
 	:members:
-	:undoc-members:
+	:special-members:
+.. autoclass:: dsenser.lstm.lstmbase.LSTMBaseSenser
+	:members:
+	:special-members:

@@ -62,11 +62,12 @@ its submodules by subsequently running the following commands:
 
     pip install -r requirements.txt -E . --user
 
-Beware, that this package does not include any pre-trained models.
-Due to a big size of the serialized files, we cannot add them all to
-the git project and default source distribution, but feel free to
-contact `the author`_ of this program to obtain the PDTB models from
-him directly.
+Note that this package does not include any pre-trained models.  Due
+to a big size of the serialized files, we cannot add them all to the
+git project and default source distribution, but feel free to contact
+`the author`_ of this program to obtain the PDTB models from him
+directly.  Some time later, we are going to upload these models
+separately on another location.
 
 Usage
 =====

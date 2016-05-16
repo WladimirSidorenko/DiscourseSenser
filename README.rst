@@ -7,7 +7,7 @@ Discourse Senser
    :align: right
    :target: http://opensource.org/licenses/MIT
 
-Disambiguation of discourse connectives for PDTB-style shallow
+Sense disambiguation of discourse connectives for PDTB-style shallow
 discourse parsing.
 
 

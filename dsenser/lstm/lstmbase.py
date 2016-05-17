@@ -29,10 +29,8 @@ TRUNCATE_GRADIENT = 20
 class LSTMBaseSenser(NNBaseSenser):
     """Abstract class for LSTM disambiguation of relation senses.
 
-    Attrs:
+    Attributes:
       n_y (int): number of distinct classes
-
-    Methods:
 
     """
 
@@ -46,11 +44,12 @@ class LSTMBaseSenser(NNBaseSenser):
             list of input JSON data
           a_ret (np.array):
             prediction matrix
-          a_i (int):
-            row index in the output vector
 
         Returns:
-          (void): update a_ret in place
+          void:
+
+        Note:
+          updates ``a_ret`` in place
 
         """
         rels, parses = a_data
@@ -73,12 +72,6 @@ class LSTMBaseSenser(NNBaseSenser):
 
     def _init_nn(self):
         """Initialize neural network.
-
-        Args:
-        (void)
-
-        Returns:
-        (void)
 
         """
         self.intm_dim = max(100, self.ndim - (self.ndim - self.n_y) / 2)
@@ -124,15 +117,15 @@ class LSTMBaseSenser(NNBaseSenser):
         """Initialize LSTM layer.
 
         Args:
-        a_invars (list(theano.shared)):
-        list of input parameters as symbolic theano variable
-        a_sfx (str):
-        suffix to use for function and parameter names
+          a_invars (list(theano.shared)):
+              list of input parameters as symbolic theano variable
+          a_sfx (str):
+            suffix to use for function and parameter names
 
         Returns:
-        (2-tuple)
-        parameters to be optimized and list of symbolic outputs from the
-        function
+          (2-tuple):
+            parameters to be optimized and list of symbolic outputs from the
+            function
 
         """
         intm_dim = self.intm_dim

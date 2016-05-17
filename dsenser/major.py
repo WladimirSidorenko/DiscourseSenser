@@ -3,10 +3,6 @@
 
 """Module providing class for majority class sense disambiguation.
 
-Attributes:
-  MajorSenser (class):
-    class that always chooses majority category  for sense disambiguation
-
 """
 
 ##################################################################
@@ -108,9 +104,9 @@ class MajorSenser(BaseSenser):
         Args:
           a_rel (dict):
             discourse relation whose sense need to be predicted
-          a_data (2-tuple(dict, dict)):
-            list of input JSON data
-          a_ret (np.array):
+          a_data (tuple):
+            relations and parses
+          a_ret (numpy.array):
             prediction matrix
           a_i (int):
             row index in the output vector
@@ -134,7 +130,7 @@ class MajorSenser(BaseSenser):
           a_stat (dict): statistics on senses
 
         Returns:
-          (np.array): prior probabilities of senses
+          (numpy.array): prior probabilities of senses
 
         """
         ret = np.zeros(self.n_y)

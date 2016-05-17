@@ -4,6 +4,73 @@
 """Module containing constants for dsenser package.
 
 Attributes:
+  ALT_LEX (str): symbolic name of the `alternative lexicalization` relation
+    type
+  ARG1 (str): symbolic name of the field containing the 1-st argument of the
+    input relations in the JSON data
+  ARG2 (str): symbolic name of the field containing the 2-nd argument of the
+    input relations in the JSON data
+  CHAR_SPAN (str): symbolic name of the field containing the character
+   span list in the input JSON data
+  COB (str): symbolic name of the field containing the beggining of the
+   character offset in the input JSON data
+  COE (str):symbolic name of the field containing the end of the
+   character offset in the input JSON data
+  CONNECTIVE (str): symbolic name of the field containing the connectives
+    in the input JSON data
+  DATA_DIR (str): path to the directory with auxliary data files
+  DEPS (str): symbolic name of the field containing grammar dependencies
+    in the input JSON data
+  DFLT_BROWN_PATH (str): path to the file containing Brown clusters
+  DFLT_ECONN_PATH (str): path to the file containing explicit connectives
+  DFLT_INQUIRER_PATH (str):  path to the file containing General Inquirer
+    lexicon
+  DFLT_LCSI_PATH (str): path to the file with LCSInfomerge
+  DFLT_MODEL_PATH (str): path to the main default model file
+  DFLT_MODEL_TYPE (int): default type of the model to be trained
+  DFLT_MPQA_PATH (str): path to the MPQA lexicon
+  DFLT_W2V_PATH (str): path to Google word2vec file
+  DIRNAME (str): path to the package directory
+  DOC_ID (str): symbolic name of the field containing document id in the
+    input JSON data
+  ECONN_DIR (str): path to the directory containing file with the explcit
+    connectives
+  ENCODING (str): default encoding used for input and output files
+  EXPLICIT (str): symbolic name of the `explicit` relation type
+  IMPLICIT (str): symbolic name of the `implicit` relation type
+  LSTM (int): integer flag for LSTM training mode
+  MJR (int): integer flag for MajorSenser training mode
+  MODEL_DIR (str): directory containing the main default model file
+  PARSE_TREE (str): symbolic name of the field containing syntactic
+    parse tree in the input JSON data
+  POS (str): symbolic name of the field containing part-of-speech tag
+    parse tree in the input JSON data
+  RAW_TEXT (str): symbolic name of the field containing the raw text
+    of connectives, arguments, and sentences in the input JSON data
+  SENSE (str): symbolic name of the field containing the sense of
+    a relation in the input JSON data
+  SENTENCES (str): symbolic name of the field containing the information
+    about the input senteces in the input JSON data
+  SHORT2FULL (dict): mapping from partial to full sense names
+  SNT_ID (int): index of the sentence id in the list containing token
+    information
+  SSNT_ID (str): symbolic name of the field containing the information
+    about the sentece ids in the input JSON data
+  SVD (int): integer flag for SVD training mode
+  TOK_ID (int): index of the sentence token id in the list containing token
+    information
+  TOK_IDX (int): index of the document token id in the list containing token
+    information
+  TOK_LIST (str): symbolic name of the field containing the list
+    of tokens in the input JSON data
+  TOK_OFFS_IDX (int): index of the token offset information in the list
+    containing the token information
+  TYPE (str): symbolic name of the field containing the information
+    about the type of an input relation in the input JSON data
+  WANG (int): integer flag for Wang training mode
+  WORDS (str): symbolic name of the field containing the information
+    about the words of an input relation in the input JSON data
+  XGBOOST (int): integer flag for XGBoost training mode
 
 """
 

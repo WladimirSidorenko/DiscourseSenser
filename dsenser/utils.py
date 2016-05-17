@@ -3,10 +3,6 @@
 
 """Module providing common utils for discourse senser components.
 
-Attributes:
-timeit (class): parameterized decorator for measurinng time performance
-divide_ds (method): separate training set into explicit and implicit instances
-
 """
 
 ##################################################################
@@ -26,8 +22,12 @@ def singleton(cls):
     """Make `cls` instance unique across all calls.
 
     Args:
-    cls (class):
-    class to be decorated
+      cls (class):
+        class to be decorated
+
+    Retuns:
+      object:
+        singleton instance of the decorated class
 
     """
     instance = cls()
@@ -39,8 +39,7 @@ class timeit(object):
     """Decorator class for measuring time performance.
 
     Attributes:
-    __init__: class constructor
-    __call__: actual execution routine
+      msg (str): message to be printed on method invocation
 
     """
 
@@ -48,7 +47,7 @@ class timeit(object):
         """Class constructor.
 
         Args:
-        a_msg (str): debug message to print
+          a_msg (str): debug message to print
 
         """
         self.msg = a_msg
@@ -57,10 +56,10 @@ class timeit(object):
         """Decorator function.
 
         Args:
-        a_func (method): decorated method
+          a_func (method): decorated method
 
         Returns:
-        (method): wrapped method
+          method: wrapped method
 
         """
         def _wrapper(*args, **kwargs):
@@ -80,12 +79,12 @@ def is_explicit(a_rel):
     """Check whether given relation is explicit.
 
     Args:
-    a_rel (dict):
-    discourse relation to classify
+      a_rel (dict):
+       discourse relation to classify
 
     Returns:
-    (bool):
-    True if the relation is explicit
+      bool:
+        ``True`` if the relation is explicit, ``False`` otherwise
 
     """
     return bool(a_rel[CONNECTIVE][TOK_LIST])

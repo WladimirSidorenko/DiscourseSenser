@@ -27,19 +27,17 @@ from dsenser.wang.implicit import WangImplicitSenser
 class WangSenser(BaseSenser):
     """Class using Wang classification for disambiguating connectives.
 
-    Attrs:
-    explicit (WangImplicitSenser): classifier for implicit discourse relations
-    implicit (WangExplicitSenser): classifier for explicit discourse relations
-    n_y (int): number of distinct classes
-
-    Methods:
+    Attributes:
+      explicit (:class:`dsenser.wang.explicit.WangExplicitSenser`):
+        classifier for explicit discourse relations
+      implicit (:class:`dsenser.wang.implicit.WangImplicitSenser`):
+        classifier for implicit discourse relations
+      n_y (int): number of distinct classes
 
     """
 
     def __init__(self):
         """Class constructor.
-
-        Args:
 
         """
         self.explicit = WangExplicitSenser()

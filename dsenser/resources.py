@@ -4,20 +4,16 @@
 """Module providing access to third party resources.
 
 Attributes:
-load_conns (lambda): method for loading explicit connectives
-conns2str (lambda): connective normalization method
-load_LCSI (lambda): method for loading LCSI verb classes
-load_BROWN (lambda): method for loading Brown clusters
-LCSI (dict(str: set(str))):  mapping from verb to a set of classes
-BROWN_CLUSTERS (dict(str: str)): mapping from word to a set of
-            Brown clusters
-CONNS (set(str)): set of explcit connectives
-CONNTOK2CONN (defaultdict(list)): mapping from connective to its
-            enumerated tokens
-CONNTOKS (set): set of tokens which can be part of a connective
-INQUIRER (dict): mapping from word to General Inquirer class
-STEMMED_INQUIRER (dict): mapping from stemmed word to General Inquirer class
-W2V (dict): word2vec embeddings
+  LCSI (dict):  mapping from verb to a set of classes
+  BROWN_CLUSTERS (dict): mapping from word to a set of
+    Brown clusters
+  CONNS (set): set of explcit connectives
+  CONNTOK2CONN (defaultdict): mapping from connective to its
+    enumerated tokens
+  CONNTOKS (set): set of tokens which can be part of a connective
+  INQUIRER (dict): mapping from word to General Inquirer class
+  STEMMED_INQUIRER (dict): mapping from stemmed word to General Inquirer class
+  W2V (dict): word2vec embeddings
 
 """
 
@@ -70,10 +66,10 @@ def load_conns(a_fname):
     """Load explicit connectives from file.
 
     Args:
-    a_fname (str): file containing connectives
+      a_fname (str): file containing connectives
 
     Returns:
-    (set(str)): set of loaded connectives
+      set: set of loaded connectives
 
     """
     ret = set()
@@ -94,11 +90,11 @@ def conn2str(a_conn):
     """Convert connective tuple to string.
 
     Args:
-    a_conn (tuple):
-    tuple of connective tokens
+      a_conn (tuple):
+        tuple of connective tokens
 
     Returns:
-    (str): connective string
+      str: connective string
 
     """
     return '_'.join(itok for ipart in a_conn for itok in ipart)
@@ -108,11 +104,11 @@ def load_LCSI(a_fname):
     """Load LCSI verb classes from file.
 
     Args:
-    a_fname (str): file containing LCSI data
+      a_fname (str): file containing LCSI data
 
     Returns:
-    (dict(str: set(str))):
-    mapping from verb to a set of classes
+      dict:
+        mapping from verb to a set of classes
 
     """
     ret = dict()
@@ -134,11 +130,11 @@ def load_BROWN(a_fname):
     """Load BROWN clusters from file.
 
     Args:
-    a_fname (str): file containing Brown clusters
+      a_fname (str): file containing Brown clusters
 
     Returns:
-    (dict(str: set(str))):
-    mapping from word to a set of Brown clusters
+      dict:
+        mapping from word to a set of Brown clusters
 
     """
     ret = defaultdict(set)
@@ -162,12 +158,12 @@ def load_INQUIRER(a_fname):
     """Load Inquirer data from file.
 
     Args:
-    a_fname (str): file containing Inquirer data
+      a_fname (str): file containing Inquirer data
 
     Returns:
-    (dict(str: []), dict(str: [])):
-      mapping from word to Inquirer classes and the same mapping for stemmed
-      words
+      tuple:
+        mapping from word to Inquirer classes and the same mapping for stemmed
+        words
 
     """
     ret = dict()
@@ -192,12 +188,12 @@ def load_MPQA(a_fname):
     """Load MPQA data from file.
 
     Args:
-    a_fname (str): file containing MPQA data
+      a_fname (str): file containing MPQA data
 
     Returns:
-    (dict(str: tuple(polarity, type, pos))):
-      mapping from word to Inquirer classes and the same mapping for stemmed
-      words
+      dict:
+        mapping from word to Inquirer classes and the same mapping for stemmed
+        words
 
     """
     ret = defaultdict(lambda: [None] * 3)
@@ -220,12 +216,12 @@ def load_W2V(a_fname):
     """Load Word2Vec data from file.
 
     Args:
-    a_fname (str): file containing W2V data
+      a_fname (str): file containing W2V data
 
     Returns:
-    (dict(str: tuple(polarity, type, pos))):
-      mapping from word to Inquirer classes and the same mapping for stemmed
-      words
+      dict:
+        mapping from word to Inquirer classes and the same mapping for stemmed
+        words
 
     """
     from gensim.models.word2vec import Word2Vec
@@ -243,13 +239,10 @@ class LoadOnDemand(object):
     Loads resources only if they are actually used.
 
     Attributes:
-    __init__ (method): class constructor
-    __getattr__ (method): method for initiliazing the resource the first time
-                       it gets used
-    resource (object or None): loaded resource
-    cmd (method): method to load the  resource
-    args (list): arguments to pass to ``cmd``
-    kwargs (dict): keyword arguments to pass to ``cmd``
+      resource (object or None): loaded resource
+      cmd (method): method to load the  resource
+      args (list): arguments to pass to ``cmd``
+      kwargs (dict): keyword arguments to pass to ``cmd``
 
     """
 
@@ -257,9 +250,9 @@ class LoadOnDemand(object):
         """Class cosntructor.
 
         Args:
-        a_cmd (method): custom method to load the resource
-        args (list): arguments to pass to ``a_cmd``
-        kwargs (dict): keyword arguments to pass to ``a_cmd``
+          a_cmd (method): custom method to load the resource
+          args (list): arguments to pass to ``a_cmd``
+          kwargs (dict): keyword arguments to pass to ``a_cmd``
 
         """
         self.resource = None
@@ -271,10 +264,10 @@ class LoadOnDemand(object):
         """Proxy method for looking up a word in the resource.
 
         Args:
-        a_name (str): word to look up in the resource
+          a_name (str): word to look up in the resource
 
-        Returns:
-        forwards the request to the underlying resource
+        Note:
+          forwards the request to the underlying resource
 
         """
         self.load()
@@ -284,10 +277,10 @@ class LoadOnDemand(object):
         """Proxy method for accessing the resource.
 
         Args:
-        a_name (str): word to look up in the resource
+          a_name (str): word to look up in the resource
 
-        Returns:
-        forwards the request to the underlying resource
+        Note:
+          forwards the request to the underlying resource
 
         """
         # initialize the resource if needed
@@ -297,12 +290,8 @@ class LoadOnDemand(object):
     def load(self):
         """Force loading the resource.
 
-        Args:
-        (void):
-
-        Returns:
-        (void):
-        load the resource
+        Note:
+          loads the resource
 
         """
         if self.resource is None:
@@ -312,12 +301,8 @@ class LoadOnDemand(object):
     def unload(self):
         """Unload the resource.
 
-        Args:
-        (void):
-
-        Returns:
-        (void):
-        load the resource
+        Note:
+           unloads the resource
 
         """
         if self.resource is not None:

@@ -2,5 +2,11 @@ dsenser.wang
 ~~~~~~~~~~~~~~~~~~
 
 .. automodule:: dsenser.wang
-	:members:
-	:undoc-members:
+
+.. toctree::
+   :maxdepth: 2
+
+   dsenser.wang.wang.rst
+   dsenser.wang.wangbase.rst
+   dsenser.wang.explicit.rst
+   dsenser.wang.implicit.rst

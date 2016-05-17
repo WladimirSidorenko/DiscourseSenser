@@ -4,8 +4,8 @@
 """Module providing abstract interface class for Wang sense classification.
 
 Attributes:
-WangBaseSenser (class):
-  abstract class defining interface for explicit and implicit classifier
+  WangBaseSenser (class):
+    abstract class defining interface for explicit and implicit classifier
 
 """
 
@@ -25,10 +25,8 @@ import numpy as np
 class WangBaseSenser(BaseSenser):
     """Abstract class for disambiguating relation senses.
 
-    Attrs:
-    n_y (int): number of distinct classes
-
-    Methods:
+    Attributes:
+      n_y (int): number of distinct classes
 
     """
     __metaclass__ = abc.ABCMeta
@@ -38,22 +36,24 @@ class WangBaseSenser(BaseSenser):
         """Method for training the model.
 
         Args:
-        a_train_data (2-tuple(list, dict)):
-          list of training JSON data
-        a_dev_data (2-tuple(list, dict) or None):
-          list of development JSON data
-        a_n_y (int):
-          number of distinct classes
-        a_i (int):
-          row index for the output predictions
-        a_train_out (np.array or None):
-          predictions for the training set
-        a_dev_out (np.array or None):
-          predictions for the training set
+          a_train_data (2-tuple(list, dict)):
+            list of training JSON data
+          a_dev_data (2-tuple(list, dict) or None):
+            list of development JSON data
+          a_n_y (int):
+            number of distinct classes
+          a_i (int):
+            row index for the output predictions
+          a_train_out (np.array or None):
+            predictions for the training set
+          a_dev_out (np.array or None):
+            predictions for the training set
 
         Returns:
-        (void):
-        updates ``a_train_out`` and ``a_dev_out`` in place
+          void:
+
+        Note:
+          updates ``a_train_out`` and ``a_dev_out`` in place
 
         """
         self.n_y = a_n_y
@@ -73,18 +73,20 @@ class WangBaseSenser(BaseSenser):
         """Method for predicting sense of single relation.
 
         Args:
-        a_rel (dict):
-          discourse relation whose sense should be predicted
-        a_data (2-tuple(dict, dict)):
-          list of input JSON data
-        a_ret (np.array):
-          output prediction vector
-        a_i (int):
-          row index in the output vector
+          a_rel (dict):
+            discourse relation whose sense should be predicted
+          a_data (2-tuple(dict, dict)):
+            list of input JSON data
+          a_ret (np.array):
+            output prediction vector
+          a_i (int):
+            row index in the output vector
 
         Returns:
-        (void):
-          updates ``a_ret`` in place
+          void:
+
+        Note:
+          updates ``a_ret[a_i]`` in place
 
         """
         feats = self._extract_features(a_rel, a_data[-1])
@@ -95,13 +97,13 @@ class WangBaseSenser(BaseSenser):
         """Extract classification features for a given relation.
 
         Args:
-        a_rel (dict):
-          discourse relation to extract features for
-        a_parses (dict):
-          parsed sentences
+          a_rel (dict):
+            discourse relation to extract features for
+          a_parses (dict):
+            parsed sentences
 
         Returns:
-        (void):
+          void:
 
         """
         raise NotImplementedError
@@ -110,16 +112,16 @@ class WangBaseSenser(BaseSenser):
         """Method for predicting sense of single relation.
 
         Args:
-        a_feats (dict):
-          features of the input instance
-        a_ret (np.array):
-          output prediction vector
-        a_i (int):
-          row index in the output vector
+          a_feats (dict):
+            features of the input instance
+          a_ret (np.array):
+            output prediction vector
+          a_i (int):
+            row index in the output vector
 
         Returns:
-        (void):
-          updates ``a_ret`` in place
+          void:
+            updates ``a_ret[a_i]`` in place
 
         """
         # obtain model's estimates
@@ -136,12 +138,6 @@ class WangBaseSenser(BaseSenser):
     def _free(self):
         """Free resources used by the model.
 
-        Args:
-        (void):
-
-        Returns:
-        (void):
-
         """
         self.n_y = -1
 
@@ -149,12 +145,12 @@ class WangBaseSenser(BaseSenser):
         """Generate training set.
 
         Args:
-        a_data (2-tuple(list, dict)):
-          input data (discourse relations and parses)
+          a_data (2-tuple(list, dict)):
+            input data (discourse relations and parses)
 
         Returns:
-        (tuple(list, list)):
-          lists of input features and expected classes
+          tuple(list, list):
+            lists of input features and expected classes
 
         """
         x, y = [], []

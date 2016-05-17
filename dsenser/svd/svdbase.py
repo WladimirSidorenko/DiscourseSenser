@@ -4,8 +4,8 @@
 """Module providing abstract interface class for SVD sense classification.
 
 Attributes:
-SVDBaseSenser (class):
-  abstract class defining interface for explicit and implicit classifier
+  SVDBaseSenser (class):
+    abstract class defining interface for explicit and implicit classifier
 
 """
 
@@ -27,21 +27,13 @@ import numpy as np
 class SVDBaseSenser(NNBaseSenser):
     """Abstract class for disambiguating relation senses.
 
-    Attrs:
-    n_y (int): number of distinct classes
-
-    Methods:
+    Attributes:
+      n_y (int): number of distinct classes
 
     """
 
     def _init_nn(self):
         """Initialize neural network.
-
-        Args:
-        (void)
-
-        Returns:
-        (void)
 
         """
         self.intm_dim = max(100, self.ndim - (self.ndim - self.n_y) / 2)

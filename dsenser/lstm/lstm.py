@@ -24,10 +24,10 @@ class LSTMSenser(BaseSenser):
     """Class using LSTM classification for disambiguating connectives.
 
     Attributes:
-      explicit (LSTMImplicitSenser): classifier for implicit discourse
-                                     relations
-      implicit (LSTMExplicitSenser): classifier for explicit discourse
-                                     relations
+      explicit (:class:`dsenser.lstm.explicit.LSTMExplicitSenser`):
+        classifier for implicit discourse relations
+      implicit (:class:`dsenser.lstm.implicit.LSTMImplicitSenser`):
+        classifier for explicit discourse relations
       n_y (int): number of distinct classes
 
     """
@@ -37,7 +37,7 @@ class LSTMSenser(BaseSenser):
 
         Args:
           args (list): list of arguments
-          kwargs (dict): list of keyword arguments
+          kwargs (dict): dictionary of keyword arguments
 
         """
         self.explicit = LSTMExplicitSenser(*args, **kwargs)

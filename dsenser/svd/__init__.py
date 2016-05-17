@@ -11,8 +11,6 @@ Attributes:
   explicit (module): module providing explicit SVDSenser
   implicit (module): module providing implicit SVDSenser
 
-:noindex:
-
 """
 
 ##################################################################

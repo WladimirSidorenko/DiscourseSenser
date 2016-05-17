@@ -4,8 +4,8 @@
 """Module providing class for SVD sense disambiguation.
 
 Attributes:
-SVDImplicitSenser (class):
-  class that predicts senses of implicit relations
+  SVDImplicitSenser (class):
+    class that predicts senses of implicit relations
 
 """
 
@@ -23,12 +23,7 @@ from dsenser.utils import timeit
 ##################################################################
 # Classes
 class SVDImplicitSenser(SVDBaseSenser):
-    """Class for disambiguating explicit connectives.
-
-    Attrs:
-    n_y (int): number of distinct classes
-
-    Methods:
+    """Class for disambiguating implicit discourse relations.
 
     """
 

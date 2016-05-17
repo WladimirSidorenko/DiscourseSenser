@@ -3,10 +3,6 @@
 
 """Module providing abstract class for sense disambiguation.
 
-Attributes:
-BaseSenser (class):
-  class that always chooses majority category  for sense disambiguation
-
 """
 
 ##################################################################
@@ -33,10 +29,11 @@ from collections import defaultdict
 class BaseSenser(object):
     """Abstract class for sense disambiguation of connectives.
 
-    Attrs:
-
-    Methods:
-    train: pure abstract method
+    Attributes:
+      explicit (or None):
+        classifier for predicting senses of explicit connectives
+      implicit (or None):
+        classifier for predicting senses of implicit connectives
 
     """
 
@@ -52,21 +49,21 @@ class BaseSenser(object):
         """Method for training the model.
 
         Args:
-        a_train_data (2-tuple(list, dict)):
-          list of gold relations and dict with parses
-        a_dev_data (2-tuple(list, dict) or None):
-          list of development relations and dict with parses
-        a_n_y (int):
-          number of distinct classes
-        a_i (int):
-          row index for the output predictions
-        a_train_out (np.array or None):
-          predictions for the training set
-        a_dev_out (np.array or None):
-          predictions for the training set
+          a_train_data (2-tuple(list, dict)):
+            list of gold relations and dict with parses
+          a_dev_data (2-tuple(list, dict) or None):
+            list of development relations and dict with parses
+          a_n_y (int):
+            number of distinct classes
+          a_i (int):
+            row index for the output predictions
+          a_train_out (np.array or None):
+            predictions for the training set
+          a_dev_out (np.array or None):
+            predictions for the training set
 
         Returns:
-        (void)
+          void:
 
         """
         self.n_y = a_n_y
@@ -81,18 +78,20 @@ class BaseSenser(object):
         """Method for predicting sense of multiple relations.
 
         Args:
-        a_rels (list):
-          list of input relations
-        a_data (2-tuple(dict, dict)):
-          list of input JSON data
-        a_ret (np.array):
-          prediction matrix
-        a_i (int):
-          row index in the output vector
+          a_rels (list):
+            list of input relations
+          a_data (2-tuple(dict, dict)):
+            list of input JSON data
+          a_ret (np.array):
+            prediction matrix
+          a_i (int):
+            row index in the output vector
 
         Returns:
-        (void):
-          update a_ret in place
+          void:
+
+        Note:
+          modifies ``a_ret`` in place
 
         """
         for i, irel in enumerate(a_rels):
@@ -102,18 +101,20 @@ class BaseSenser(object):
         """Method for predicting sense of single relation.
 
         Args:
-        a_rel (dict):
-          discourse relation whose sense should be predicted
-        a_data (2-tuple(dict, dict)):
-          list of input JSON data
-        a_ret (np.array):
-          output prediction vector
-        a_i (int):
-          row index in the output vector
+          a_rel (dict):
+            discourse relation whose sense should be predicted
+          a_data (2-tuple(dict, dict)):
+            list of input JSON data
+          a_ret (np.array):
+            output prediction vector
+          a_i (int):
+            row index in the output vector
 
         Returns:
-        str:
-          most probable sense of discourse relation
+          void:
+
+        Note:
+          modifies ``a_ret[a_i]`` in place
 
         """
         if is_explicit(a_rel):
@@ -122,12 +123,6 @@ class BaseSenser(object):
 
     def _free(self):
         """Free resources used by the model.
-
-        Args:
-        (void):
-
-        Returns:
-        (void):
 
         """
         del self.explicit
@@ -138,12 +133,12 @@ class BaseSenser(object):
         """Separate dataset into explicit and implicit instances.
 
         Args:
-        a_ds (2-tuple(dict, dict)):
-        list of gold relations and dict with parses
+          a_ds (tuple):
+            list of gold relations and dict with parses
 
         Returns:
-        (((list, dict), (list, dict))):
-        trainings set with explicit and implicit connectives
+          tuple:
+            trainings set with explicit and implicit connectives
 
         """
         if not a_ds:
@@ -163,11 +158,11 @@ class BaseSenser(object):
         """Normalize connective form.
 
         Args:
-        a_conn (str):
-          connectve to be normalized
+          a_conn (str):
+            connectve to be normalized
 
         Returns:
-        (void)
+          str: normalized connective
 
         """
         a_conn = a_conn.strip().lower()
@@ -179,16 +174,15 @@ class BaseSenser(object):
         """Method for getting raw tokens with their parts of speech.
 
         Args:
-        a_parses (dict):
-          parsed sentences
-        a_rel (dict):
-          discourse relation whose tokens should be obtained
-        a_arg (str):
-          relation argument to obtain senses for
+          a_parses (dict):
+            parsed sentences
+          a_rel (dict):
+            discourse relation whose tokens should be obtained
+          a_arg (str):
+            relation argument to obtain senses for
 
         Returns:
-        (list(tuple(str, str))):
-          list of tokens and their parts of speech
+          list: list of tokens and their parts of speech
 
         """
         ret = []
@@ -205,12 +199,12 @@ class BaseSenser(object):
         """Generate mapping from sentence indices to token lists.
 
         Args:
-        a_tok_list (list(tuple(int, int))):
-          list of sentence and token indices pertaining to the argument
+          a_tok_list (list):
+            list of sentence and token indices pertaining to the argument
 
         Returns:
-        defaultdict(set):
-          mapping from sentence indices to token lists
+          defaultdict:
+            mapping from sentence indices to token lists
 
         """
         snt2tok_pos = defaultdict(set)

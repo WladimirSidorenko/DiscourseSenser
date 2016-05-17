@@ -2,9 +2,11 @@ dsenser.lstm
 ~~~~~~~~~~~~
 
 .. automodule:: dsenser.lstm
-.. autoclass:: dsenser.lstm.LSTMSenser
-	:members:
-	:special-members:
-.. autoclass:: dsenser.lstm.lstmbase.LSTMBaseSenser
-	:members:
-	:special-members:
+
+.. toctree::
+   :maxdepth: 2
+
+   dsenser.lstm.lstm.rst
+   dsenser.lstm.lstmbase.rst
+   dsenser.lstm.explicit.rst
+   dsenser.lstm.implicit.rst

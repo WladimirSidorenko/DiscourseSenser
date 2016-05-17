@@ -1,6 +1,12 @@
 dsenser.xgboost
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. automodule:: dsenser.xgboost
-	:members:
-	:undoc-members:
+
+.. toctree::
+   :maxdepth: 2
+
+   dsenser.xgboost.xgboost.rst
+   dsenser.xgboost.xgboostbase.rst
+   dsenser.xgboost.explicit.rst
+   dsenser.xgboost.implicit.rst

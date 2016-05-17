@@ -3,6 +3,8 @@
 
 """Package providing modules for sense disambiguation of connectives.
 
+:noindex:
+
 Attributes:
   __all__ (list): variables and modules provided for export
   __version__ (str): version of this package

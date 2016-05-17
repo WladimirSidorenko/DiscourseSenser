@@ -4,8 +4,8 @@
 """Module providing class for XGBoost sense disambiguation.
 
 Attributes:
-WangSenser (class):
-  class for XGBoost sense classification of explicit and implicit relations
+  XGBoostSenser (class):
+    class for XGBoost sense classification of explicit and implicit relations
 
 """
 
@@ -27,19 +27,17 @@ from dsenser.xgboost.implicit import XGBoostImplicitSenser
 class XGBoostSenser(WangSenser):
     """Class for XGBoost classification of discourse relations.
 
-    Attrs:
-    explicit (ImplicitSenser): classifier for implicit discourse relations
-    implicit (ExplicitSenser): classifier for explicit discourse relations
-    n_y (int): number of distinct classes
-
-    Methods:
+    Attributes:
+      explicit (:class:`dsenser.xgboost.explicit.XGBoostExplicitSenser`):
+        classifier for explicit discourse relations
+      implicit (:class:`dsenser.xgboost.implicit.XGBoostImplicitSenser`):
+        classifier for implicit discourse relations
+      n_y (int): number of distinct classes
 
     """
 
     def __init__(self):
         """Class constructor.
-
-        Args:
 
         """
         self.explicit = XGBoostExplicitSenser()

@@ -1,6 +1,12 @@
 dsenser.svd
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. automodule:: dsenser.svd
-	:members:
-	:undoc-members:
+
+.. toctree::
+   :maxdepth: 2
+
+   dsenser.svd.svd.rst
+   dsenser.svd.svdbase.rst
+   dsenser.svd.explicit.rst
+   dsenser.svd.implicit.rst

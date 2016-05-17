@@ -4,8 +4,8 @@
 """Module providing class for Wang sense disambiguation.
 
 Attributes:
-WangExplicitSenser (class):
-  class that predict senses of explicit relations
+  WangExplicitSenser (class):
+    class that predict senses of explicit relations
 
 """
 
@@ -55,10 +55,8 @@ MODALITY = {"can": 0, "may": 1, "must": 2, "need": 3, "shall": 4,
 class WangExplicitSenser(WangBaseSenser):
     """Class for disambiguating explicit connectives.
 
-    Attrs:
-    n_y (int): number of distinct classes
-
-    Methods:
+    Attributes:
+      n_y (int): number of distinct classes
 
     """
 
@@ -66,8 +64,8 @@ class WangExplicitSenser(WangBaseSenser):
         """Class constructor.
 
         Args:
-        a_clf (classifier or None):
-        classifier to use or None for default
+          a_clf (classifier or None):
+            classifier to use or None for default
 
         """
         self.n_y = -1
@@ -85,13 +83,13 @@ class WangExplicitSenser(WangBaseSenser):
         """Extract classification features for a given relation.
 
         Args:
-        a_rel (dict):
-          discourse relation to extract features for
-        a_parses (dict):
-          parsed sentences
+          a_rel (dict):
+            discourse relation to extract features for
+          a_parses (dict):
+            parsed sentences
 
         Returns:
-        (void):
+          void:
 
         """
         feats = {}
@@ -190,15 +188,15 @@ class WangExplicitSenser(WangBaseSenser):
         """Obtain raw text of the connective.
 
         Args:
-        a_doc_id (str):
-          id of the document containing the connectiv
-        a_rel (dict):
-          discourse relation to extract features for
-        a_parses (dict):
-          parsed data
+          a_doc_id (str):
+            id of the document containing the connectiv
+          a_rel (dict):
+            discourse relation to extract features for
+          a_parses (dict):
+            parsed data
 
         Returns:
-        (str): connective's text
+          str: connective's text
 
         """
         return ' '.join([
@@ -209,16 +207,15 @@ class WangExplicitSenser(WangBaseSenser):
         """Obtain part-of-speech tags of the connective.
 
         Args:
-        a_doc_id (str):
-          id of the document containing the connectiv
-        a_rel (dict):
-          discourse relation to extract features for
-        a_parses (dict):
-          parsed data
+          a_doc_id (str):
+            id of the document containing the connectiv
+          a_rel (dict):
+            discourse relation to extract features for
+          a_parses (dict):
+            parsed data
 
         Returns:
-        (str):
-        connective's part-of-speech tags
+          str: connective's part-of-speech tags
 
         """
         return '_'.join([
@@ -229,15 +226,15 @@ class WangExplicitSenser(WangBaseSenser):
         """Obtain token preceding the connective.
 
         Args:
-        a_doc_id (str):
-          id of the document containing the connectiv
-        a_rel (dict):
-          discourse relation to extract features for
-        a_parses (dict):
-          parsed data
+          a_doc_id (str):
+            id of the document containing the connectiv
+          a_rel (dict):
+            discourse relation to extract features for
+          a_parses (dict):
+            parsed data
 
         Returns:
-        (str): connective's text
+          str: connective's text
 
         """
         _, _, _, snt_id, tok_id = a_rel[CONNECTIVE][TOK_LIST][0]
@@ -254,15 +251,15 @@ class WangExplicitSenser(WangBaseSenser):
         """Obtain the token and POS following the connective
 
         Args:
-        a_doc_id (str):
-          id of the document containing the connectiv
-        a_rel (dict):
-          discourse relation to extract features for
-        a_parses (dict):
-          parsed data
+          a_doc_id (str):
+            id of the document containing the connectiv
+          a_rel (dict):
+            discourse relation to extract features for
+          a_parses (dict):
+            parsed data
 
         Returns:
-        (str, pos): next token and pos
+          tuple(str, pos): next token and pos
 
         """
         _, _, _, snt_id, tok_id = a_rel[CONNECTIVE][TOK_LIST][0]
@@ -280,13 +277,13 @@ class WangExplicitSenser(WangBaseSenser):
         """Obtain syntactic category of a connective.
 
         Args:
-        a_conn_toks (list):
-          list of connective's tokens
-        a_tree (dict):
-          syntactic tree
+          a_conn_toks (list):
+            list of connective's tokens
+          a_tree (dict):
+            syntactic tree
 
         Returns:
-        (str): syntactic category of the connective
+          str: syntactic category of the connective
 
         """
         inode_id = self._get_path(a_conn_toks, a_tree)
@@ -296,13 +293,13 @@ class WangExplicitSenser(WangBaseSenser):
         """Obtain syntactic category of connective's parent.
 
         Args:
-        a_conn_toks (list):
-          list of connective's tokens
-        a_tree (dict):
-          syntactic tree
+          a_conn_toks (list):
+            list of connective's tokens
+          a_tree (dict):
+            syntactic tree
 
         Returns:
-        (str): syntactic category of the connective
+          str: syntactic category of the connective
 
         """
         inode_id = self._get_path(a_conn_toks, a_tree)
@@ -317,16 +314,15 @@ class WangExplicitSenser(WangBaseSenser):
         """Find common ancestor of two nodes
 
         Args:
-        a_conn_toks (list):
-          list of connective's tokens
-        a_tree (dict):
-          syntactic tree
-        a_side (int):
-          side of the sibling
+          a_conn_toks (list):
+            list of connective's tokens
+          a_tree (dict):
+            syntactic tree
+          a_side (int):
+            side of the sibling
 
         Returns:
-        (str):
-        label of the sibling (or empty string)
+          str: label of the sibling (or empty string)
 
         """
         ret = "NONE"
@@ -348,14 +344,13 @@ class WangExplicitSenser(WangBaseSenser):
         """Find syntactic context nodes of the connective.
 
         Args:
-        a_conn_toks (list):
-          list of connective's tokens
-        a_tree (dict):
-          syntactic tree
+          a_conn_toks (list):
+            list of connective's tokens
+          a_tree (dict):
+            syntactic tree
 
         Returns:
-        (list):
-        list of context node labels
+          list: list of context node labels
 
         """
         ret = []
@@ -372,16 +367,16 @@ class WangExplicitSenser(WangBaseSenser):
         """Obtain  of the connective.
 
         Args:
-        a_tok_id (int):
-          index of the first token of the connective
-        a_tree (dict):
-          syntactic tree
-        a_toks (list):
-          list of sentence tokens
+          a_tok_id (int):
+            index of the first token of the connective
+          a_tree (dict):
+            syntactic tree
+          a_toks (list):
+            list of sentence tokens
 
         Returns:
-        (2-tupe(list, list)):
-          list of previous connective tokens and their PoS tags
+          tupe(list, list):
+            list of previous connective tokens and their PoS tags
 
         """
         ret_conn = []
@@ -463,14 +458,13 @@ class WangExplicitSenser(WangBaseSenser):
         """Obtain path to the syntactic node covering all tokens.
 
         Args:
-        a_toks (list):
-          list of token(s)
-        a_tree (dict):
-          syntactic tree
+          a_toks (list):
+            list of token(s)
+          a_tree (dict):
+            syntactic tree
 
         Returns:
-        (tuple):
-        path to the node covering all tokens
+          tuple: path to the node covering all tokens
 
         """
         if len(a_toks) > 1:
@@ -488,16 +482,15 @@ class WangExplicitSenser(WangBaseSenser):
         """Estimate polarity values of the given relation.
 
         Args:
-        a_feats (dict):
-          target feature dictionary
-        a_toks1 (list(str)):
-          list of tokens from the 1-st argument
-        a_toks2 (list(str)):
-          list of tokens from the 2-nd argument
+          a_feats (dict):
+            target feature dictionary
+          a_toks1 (list(str)):
+            list of tokens from the 1-st argument
+          a_toks2 (list(str)):
+            list of tokens from the 2-nd argument
 
         Returns:
-        (void):
-          updates `a_feats` dictionary in place
+          void: updates `a_feats` dictionary in place
 
         """
         neg1 = self._get_arg_negation(a_toks1)
@@ -511,11 +504,10 @@ class WangExplicitSenser(WangBaseSenser):
         """Estimate polarity of the given relation argument.
 
         Args:
-        a_toks (list(str)):
-          argument's tokens
+          a_toks (list): indices of argument's tokens
 
         Returns:
-        (list(int)):
+          list: argument's tokens
 
         """
         ret = "pos"
@@ -530,16 +522,18 @@ class WangExplicitSenser(WangBaseSenser):
         """Estimate modality of the given relation.
 
         Args:
-        a_feats (dict):
-          target feature dictionary
-        a_toks1 (list(str)):
-          list of tokens from the 1-st argument
-        a_toks2 (list(str)):
-          list of tokens from the 2-nd argument
+          a_feats (dict):
+            target feature dictionary
+          a_toks1 (list):
+            list of tokens from the 1-st argument
+          a_toks2 (list):
+            list of tokens from the 2-nd argument
 
         Returns:
-        (void):
-          updates `a_feats` dictionary in place
+          void:
+
+        Note:
+          updates ``a_feats`` dictionary in place
 
         """
         mod1 = self._get_arg_modality(a_toks1)
@@ -554,11 +548,10 @@ class WangExplicitSenser(WangBaseSenser):
         """Estimate modality of the given relation argument.
 
         Args:
-        a_toks (list(str)):
-          argument's tokens
+          a_toks (list): argument's tokens
 
         Returns:
-        (list(int)):
+          list(int):
 
         """
         ret = [0] * 7
@@ -578,16 +571,16 @@ class WangExplicitSenser(WangBaseSenser):
         """Method for getting raw tokens with their parts of speech.
 
         Args:
-        a_parses (dict):
-          parsed sentences
-        a_rel (dict):
-          discourse relation whose tokens should be obtained
-        a_arg (str):
-          relation argument to obtain senses for
+          a_parses (dict):
+            parsed sentences
+          a_rel (dict):
+            discourse relation whose tokens should be obtained
+          a_arg (str):
+            relation argument to obtain senses for
 
         Returns:
-        (list(tuple(str, str))):
-          list of tokens and their parts of speech
+          list:
+            list of tokens and their parts of speech
 
         """
         ret = []
@@ -604,12 +597,12 @@ class WangExplicitSenser(WangBaseSenser):
         """Generate mapping from sentence indices to token lists.
 
         Args:
-        a_tok_list (list(tuple(int, int))):
-          list of sentence and token indices pertaining to the argument
+          a_tok_list (list):
+            list of sentence and token indices pertaining to the argument
 
         Returns:
-        defaultdict(set):
-          mapping from sentence indices to token lists
+          collections.defaultdict:
+            mapping from sentence indices to token lists
 
         """
         snt2tok_pos = defaultdict(set)
@@ -618,16 +611,14 @@ class WangExplicitSenser(WangBaseSenser):
             snt2tok_pos[snt_id].add(el[TOK_ID])
         return snt2tok_pos
 
-
     def _escape_feat(self, a_feat):
         """Replace characters that might confuse dict vectorize.
 
         Args:
-        a_feat (str): feature to be escaped
+          a_feat (str): feature to be escaped
 
         Return:
-        (str):
-        escaped feature
+          str: escaped feature
 
         """
         a_feat = MULTISPACE_RE.sub(' ', a_feat)

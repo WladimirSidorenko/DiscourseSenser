@@ -3,10 +3,6 @@
 
 """Module providing class for SVD sense disambiguation.
 
-Attributes:
-SVDSenser (class):
-  class for predicting sense probabilities for explicit and implcit relations
-
 """
 
 ##################################################################
@@ -24,11 +20,11 @@ class SVDSenser(BaseSenser):
     """Class using LSTM classification for disambiguating connectives.
 
     Attributes:
-    explicit (SVDImplicitSenser): classifier for implicit discourse relations
-    implicit (SVDExplicitSenser): classifier for explicit discourse relations
-    n_y (int): number of distinct classes
-
-    Methods:
+      explicit (:class:`dsenser.svd.explicit.SVDExplicitSenser`):
+        classifier for implicit discourse relations
+      implicit (:class:`dsenser.svd.implicit.SVDExplicitSenser`):
+        classifier for explicit discourse relations
+      n_y (int): number of distinct classes
 
     """
 
@@ -37,8 +33,8 @@ class SVDSenser(BaseSenser):
         Class constructor.
 
         Args:
-        args (list): list of arguments
-        kwargs (dict): list of keyword arguments
+          args (list): list of arguments
+          kwargs (dict): dictionary of keyword arguments
 
         """
         self.explicit = SVDExplicitSenser(*args, **kwargs)

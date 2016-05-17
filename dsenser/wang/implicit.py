@@ -4,8 +4,8 @@
 """Module providing class for Wang sense disambiguation.
 
 Attributes:
-WangImplicitSenser (class):
-  class that predicts senses of implicit relations using Wang classifier
+  WangImplicitSenser (class):
+    class that predicts senses of implicit relations using Wang classifier
 
 """
 
@@ -54,9 +54,7 @@ class WangImplicitSenser(WangBaseSenser):
     """Class for disambiguating explicit connectives.
 
     Attrs:
-    n_y (int): number of distinct classes
-
-    Methods:
+      n_y (int): number of distinct classes
 
     """
 
@@ -64,8 +62,8 @@ class WangImplicitSenser(WangBaseSenser):
         """Class constructor.
 
         Args:
-        a_clf (classifier or None):
-          classifier to use or None for default
+          a_clf (classifier or None):
+            classifier to use or None for default
 
         """
         self.n_y = -1
@@ -83,13 +81,13 @@ class WangImplicitSenser(WangBaseSenser):
         """Extract classification features for the given relation.
 
         Args:
-        a_rel (dict):
-          discourse relation to extract features for
-        a_parses (dict):
-          parsed sentences
+          a_rel (dict):
+            discourse relation to extract features for
+          a_parses (dict):
+            parsed sentences
 
         Returns:
-        (void):
+          void:
 
         """
         feats = {}
@@ -112,18 +110,18 @@ class WangImplicitSenser(WangBaseSenser):
         """Extract syntactic production rules for the given relation.
 
         Args:
-        a_feats (dict):
-          target feature dictionary
-        a_doc_id (str):
-          id of the document
-        a_rel (dict):
-          discourse relation to extract features for
-        a_parses (dict):
-          parsed sentences
+          a_feats (dict):
+            target feature dictionary
+          a_doc_id (str):
+            id of the document
+          a_rel (dict):
+            discourse relation to extract features for
+          a_parses (dict):
+            parsed sentences
 
         Returns:
-        (void):
-          updates `a_feats` dictionary in place
+          void:
+            updates `a_feats` dictionary in place
 
         """
         arg1_prods = self._get_arg_product_rules(a_doc_id, ARG1,
@@ -143,18 +141,18 @@ class WangImplicitSenser(WangBaseSenser):
         """Extract syntactic production rules for the given arg.
 
         Args:
-        a_doc_id (str):
-          id of the document
-        a_arg (str):
-          argument to extract productions for
-        a_rel (dict):
-          discourse relation to extract features for
-        a_parses (dict):
-          parsed sentences
+          a_doc_id (str):
+            id of the document
+          a_arg (str):
+            argument to extract productions for
+          a_rel (dict):
+            discourse relation to extract features for
+          a_parses (dict):
+            parsed sentences
 
         Returns:
-        (set(str)):
-          set of syntactic productions
+          set:
+            set of syntactic productions
 
         """
         ret = set()
@@ -197,18 +195,20 @@ class WangImplicitSenser(WangBaseSenser):
         """Extract syntactic dependency rules for the given relation.
 
         Args:
-        a_feats (dict):
-          target feature dictionary
-        a_doc_id (str):
-          id of the document
-        a_rel (dict):
-          discourse relation to extract features for
-        a_parses (dict):
-          parsed sentences
+          a_feats (dict):
+            target feature dictionary
+          a_doc_id (str):
+            id of the document
+          a_rel (dict):
+            discourse relation to extract features for
+          a_parses (dict):
+            parsed sentences
 
         Returns:
-        (void):
-          updates `a_feats` dictionary in place
+          void:
+
+        Note:
+          updates ``a_feats`` dictionary in place
 
         """
         for dep1 in self._get_arg_dep_rules(a_doc_id, ARG1,
@@ -222,18 +222,17 @@ class WangImplicitSenser(WangBaseSenser):
         """Extract syntactic dependency rules for the given arg.
 
         Args:
-        a_doc_id (str):
-          id of the document
-        a_arg (str):
-          argument to extract productions for
-        a_rel (dict):
-          discourse relation to extract features for
-        a_parses (dict):
-          parsed sentences
+          a_doc_id (str):
+            id of the document
+          a_arg (str):
+            argument to extract productions for
+          a_rel (dict):
+            discourse relation to extract features for
+          a_parses (dict):
+            parsed sentences
 
         Yields:
-        (set(str)):
-          set of syntactic productions
+          set: set of syntactic productions
 
         """
         # obtain sentence and token indices
@@ -257,16 +256,18 @@ class WangImplicitSenser(WangBaseSenser):
         """Extract first and last tokens of the given relation.
 
         Args:
-        a_feats (dict):
-          target feature dictionary
-        a_toks1 (list(str)):
-          list of tokens from the 1-st argument
-        a_toks2 (list(str)):
-          list of tokens from the 2-nd argument
+          a_feats (dict):
+            target feature dictionary
+          a_toks1 (list):
+            list of tokens from the 1-st argument
+          a_toks2 (list):
+            list of tokens from the 2-nd argument
 
         Returns:
-        (void):
-          updates `a_feats` dictionary in place
+          void:
+
+        Note:
+          updates ``a_feats`` dictionary in place
 
         """
         a1_first3 = a2_first3 = "NULL" * 3
@@ -294,15 +295,17 @@ class WangImplicitSenser(WangBaseSenser):
         """Estimate modality of the given relation.
 
         Args:
-        a_feats (dict):
-          target feature dictionary
-        a_toks1 (list(str)):
-          list of tokens from the 1-st argument
-        a_toks2 (list(str)):
-          list of tokens from the 2-nd argument
+          a_feats (dict):
+            target feature dictionary
+          a_toks1 (list):
+            list of tokens from the 1-st argument
+          a_toks2 (list):
+            list of tokens from the 2-nd argument
 
         Returns:
-        (void):
+          void:
+
+        Note:
           updates `a_feats` dictionary in place
 
         """
@@ -318,11 +321,10 @@ class WangImplicitSenser(WangBaseSenser):
         """Estimate modality of the given relation argument.
 
         Args:
-        a_toks (list(str)):
-          argument's tokens
+          a_toks (list): argument's tokens
 
         Returns:
-        (list(int)):
+          list:
 
         """
         ret = [0] * 7
@@ -342,16 +344,18 @@ class WangImplicitSenser(WangBaseSenser):
         """Obtain verb classes of the given relation.
 
         Args:
-        a_feats (dict):
-          target feature dictionary
-        a_toks1 (list(str)):
-          list of tokens from the 1-st argument
-        a_toks2 (list(str)):
-          list of tokens from the 2-nd argument
+          a_feats (dict):
+            target feature dictionary
+          a_toks1 (list(str)):
+            list of tokens from the 1-st argument
+          a_toks2 (list(str)):
+            list of tokens from the 2-nd argument
 
         Returns:
-        (void):
-          updates `a_feats` dictionary in place
+          void:
+
+        Note:
+          updates ``a_feats`` dictionary in place
 
         """
         # find intersecting verb classes
@@ -376,12 +380,11 @@ class WangImplicitSenser(WangBaseSenser):
         """Obtain verb classes of single argument.
 
         Args:
-        a_toks (list(str)):
-          list of tokens from the 1-st argument
+          a_toks (list):
+            list of tokens from the 1-st argument
 
         Returns:
-        (str):
-          binary mask of activated PoS tags
+          str: binary mask of activated PoS tags
 
         """
         ret = [0] * 7
@@ -394,16 +397,18 @@ class WangImplicitSenser(WangBaseSenser):
         """Obtain Brown cluster pairs for the given relation.
 
         Args:
-        a_feats (dict):
-          target feature dictionary
-        a_toks1 (list(str)):
-          list of tokens from the 1-st argument
-        a_toks2 (list(str)):
-          list of tokens from the 2-nd argument
+          a_feats (dict):
+            target feature dictionary
+          a_toks1 (list):
+            list of tokens from the 1-st argument
+          a_toks2 (list):
+            list of tokens from the 2-nd argument
 
         Returns:
-        (void):
-          updates `a_feats` dictionary in place
+          void:
+
+        Note:
+          updates ``a_feats`` dictionary in place
 
         """
         bcluster_str = ""
@@ -421,16 +426,18 @@ class WangImplicitSenser(WangBaseSenser):
         """Obtain General Inquirer scores for the given relation.
 
         Args:
-        a_feats (dict):
-          target feature dictionary
-        a_toks1 (list(str)):
-          list of tokens from the 1-st argument
-        a_toks2 (list(str)):
-          list of tokens from the 2-nd argument
+          a_feats (dict):
+            target feature dictionary
+          a_toks1 (list):
+            list of tokens from the 1-st argument
+          a_toks2 (list):
+            list of tokens from the 2-nd argument
 
         Returns:
-        (void):
-          updates `a_feats` dictionary in place
+          void:
+
+        Note:
+          updates ``a_feats`` dictionary in place
 
         """
         inq1 = self._get_arg_inquirer(a_toks1)
@@ -450,12 +457,11 @@ class WangImplicitSenser(WangBaseSenser):
         """Obtain General Inquirer scores for the given relation.
 
         Args:
-        a_toks (list(str)):
-          list of tokens from the 1-st argument
+          a_toks (list):
+            list of tokens from the 1-st argument
 
         Returns:
-        (list(bool)):
-          updates `a_feats` dictionary in place
+          list:
 
         """
         ret = [False] * 42
@@ -480,16 +486,18 @@ class WangImplicitSenser(WangBaseSenser):
         """Obtain MPQA scores for the given relation.
 
         Args:
-        a_feats (dict):
-          target feature dictionary
-        a_toks1 (list(str)):
-          list of tokens from the 1-st argument
-        a_toks2 (list(str)):
-          list of tokens from the 2-nd argument
+          a_feats (dict):
+            target feature dictionary
+          a_toks1 (list(str)):
+            list of tokens from the 1-st argument
+          a_toks2 (list(str)):
+            list of tokens from the 2-nd argument
 
         Returns:
-        (void):
-          updates `a_feats` dictionary in place
+          void:
+
+        Note:
+          updates ``a_feats`` dictionary in place
 
         """
         mpqa1 = self._get_arg_MPQA(a_toks1)
@@ -503,12 +511,11 @@ class WangImplicitSenser(WangBaseSenser):
         """Obtain MPQA scores for single argument.
 
         Args:
-        a_toks (list((str, str))):
-          list of argument's tokens and tags
+          a_toks (list((str, str))):
+            list of argument's tokens and tags
 
         Returns:
-        (dict):
-          polarit-intensity values
+          dict: polarity-intensity values
 
         """
         ret = {}

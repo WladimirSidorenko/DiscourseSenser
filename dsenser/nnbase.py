@@ -4,9 +4,10 @@
 """Module providing abstract class for NN-based sense classification.
 
 Attributes:
-NNBaseSenser (class):
-  abstract class defining interface for neural-network based sense
-  classification
+  MAX (float): big number
+  INF (float): infinity
+  UNK_PROB (lambda): random number generator from Binomial distribution
+  DIG_RE (re): regular expression for matching digits
 
 """
 
@@ -46,12 +47,12 @@ def _norm_vec(a_x):
     """Normali length of the inout vector.
 
     Args:
-    a_x (np.array):
-    input vector
+      a_x (np.array):
+        input vector
 
     Returns:
-    (np.array):
-    normalized vector
+      np.array:
+        normalized vector
 
     """
     return a_x / (np.linalg.norm(a_x) or MAX)
@@ -61,12 +62,12 @@ def _norm_word(a_word):
     """Normalize word.
 
     Args:
-    a_word (str):
-    word to normalize
+      a_word (str):
+        word to normalize
 
     Returns:
-    (str):
-    normalized word form
+      str:
+        normalized word form
 
     """
     return DIG_RE.sub('1', a_word.lower())
@@ -77,10 +78,8 @@ def _norm_word(a_word):
 class NNBaseSenser(BaseSenser):
     """Abstract class for NN-based sense disambiguation.
 
-    Attrs:
-    n_y (int): number of distinct classes
-
-    Methods:
+    Attributes:
+      n_y (int): number of distinct classes
 
     """
     __metaclass__ = abc.ABCMeta
@@ -89,14 +88,14 @@ class NNBaseSenser(BaseSenser):
         """Class constructor.
 
         Args:
-        a_w2v (bool):
-          use pre-trained word2vec instance
-        a_lstsq (bool):
-          pre-train task-specific word embeddings, but use least-square method
-          to generate embeddings for unknown words from generic word2vec
-          vectors
-        a_max_iters (int):
-          maximum number of iterations
+          a_w2v (bool):
+            use pre-trained word2vec instance
+          a_lstsq (bool):
+            pre-train task-specific word embeddings, but use least-square
+            method to generate embeddings for unknown words from generic
+            word2vec vectors
+          a_max_iters (int):
+            maximum number of iterations
 
         """
         # access to the original word2vec resource
@@ -139,21 +138,23 @@ class NNBaseSenser(BaseSenser):
         """Method for training the model.
 
         Args:
-        a_train_data (2-tuple(list, dict)):
-          list of training JSON data
-        a_dev_data (2-tuple(list, dict) or None):
-          list of development JSON data
-        a_n_y (int):
-          number of distinct classes
-        a_i (int):
-          row index for the output predictions
-        a_train_out (np.array or None):
-          predictions for the training set
-        a_dev_out (np.array or None):
-          predictions for the training set
+          a_train_data (2-tuple(list, dict)):
+            list of training JSON data
+          a_dev_data (2-tuple(list, dict) or None):
+            list of development JSON data
+          a_n_y (int):
+            number of distinct classes
+          a_i (int):
+            row index for the output predictions
+          a_train_out (np.array or None):
+            predictions for the training set
+          a_dev_out (np.array or None):
+            predictions for the training set
 
         Returns:
-        (void):
+          void:
+
+        Note:
           updates ``a_train_out`` and ``a_dev_out`` in place
 
         """
@@ -265,12 +266,6 @@ class NNBaseSenser(BaseSenser):
     def _init_nn(self):
         """Initialize neural network.
 
-        Args:
-        (void)
-
-        Returns:
-        (void)
-
         """
         raise NotImplementedError
 
@@ -278,17 +273,19 @@ class NNBaseSenser(BaseSenser):
         """Method for predicting sense of single relation.
 
         Args:
-        a_rel (dict):
-          discourse relation whose sense should be predicted
-        a_data (2-tuple(dict, dict)):
-          list of input JSON data
-        a_ret (np.array):
-          output prediction vector
-        a_i (int):
-          row index in the output vector
+          a_rel (dict):
+            discourse relation whose sense should be predicted
+          a_data (2-tuple(dict, dict)):
+            list of input JSON data
+          a_ret (np.array):
+            output prediction vector
+          a_i (int):
+            row index in the output vector
 
         Returns:
-        (void):
+          void:
+
+        Note:
           updates ``a_ret`` in place
 
         """
@@ -311,15 +308,17 @@ class NNBaseSenser(BaseSenser):
         """Method for predicting sense of single relation.
 
         Args:
-        a_args (list):
-          list of input arguments to the prediction function
-        a_ret (np.array):
-          output prediction vector
-        a_i (int):
-          row index in the output vector
+          a_args (list):
+            list of input arguments to the prediction function
+          a_ret (np.array):
+            output prediction vector
+          a_i (int):
+            row index in the output vector
 
         Returns:
-        (void):
+          void:
+
+        Note:
           updates ``a_ret`` in place
 
         """
@@ -333,12 +332,6 @@ class NNBaseSenser(BaseSenser):
     def _free(self):
         """Free resources used by the model.
 
-        Args:
-        (void):
-
-        Returns:
-        (void):
-
         """
         self.n_y = -1
         self._w_stat = None
@@ -349,11 +342,11 @@ class NNBaseSenser(BaseSenser):
         """Clean-up memory occupied by shared variables.
 
         Args:
-        a_shared_vars: list(theano.shared)
-          list of shared variables whose memory should be freed
+          a_shared_vars (list):
+            list of shared variables whose memory should be freed
 
         Returns:
-        (void)
+          void:
 
         """
         dim = 0
@@ -366,16 +359,16 @@ class NNBaseSenser(BaseSenser):
         """Generate training set.
 
         Args:
-        a_data (2-tuple(list, dict)):
-          input data (discourse relations and parses)
-        a_get_w_emb_i (method):
-          custom method for retrieving the word embedding index
-        a_get_c_emb_i (method):
-          custom method for retrieving the conn embedding index
+          a_data (tuple):
+            input data (discourse relations and parses)
+          a_get_w_emb_i (method):
+            custom method for retrieving the word embedding index
+          a_get_c_emb_i (method):
+            custom method for retrieving the conn embedding index
 
         Returns:
-        (tuple(list, list)):
-          lists of input features and expected classes
+          tuple:
+            lists of input features and expected classes
 
         """
         x, y = [], []
@@ -396,18 +389,18 @@ class NNBaseSenser(BaseSenser):
         """Convert input relation to embeddings.
 
         Args:
-        a_rel (dict):
-          discourse relation whose tokens should be obtained
-        a_parses (dict):
-          parsed sentences
-        a_get_w_emb_i (method):
-          custom method for retrieving the word embedding index
-        a_get_c_emb_i (method):
-          custom method for retrieving the conn embedding index
+          a_rel (dict):
+            discourse relation whose tokens should be obtained
+          a_parses (dict):
+            parsed sentences
+          a_get_w_emb_i (method):
+            custom method for retrieving the word embedding index
+          a_get_c_emb_i (method):
+            custom method for retrieving the conn embedding index
 
         Returns:
-        (np.array, np.array, np.array):
-        embeddings of arg1, arg2, and connective
+          (np.array, np.array, np.array):
+            embeddings of arg1, arg2, and connective
 
         """
         # print("rel2x: a_rel =", repr(a_rel))

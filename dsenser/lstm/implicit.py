@@ -4,8 +4,8 @@
 """Module providing class for LSTM sense disambiguation.
 
 Attributes:
-LSTMImplicitSenser (class):
-  class that predicts senses of implicit relations
+  LSTMImplicitSenser (class):
+    class that predicts senses of implicit relations
 
 """
 
@@ -24,11 +24,6 @@ from dsenser.utils import timeit
 # Classes
 class LSTMImplicitSenser(LSTMBaseSenser):
     """Class for disambiguating explicit connectives.
-
-    Attrs:
-    n_y (int): number of distinct classes
-
-    Methods:
 
     """
 

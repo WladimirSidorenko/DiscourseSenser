@@ -4,8 +4,8 @@
 """Module for XGBoost disambiguation of implicit relations.
 
 Attributes:
-XGBoostImplicitSenser (class):
-  class that xgboost sense prediction of implicit relations
+  XGBoostImplicitSenser (class):
+    class that xgboost sense prediction of implicit relations
 
 """
 
@@ -21,7 +21,7 @@ from dsenser.xgboost.xgboostbase import XGBoostBaseSenser
 ##################################################################
 # Classes
 class XGBoostImplicitSenser(XGBoostBaseSenser, WangImplicitSenser):
-    """Subclass of explicit WangSenser using XGBoost
+    """Subclass of implicit WangSenser using XGBoost.
 
     """
 

@@ -133,10 +133,12 @@ class MajorSenser(BaseSenser):
           (numpy.array): prior probabilities of senses
 
         """
-        ret = np.zeros(self.n_y)
+        ret = np.zeros(self.n_y if self.n_y > 0 else 0)
         for i, j in a_stat.iteritems():
             ret[i] = j
-        ret /= float(sum(ret))
+        total = float(sum(ret))
+        if total:
+            ret /= total
         return ret
 
     def _free(self):

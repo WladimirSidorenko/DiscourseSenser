@@ -16,7 +16,6 @@ from dsenser.constants import CONNECTIVE, RAW_TEXT, SENSE
 from dsenser.utils import timeit
 
 import numpy as np
-import sys
 
 ##################################################################
 # Variables and Constants

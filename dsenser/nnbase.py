@@ -774,8 +774,7 @@ class NNBaseSenser(BaseSenser):
         """Compute word frequencies on the corpus.
 
         Args:
-          a_parses (dict):
-            CoNLL parses
+          a_parses (dict): CoNLL parses
 
         Returns:
           void:

@@ -419,8 +419,7 @@ class NNBaseSenser(BaseSenser):
         """Extract classification features for a given relation.
 
         Args:
-          a_parses (dict):
-            parsed sentences
+          a_parses (dict): parsed sentences
           a_rel (dict):
             discourse relation whose tokens should be obtained
           a_arg (str):

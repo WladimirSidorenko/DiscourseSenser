@@ -84,8 +84,6 @@ class BaseSenser(object):
             list of input JSON data
           a_ret (np.array):
             prediction matrix
-          a_i (int):
-            row index in the output vector
 
         Returns:
           void:

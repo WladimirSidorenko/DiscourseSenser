@@ -8220,3 +8220,4 @@ type=strongsubj len=1 word1=zealous pos1=adj stemmed1=n priorpolarity=negative
 type=strongsubj len=1 word1=zealously pos1=anypos stemmed1=n priorpolarity=negative
 type=strongsubj len=1 word1=zenith pos1=noun stemmed1=n priorpolarity=positive
 type=strongsubj len=1 word1=zest pos1=noun stemmed1=n priorpolarity=positive
+

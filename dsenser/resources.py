@@ -122,7 +122,10 @@ def load_LCSI(a_fname):
             iword, iclass_str = SPACE_RE.split(iline, 1)
             iword = iword.lower()
             iclasses = set(HASH_RE.split(iclass_str))
-            ret[iword] = iclasses
+            if iword in ret:
+                ret[iword].update(iclasses)
+            else:
+                ret[iword] = iclasses
     return ret
 
 
@@ -146,7 +149,7 @@ def load_BROWN(a_fname):
             iline = iline.strip()
             if not iline:
                 continue
-            _, iword, iclass = SPACE_RE.split(iline, 2)
+            iclass, iword, _ = SPACE_RE.split(iline, 2)
             iword = iword.lower()
             ret[iword].add(iclass)
     print("done", file=sys.stderr)
@@ -179,7 +182,7 @@ def load_INQUIRER(a_fname):
             iword = iword.strip().lower()
             iclass = [bool(el) if el else False for el in BAR_RE.split(iclass)]
             ret[iword] = iclass
-            ret[PSTEMMER.stem(iword)] = iclass
+            stem_ret[PSTEMMER.stem(iword)] = iclass
     # convert defaultdict back to the normal one
     return (ret, stem_ret)
 

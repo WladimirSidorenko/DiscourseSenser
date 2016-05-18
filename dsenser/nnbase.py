@@ -419,18 +419,18 @@ class NNBaseSenser(BaseSenser):
         """Extract classification features for a given relation.
 
         Args:
-        a_parses (dict):
-          parsed sentences
-        a_rel (dict):
-          discourse relation whose tokens should be obtained
-        a_arg (str):
-          relation argument to obtain senses for
-        a_get_emb_i (method):
-          custom method for retrieving the embedding index
+          a_parses (dict):
+            parsed sentences
+          a_rel (dict):
+            discourse relation whose tokens should be obtained
+          a_arg (str):
+            relation argument to obtain senses for
+          a_get_emb_i (method):
+            custom method for retrieving the embedding index
 
         Returns:
-        (np.array or None):
-        convert input relation to word embedding matrix
+          np.array or None:
+            convert input relation to word embedding matrix
 
         """
         toks = [t[0] for t in
@@ -447,25 +447,13 @@ class NNBaseSenser(BaseSenser):
     def _init_w_emb(self):
         """Initialize task-specific word embeddings.
 
-        Args:
-        (void)
-
-        Returns:
-        (void)
-
         """
         self.W_EMB = theano.shared(
             value=HE_UNIFORM((self.w_i, self.ndim)), name="W_EMB")
         self._params.append(self.W_EMB)
 
     def _init_w2v_emb(self):
-        """Initialize task-specific word embeddings.
-
-        Args:
-        (void)
-
-        Returns:
-        (void)
+        """Initialize word2vec embedding matrix.
 
         """
         w_emb = np.empty((self.w_i, self.ndim))
@@ -484,12 +472,8 @@ class NNBaseSenser(BaseSenser):
     def _init_w2emb(self):
         """Compute a mapping from Word2Vec to embeddings.
 
-        Args:
-        (void)
-
-        Returns:
-        (void):
-        modifies instance variable in place
+        Note:
+          modifies instance variables in place
 
         """
         # construct two matrices - one with the original word2vec
@@ -516,12 +500,12 @@ class NNBaseSenser(BaseSenser):
         """Obtain embedding index for the given word.
 
         Args:
-        a_word (str):
-        word whose embedding index should be retrieved
+          a_word (str):
+            word whose embedding index should be retrieved
 
         Returns:
-        (int):
-          embedding index od the given word
+          int:
+            embedding index od the given word
 
         """
         a_word = _norm_word(a_word)
@@ -539,12 +523,12 @@ class NNBaseSenser(BaseSenser):
         """Obtain embedding index for the given word.
 
         Args:
-        a_word (str):
-          word whose embedding index should be retrieved
+          a_word (str):
+            word whose embedding index should be retrieved
 
         Returns:
-        (int):
-          embedding index od the given word
+          int:
+            embedding index od the given word
 
         """
         a_word = _norm_word(a_word)
@@ -554,12 +538,12 @@ class NNBaseSenser(BaseSenser):
         """Obtain embedding index for the given word.
 
         Args:
-        a_word (str):
-          word whose embedding index should be retrieved
+          a_word (str):
+            word whose embedding index should be retrieved
 
         Returns:
-        (int):
-          embedding index of the given word
+          int:
+            embedding index of the given word
 
         """
         a_word = _norm_word(a_word)
@@ -576,12 +560,12 @@ class NNBaseSenser(BaseSenser):
         """Obtain embedding index for the given word.
 
         Args:
-        a_word (str):
-        word whose embedding index should be retrieved
+          a_word (str):
+            word whose embedding index should be retrieved
 
         Returns:
-        (np.array):
-          embedding of the input word
+          np.array:
+            embedding of the input word
 
         """
         a_word = _norm_word(a_word)
@@ -596,12 +580,12 @@ class NNBaseSenser(BaseSenser):
         """Obtain embedding index for the given word.
 
         Args:
-        a_word (str):
-        word whose embedding index should be retrieved
+          a_word (str):
+            word whose embedding index should be retrieved
 
         Returns:
-        (np.array):
-          embedding of the input word
+          np.array:
+            embedding of the input word
 
         """
         a_word = _norm_word(a_word)
@@ -615,12 +599,6 @@ class NNBaseSenser(BaseSenser):
     def _init_conn_emb(self):
         """Initialize task-specific connective embeddings.
 
-        Args:
-        (void)
-
-        Returns:
-        (void)
-
         """
         self.CONN_EMB = theano.shared(
             value=HE_UNIFORM((self.c_i, self.intm_dim)),
@@ -631,12 +609,12 @@ class NNBaseSenser(BaseSenser):
         """Obtain embedding index for the given connective.
 
         Args:
-        a_conn (str):
-        connective whose embedding index should be retrieved
+          a_conn (str):
+            connective whose embedding index should be retrieved
 
         Returns:
-        (int):
-        embedding index of the given connective
+          int:
+            embedding index of the given connective
 
         """
         a_conn, _ = CHM.map_raw_connective(a_conn.lower())
@@ -652,12 +630,12 @@ class NNBaseSenser(BaseSenser):
         """Obtain embedding index for the given connective.
 
         Args:
-        a_conn (str):
-        connective whose embedding index should be retrieved
+          a_conn (str):
+            connective whose embedding index should be retrieved
 
         Returns:
-        (int):
-        embedding index of the given connective
+          int:
+            embedding index of the given connective
 
         """
         a_conn, _ = CHM.map_raw_connective(a_conn.lower())
@@ -688,12 +666,14 @@ class NNBaseSenser(BaseSenser):
         """Compile theano functions.
 
         Args:
-        a_grads (theano.shared or None):
-        gradients of the trainign function
+          a_grads (theano.shared or None):
+            gradients of the trainign function
 
         Returns:
-        (void):
-        modifies instance variables in place
+          void:
+
+        Note:
+          modifies instance variables in place
 
         """
         if a_grads:
@@ -741,12 +721,6 @@ class NNBaseSenser(BaseSenser):
     def _init_wemb_funcs(self):
         """Initialize functions for obtaining word embeddings.
 
-        Args:
-        (void):
-
-        Returns:
-        (void):
-
         """
         if self._plain_w2v:
             if self.w2v is None:
@@ -782,12 +756,8 @@ class NNBaseSenser(BaseSenser):
     def _reset_funcs(self):
         """Set all compiled theano functions to None.
 
-        Args:
-        (void):
-
-        Returns:
-        (void):
-        modifies instance variables in place
+        Note:
+          modifies instance variables in place
 
         """
         self._grad_shared = None
@@ -804,12 +774,14 @@ class NNBaseSenser(BaseSenser):
         """Compute word frequencies on the corpus.
 
         Args:
-        a_parses (dict):
-        CoNLL parses
+          a_parses (dict):
+            CoNLL parses
 
         Returns:
-        (void):
-        modifies instance variables in place
+          void:
+
+        Note:
+          modifies instance variables in place
 
         """
         self._w_stat = Counter(_norm_word(w[TOK_IDX])

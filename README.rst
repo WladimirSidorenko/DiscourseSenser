@@ -55,7 +55,7 @@ its submodules by subsequently running the following commands:
     git submodule init
     git submodule update
 
-    # download the Skip-gram Neural Word Embeddings at
+    # download the Skip-gram Neural Word Embeddings from
     # https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing
     # and store the unpacked archive at
     # `dsenser/data/GoogleNews-vectors-negative300.bin`

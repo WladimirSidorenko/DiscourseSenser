@@ -20,6 +20,7 @@ from dsenser.utils import timeit
 
 from collections import Iterable
 from cPickle import dump, load
+from itertools import chain
 
 import codecs
 import gc
@@ -131,7 +132,24 @@ class DiscourseSenser(object):
             from dsenser.lstm import LSTMSenser
             self.models.append(LSTMSenser(a_w2v, a_lstsq))
             nn_used = True
-        # convert classes to indices
+        # remember all possible senses
+        n_senses = 0
+        isenses = None
+        for irel in chain(a_train_data[0], a_dev_data[0]
+                          if a_dev_data is not None else []):
+            isenses = irel[SENSE]
+            for isense in isenses:
+                isense = SHORT2FULL.get(isense, isense)
+                if isense not in self.cls2idx:
+                    n_senses = len(self.cls2idx)
+                    self.cls2idx[isense] = n_senses
+                    self.idx2cls[n_senses] = isense
+            if irel[TYPE] == EXPLICIT:
+                self.econn.add(self._normalize_conn(
+                    irel[CONNECTIVE][RAW_TEXT]))
+            else:
+                irel[CONNECTIVE][RAW_TEXT] = ""
+        # convert sense classes to indices
         self._sense2idx(a_train_data[0])
         if a_dev_data is not None:
             self._sense2idx(a_dev_data[0])
@@ -369,30 +387,18 @@ class DiscourseSenser(object):
         """Convert symbolic senses to vectors.
 
         Args:
-        a_rels (list):
-        list of discourse relations
+          a_rels (list):
+            list of discourse relations
 
         Returns:
-        (void):
-        updates ``a_rels`` in place
+          void:
+
+        Note:
+          updates ``a_rels`` in place
 
         """
-        n_senses = 0
-        isense = isenses = None
-        for irel in a_rels:
-            isenses = irel[SENSE]
-            for isense in isenses:
-                isense = SHORT2FULL.get(isense, isense)
-                if isense not in self.cls2idx:
-                    self.cls2idx[isense] = n_senses
-                    self.idx2cls[n_senses] = isense
-                    n_senses += 1
-            if irel[TYPE] == EXPLICIT:
-                self.econn.add(self._normalize_conn(
-                    irel[CONNECTIVE][RAW_TEXT]))
-            else:
-                irel[CONNECTIVE][RAW_TEXT] = ""
-        vsense = None
+        n_senses = len(self.cls2idx)
+        isense = isenses = vsense = None
         for irel in a_rels:
             isenses = irel[SENSE]
             vsense = np.zeros(n_senses)

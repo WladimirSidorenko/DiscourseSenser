@@ -60,7 +60,7 @@ its submodules by subsequently running the following commands:
     # and store the unpacked archive at
     # `dsenser/data/GoogleNews-vectors-negative300.bin`
 
-    pip install -r requirements.txt -E . --user
+    pip install -r requirements.txt -e . --user
 
 Note that this package does not include any pre-trained models.  Due
 to a big size of the serialized files, we cannot add them all to the

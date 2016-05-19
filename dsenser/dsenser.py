@@ -133,6 +133,8 @@ class DiscourseSenser(object):
             nn_used = True
         # convert classes to indices
         self._sense2idx(a_train_data[0])
+        if a_dev_data is not None:
+            self._sense2idx(a_dev_data[0])
         # train models and remember their predictions (temporarly commented due
         # to memory optimization, since we are not using the judge now)
         # x_train = np.zeros((len(a_train_data[0]), len(self.models),

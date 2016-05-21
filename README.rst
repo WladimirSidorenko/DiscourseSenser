@@ -7,6 +7,9 @@ Discourse Senser
    :align: right
    :target: http://opensource.org/licenses/MIT
 
+.. image:: https://codecov.io/gh/WladimirSidorenko/DiscourseSenser/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/WladimirSidorenko/DiscourseSenser
+
 Sense disambiguation of discourse connectives for PDTB-style shallow
 discourse parsing.
 

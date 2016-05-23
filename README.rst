@@ -1,21 +1,25 @@
-================
 Discourse Senser
 ================
+
+.. image:: https://travis-ci.org/WladimirSidorenko/DiscourseSegmenter.svg?branch=master
+   :alt: Build Status
+   :target: https://travis-ci.org/WladimirSidorenko/DiscourseSegmenter
+
+.. image:: https://codecov.io/gh/WladimirSidorenko/DiscourseSenser/branch/master/graph/badge.svg
+   :alt: Code Coverage
+   :target: https://codecov.io/gh/WladimirSidorenko/DiscourseSenser
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
    :alt: MIT License
    :align: right
    :target: http://opensource.org/licenses/MIT
 
-.. image:: https://codecov.io/gh/WladimirSidorenko/DiscourseSenser/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/WladimirSidorenko/DiscourseSenser
-
 Sense disambiguation of discourse connectives for PDTB-style shallow
 discourse parsing.
 
 
 Description
-===========
+-----------
 
 This package provides core functionality for sense disambiguation of
 explicit and implicit discourse connectives for PDTB-like discourse
@@ -46,7 +50,7 @@ ensembles:
  Bayesian dropout (cf. `Yarin Gal, 2016`_);
 
 Installation
-============
+------------
 
 To install this package, you need to checkout this git-project with
 its submodules by subsequently running the following commands:
@@ -73,7 +77,7 @@ directly.  Some time later, we are going to upload these models
 separately on another location.
 
 Usage
-=====
+-----
 
 After installation, you can import the module in your python scripts, e.g.:
 
@@ -105,7 +109,7 @@ relations file whose senses need to be predicted by using the option
 
 
 Acknowledgment
-==============
+--------------
 
 We gratefuly acknowledge the contribution of
 

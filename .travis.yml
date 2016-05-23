@@ -1,0 +1,46 @@
+language: python
+
+python:
+  - 2.7
+
+git:
+  depth: 3
+
+branches:
+  only:
+    - master
+
+notifications:
+  email: false
+
+# Setup anaconda
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+  - export PATH=/home/travis/miniconda2/bin:$PATH
+  - conda update --yes conda
+  - conda create --yes -n condaenv python=$TRAVIS_PYTHON_VERSION
+  - conda install --yes -n condaenv pip
+  - source activate condaenv
+  # The next couple lines fix a crash with multiprocessing on Travis
+  # and are not specific to using Miniconda
+  - sudo rm -rf /dev/shm
+  - sudo ln -s /run/shm /dev/shm
+
+# Install packages
+install:
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION anaconda-client atlas numpy scipy
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION scikit-learn
+  # - conda install --yes python=$TRAVIS_PYTHON_VERSION --file=requirements.txt
+  # Coverage packages are on my binstar channel
+  - conda install --yes -c dan_blanchard python-coveralls nose-cov
+  - pip install -r requirements.txt
+  - ./setup.py build install
+
+# Run test
+script:
+  - ./setup.py test
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

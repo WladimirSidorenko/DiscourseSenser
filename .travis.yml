@@ -5,6 +5,7 @@ python:
 
 git:
   depth: 3
+  submodules: false
 
 branches:
   only:
@@ -15,6 +16,8 @@ notifications:
 
 # Setup anaconda
 before_install:
+  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  - git submodule update --init --recursive
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
   - ./miniconda.sh -b

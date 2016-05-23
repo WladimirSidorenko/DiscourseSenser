@@ -3,17 +3,14 @@ Discourse Senser
 
 .. image:: https://travis-ci.org/WladimirSidorenko/DiscourseSenser.svg?branch=master
    :alt: Build Status
-   :align: right
    :target: https://travis-ci.org/WladimirSidorenko/DiscourseSenser
 
 .. image:: https://codecov.io/gh/WladimirSidorenko/DiscourseSenser/branch/master/graph/badge.svg
    :alt: Code Coverage
-   :align: right
    :target: https://codecov.io/gh/WladimirSidorenko/DiscourseSenser
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
    :alt: MIT License
-   :align: right
    :target: http://opensource.org/licenses/MIT
 
 Sense disambiguation of discourse connectives for PDTB-style shallow

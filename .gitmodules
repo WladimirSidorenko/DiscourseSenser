@@ -1,3 +1,3 @@
 [submodule "dsenser/scorer"]
 	path = dsenser/scorer
-	url = git@github.com:WladimirSidorenko/conll16st
+	url = https://github.com/WladimirSidorenko/conll16st

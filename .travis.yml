@@ -35,6 +35,8 @@ install:
   # - conda install --yes python=$TRAVIS_PYTHON_VERSION --file=requirements.txt
   # Coverage packages are on my binstar channel
   - conda install --yes -c dan_blanchard python-coveralls nose-cov
+  - pip install -U setutools
+  - pip uninstall distribute
   - pip install -r requirements.txt
   - ./setup.py build install
   - pip install -r test-requirements.txt

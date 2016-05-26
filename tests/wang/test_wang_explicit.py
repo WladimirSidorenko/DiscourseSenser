@@ -9,7 +9,6 @@ from dsenser.constants import ARG1, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
     TOK_LIST, POS, WORDS
 from dsenser.wang.explicit import WangExplicitSenser
 
-from mock import patch
 from nltk import Tree
 from pytest import fixture
 from unittest import TestCase
@@ -60,7 +59,6 @@ class TestWangExplict(TestCase):
         self.wes = WangExplicitSenser()
 
     def test_get_path_0(self):
-        ret = {}
         conn_t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
         inode_id = self.wes._get_path(conn_t_ids, PARSE_TREE)
         assert inode_id == (0, 1, 1, 0, 1, 5)

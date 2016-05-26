@@ -31,6 +31,10 @@ class WangBaseSenser(BaseSenser):
     """
     __metaclass__ = abc.ABCMeta
 
+    # private members (used for feature extraction)
+    _bc1 = set()
+    _bc2 = set()
+
     def train(self, a_train_data, a_dev_data=None, a_n_y=-1,
               a_i=-1, a_train_out=None, a_dev_out=None):
         """Method for training the model.

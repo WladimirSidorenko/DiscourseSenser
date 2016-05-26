@@ -70,7 +70,10 @@ class WangExplicitSenser(WangBaseSenser):
         """
         self.n_y = -1
         self.ctype = "explicit"
-        classifier = a_clf or LinearSVC(C=DFLT_C, dual=False,
+        classifier = a_clf or LinearSVC(C=DFLT_C,
+                                        loss="hinge",
+                                        penalty="l1",
+                                        dual=False,
                                         multi_class="crammer_singer")
         self._model = Pipeline([('vectorizer', DictVectorizer()),
                                 ('classifier', classifier)])

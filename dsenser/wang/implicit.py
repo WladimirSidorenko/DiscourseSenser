@@ -68,7 +68,10 @@ class WangImplicitSenser(WangBaseSenser):
         """
         self.n_y = -1
         self.ctype = "implicit"
-        classifier = a_clf or LinearSVC(C=DFLT_C, dual=False,
+        classifier = a_clf or LinearSVC(C=DFLT_C,
+                                        loss="hinge",
+                                        penalty="l1",
+                                        dual=True,
                                         multi_class="crammer_singer")
         self._model = Pipeline([('vectorizer', DictVectorizer()),
                                 ('classifier', classifier)])
@@ -412,15 +415,21 @@ class WangImplicitSenser(WangBaseSenser):
 
         """
         bcluster_str = ""
-        for w1, _ in a_toks1:
-            if w1 not in BROWN_CLUSTERS:
-                continue
-            for w2, _ in a_toks2:
-                if w2 not in BROWN_CLUSTERS:
-                    continue
-                bcluster_str = "BrownCluster-" + BROWN_CLUSTERS[w1] + '%' + \
-                               BROWN_CLUSTERS[w2]
-                a_feats[bcluster_str] = 1.
+        self._bc1.update(BROWN_CLUSTERS[w1]
+                         for w1, _ in a_toks1 if w1 in BROWN_CLUSTERS)
+        self._bc2.update(BROWN_CLUSTERS[w2]
+                         for w2, _ in a_toks2 if w2 in BROWN_CLUSTERS)
+        # add clusters unique to the first argument
+        a_feats.update({"BrownClusterW1-" + bc1: 1
+                        for bc1 in self._bc1 - self._bc2})
+        # add clusters unique to the second argument
+        a_feats.update({"BrownClusterW2-" + bc2: 1
+                        for bc2 in self._bc1 - self._bc2})
+        # add clusters shared by both arguments
+        a_feats.update({"BrownClusterBoth-" + bc: 1
+                        for bc in self._bc1 & self._bc2})
+        self._bc1.clear()
+        self._bc2.clear()
 
     def _get_inquirer(self, a_feats, a_toks1, a_toks2):
         """Obtain General Inquirer scores for the given relation.

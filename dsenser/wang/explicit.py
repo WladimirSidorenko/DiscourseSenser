@@ -563,11 +563,11 @@ class WangExplicitSenser(WangBaseSenser):
         for i, itok in enumerate(a_toks):
             itok = itok[0]
             if itok in MODALITY:
-                ret[MODALITY[itok]] = 1.
+                ret[MODALITY[itok]] = 1
             if i < max_i:
                 bigram = itok + ' ' + a_toks[i + 1][0]
                 if bigram in MODALITY:
-                    ret[MODALITY[bigram]] = 1.
+                    ret[MODALITY[bigram]] = 1
         return ret
 
     def _get_toks_pos(self, a_parses, a_rel, a_arg):

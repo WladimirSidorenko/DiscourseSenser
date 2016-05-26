@@ -290,6 +290,8 @@ class DiscourseSenser(object):
         """
         if self.wbench is None:
             self.wbench = np.zeros((len(self.models), len(self.cls2idx)))
+        else:
+            self.wbench *= 0
         for i, imodel in enumerate(self.models):
             imodel.predict(a_rel, a_data, self.wbench, i)
         return self.wbench

@@ -5,12 +5,14 @@
 # Imports
 from __future__ import absolute_import
 
-from dsenser.constants import ARG1, TOK_LIST, POS, WORDS
+from dsenser.constants import ARG1, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
+    TOK_LIST, POS, WORDS
 from dsenser.wang.explicit import WangExplicitSenser
 
+from mock import patch
+from nltk import Tree
 from pytest import fixture
 from unittest import TestCase
-from mock import patch
 
 import numpy as np
 
@@ -18,7 +20,19 @@ import numpy as np
 ##################################################################
 # Constants
 TOKS = [[0, 1, 2, 3, 4], [0, 1, 2, 3, 5], [0, 1, 2, 3, 6]]
-REL = {ARG1: {TOK_LIST: TOKS}}
+REL = {ARG1: {TOK_LIST: TOKS},
+       CONNECTIVE: {CHAR_SPAN: [[566, 572]],
+                    RAW_TEXT: "unless", TOK_LIST: [[566, 572, 94, 2, 12]]}}
+TOK_0 = [(t, None) for t in "you do n't really have"
+         " to".split(' ')]
+MOD_0 = [0, 0, 0, 0, 0, 0, 1]
+TOK_1 = [(t, None) for t in "you might or can do"
+         " it".split(' ')]
+MOD_1 = [1, 1, 0, 0, 0, 0, 0]
+NEG_0_KEY = "Neg1-neg"
+NEG_1_KEY = "Neg2-pos"
+NEG_JNT_KEY = "JointNeg-neg|pos"
+
 PARSES = [{}, {}, {}, {WORDS: [("One", {POS: "CC"}),
                                ("Two", {POS: "CC"}),
                                ("THREE", {POS: "CC"}),
@@ -26,12 +40,16 @@ PARSES = [{}, {}, {}, {WORDS: [("One", {POS: "CC"}),
                                ("Five", {POS: "CC"}),
                                ("SiX", {POS: "CC"}),
                                ("SEVEN", {POS: "CC"})]}]
-TOK_0 = [(t, None) for t in "you do n't really have"
-         " to".split(' ')]
-MOD_0 = [0, 0, 0, 0, 0, 0, 1]
-TOK_1 = [(t, None) for t in "you might or can do"
-         " it".split(' ')]
-MOD_1 = [1, 1, 0, 0, 0, 0, 0]
+PARSE_TREE = Tree.fromstring("( (S (NP (DT The) (NN bill)) "
+                             "(VP (VBZ intends) (S (VP (TO to)"
+                             " (VP (VB restrict) (NP (DT the)"
+                             " (NNP RTC)) (PP (TO to) (NP (NNP"
+                             " Treasury) (NNS borrowings))) (ADVP"
+                             " (RB only)) (, ,) (SBAR (IN unless)"
+                             " (S (NP (DT the) (NN agency)) (VP (VBZ"
+                             " receives) (NP (JJ specific) (JJ"
+                             " congressional) (NN authorization)))))))))"
+                             " (. .)) )")
 
 
 ##################################################################
@@ -40,6 +58,19 @@ class TestWangExplict(TestCase):
     @fixture(autouse=True)
     def set_ds(self):
         self.wes = WangExplicitSenser()
+
+    def test_get_path_0(self):
+        ret = {}
+        conn_t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
+        inode_id = self.wes._get_path(conn_t_ids, PARSE_TREE)
+        assert inode_id == (0, 1, 1, 0, 1, 5)
+
+    def test_get_negation_0(self):
+        ret = {}
+        self.wes._get_negation(ret, TOK_0, TOK_1)
+        assert NEG_0_KEY in ret and ret[NEG_0_KEY] == 1
+        assert NEG_1_KEY in ret and ret[NEG_1_KEY] == 1
+        assert NEG_JNT_KEY in ret and ret[NEG_JNT_KEY] == 1
 
     def test_get_arg_negation_0(self):
         assert self.wes._get_arg_negation(TOK_0) == "neg"

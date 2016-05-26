@@ -499,8 +499,8 @@ class WangExplicitSenser(WangBaseSenser):
         neg1 = self._get_arg_negation(a_toks1)
         neg2 = self._get_arg_negation(a_toks2)
         #add negation features
-        a_feats["Neg1-" + neg1] = 1.
-        a_feats["Neg2-" + neg2] = 1.
+        a_feats["Neg1-" + neg1] = 1
+        a_feats["Neg2-" + neg2] = 1
         a_feats["JointNeg-" + neg1 + "|" + neg2] = 1
 
     def _get_arg_negation(self, a_toks):

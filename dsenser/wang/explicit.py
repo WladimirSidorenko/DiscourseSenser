@@ -624,5 +624,5 @@ class WangExplicitSenser(WangBaseSenser):
           str: escaped feature
 
         """
-        a_feat = MULTISPACE_RE.sub(' ', a_feat)
+        a_feat = MULTISPACE_RE.sub(' ', a_feat).strip()
         return EQ_RE.sub('_', a_feat)

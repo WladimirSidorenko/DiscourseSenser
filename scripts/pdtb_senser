@@ -59,16 +59,15 @@ def _read_json(a_dir, a_fname, a_enc=ENCODING):
     """Read JSON data from file.
 
     Args:
-    a_dir (str):
-      dirname to the input file
-    a_fname (str):
-      basename of the input file
-    a_enc (str):
-      input file encoding
+      a_dir (str):
+        dirname to the input file
+      a_fname (str):
+        basename of the input file
+      a_enc (str):
+        input file encoding
 
     Returns:
-    (list):
-      input data as list
+      list: input data as list
 
     """
     fname = os.path.join(a_dir, a_fname or "")
@@ -91,15 +90,15 @@ def _read_raw(a_dir, a_enc=ENCODING):
     """Read raw data from directory.
 
     Args:
-    a_dir (str):
-     path to directory containing raw data
-    a_enc (str):
-     encoding of the input files
+      a_dir (str):
+       path to directory containing raw data
+      a_enc (str):
+       encoding of the input files
 
     Returns:
-    dict(str, tuple(int, int, str)):
-      dictionary with file names as keys and 3-tuple (paragraph number,
-      sentence numberm, and sentence string) as values
+      dict:
+        dictionary with file names as keys and 3-tuple (paragraph number,
+        sentence numberm, and sentence string) as values
 
     """
     ret = dict()

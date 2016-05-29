@@ -330,8 +330,6 @@ class WangExplicitSenser(WangBaseSenser):
         """
         ret = "NONE"
         inode_id = self._get_path(a_conn_toks, a_tree)
-        if not inode_id:
-            return ret
         sib_path = [i for i in inode_id]
         if a_side == LEFT:
             if inode_id[-1] == 0:
@@ -359,7 +357,7 @@ class WangExplicitSenser(WangBaseSenser):
         ret = []
         inode_id = self._get_path(a_conn_toks, a_tree)
         if len(inode_id) <= 1:
-            return DFLT_PRNT
+            return [DFLT_PRNT]
         prnt_node = a_tree[inode_id[:-1]]
         ret.append(prnt_node.label())
         for inode in prnt_node:
@@ -378,8 +376,8 @@ class WangExplicitSenser(WangBaseSenser):
             list of sentence tokens
 
         Returns:
-          tupe(list, list):
-            list of previous connective tokens and their PoS tags
+          tuple:
+            list of previous connective tokens and list of their PoS tags
 
         """
         ret_conn = []

@@ -7,7 +7,8 @@ from __future__ import absolute_import
 
 from dsenser.constants import ARG1, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
     TOK_LIST, POS, WORDS
-from dsenser.wang.explicit import WangExplicitSenser
+from dsenser.wang.explicit import DFLT_PRNT, LEFT, RIGHT, \
+    WangExplicitSenser
 
 from nltk import Tree
 from pytest import fixture
@@ -39,16 +40,39 @@ PARSES = [{}, {}, {}, {WORDS: [("One", {POS: "CC"}),
                                ("Five", {POS: "CC"}),
                                ("SiX", {POS: "CC"}),
                                ("SEVEN", {POS: "CC"})]}]
-PARSE_TREE = Tree.fromstring("( (S (NP (DT The) (NN bill)) "
-                             "(VP (VBZ intends) (S (VP (TO to)"
-                             " (VP (VB restrict) (NP (DT the)"
-                             " (NNP RTC)) (PP (TO to) (NP (NNP"
-                             " Treasury) (NNS borrowings))) (ADVP"
-                             " (RB only)) (, ,) (SBAR (IN unless)"
-                             " (S (NP (DT the) (NN agency)) (VP (VBZ"
-                             " receives) (NP (JJ specific) (JJ"
-                             " congressional) (NN authorization)))))))))"
-                             " (. .)) )")
+PARSE_TREE_0 = Tree.fromstring("( (S (NP (DT The) (NN bill)) "
+                               "(VP (VBZ intends) (S (VP (TO to)"
+                               " (VP (VB restrict) (NP (DT the)"
+                               " (NNP RTC)) (PP (TO to) (NP (NNP"
+                               " Treasury) (NNS borrowings))) (ADVP"
+                               " (RB only)) (, ,) (SBAR (IN unless)"
+                               " (S (NP (DT the) (NN agency)) (VP (VBZ"
+                               " receives) (NP (JJ specific) (JJ"
+                               " congressional) (NN authorization)))))))))"
+                               " (. .)) )")
+TOKS_0 = {"words": [["The", {"PartOfSpeech": "DT"}],
+                    ["bill", {"PartOfSpeech": "NN"}],
+                    ["intends", {"PartOfSpeech": "VBZ"}],
+                    ["to", {"PartOfSpeech": "TO"}],
+                    ["restrict", {"PartOfSpeech": "VB"}],
+                    ["the", {"PartOfSpeech": "DT"}],
+                    ["RTC", {"PartOfSpeech": "NNP"}],
+                    ["to", {"PartOfSpeech": "TO"}],
+                    ["Treasury", {"PartOfSpeech": "NNP"}],
+                    ["borrowings", {"PartOfSpeech": "NNS"}],
+                    ["only", {"PartOfSpeech": "RB"}],
+                    [",", {"PartOfSpeech": ","}],
+                    ["unless", {"PartOfSpeech": "IN"}],
+                    ["the", {"PartOfSpeech": "DT"}],
+                    ["agency", {"PartOfSpeech": "NN"}],
+                    ["receives", {"PartOfSpeech": "VBZ"}],
+                    ["specific", {"PartOfSpeech": "JJ"}],
+                    ["congressional", {"PartOfSpeech": "JJ"}],
+                    ["authorization", {"PartOfSpeech": "NN"}],
+                    [".", {"PartOfSpeech": "."}]]}
+
+PARSE_TREE_1 = Tree.fromstring("(S (DT The))")
+PARSE_TREE_2 = Tree.fromstring("(S The)")
 
 
 ##################################################################
@@ -58,10 +82,65 @@ class TestWangExplict(TestCase):
     def set_ds(self):
         self.wes = WangExplicitSenser()
 
+    def test_get_sib_left_0(self):
+        t_ids = [0]
+        sib = self.wes._get_sib(t_ids, PARSE_TREE_0, LEFT)
+        assert sib == "NONE"
+
+    def test_get_sib_left_1(self):
+        t_ids = [4]
+        sib = self.wes._get_sib(t_ids, PARSE_TREE_0, LEFT)
+        assert sib == "TO"
+
+    def test_get_sib_left_2(self):
+        t_ids = [2]
+        sib = self.wes._get_sib(t_ids, PARSE_TREE_0, LEFT)
+        assert sib == "NP"
+
+    def test_get_sib_right_0(self):
+        t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
+        sib = self.wes._get_sib(t_ids, PARSE_TREE_0, RIGHT)
+        assert sib == "NONE"
+
+    def test_get_sib_right_1(self):
+        t_ids = [0]
+        sib = self.wes._get_sib(t_ids, PARSE_TREE_0, RIGHT)
+        assert sib == "VP"
+
+    def test_get_prev_conn_0(self):
+        conn_t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
+        sib = self.wes._get_prev_conn(conn_t_ids[0], PARSE_TREE_0, TOKS_0)
+        assert sib == ([], [])
+
+    def test_get_ctx_nodes_0(self):
+        t_ids = [0]
+        ctx_nodes = self.wes._get_ctx_nodes(t_ids, PARSE_TREE_2)
+        assert ctx_nodes == [DFLT_PRNT]
+
+    def test_get_ctx_nodes_1(self):
+        conn_t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
+        ctx_nodes = self.wes._get_ctx_nodes(conn_t_ids, PARSE_TREE_0)
+        assert ctx_nodes == ['VP', 'VB', 'NP', 'PP', 'ADVP', ',', 'SBAR']
+
     def test_get_path_0(self):
         conn_t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
-        inode_id = self.wes._get_path(conn_t_ids, PARSE_TREE)
+        inode_id = self.wes._get_path(conn_t_ids, PARSE_TREE_0)
         assert inode_id == (0, 1, 1, 0, 1, 5)
+
+    def test_get_path_1(self):
+        t_ids = [0, 1]
+        inode_id = self.wes._get_path(t_ids, PARSE_TREE_0)
+        assert inode_id == (0, 0)
+
+    def test_get_path_2(self):
+        t_ids = [19]
+        inode_id = self.wes._get_path(t_ids, PARSE_TREE_0)
+        assert inode_id == (0,)
+
+    def test_get_path_3(self):
+        t_ids = [0]
+        inode_id = self.wes._get_path(t_ids, PARSE_TREE_1)
+        assert inode_id == (0,)
 
     def test_get_negation_0(self):
         ret = {}

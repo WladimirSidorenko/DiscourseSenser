@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 
 from dsenser.constants import ARG1, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
-    TOK_LIST, POS, WORDS
+    TOK_LIST, POS, SENTENCES, WORDS
 from dsenser.wang.explicit import DFLT_PRNT, LEFT, RIGHT, \
     WangExplicitSenser
 
@@ -23,6 +23,45 @@ TOKS = [[0, 1, 2, 3, 4], [0, 1, 2, 3, 5], [0, 1, 2, 3, 6]]
 REL = {ARG1: {TOK_LIST: TOKS},
        CONNECTIVE: {CHAR_SPAN: [[566, 572]],
                     RAW_TEXT: "unless", TOK_LIST: [[566, 572, 94, 2, 12]]}}
+REL1 = {"DocID": "wsj_2200",
+        "Arg1": {"CharacterSpanList": [[517, 564]],
+                 "RawText": "to restrict the RTC to Treasury"
+                 " borrowings only",
+                 "TokenList": [[517, 519, 85, 2, 3], [520, 528, 86, 2, 4],
+                               [529, 532, 87, 2, 5], [533, 536, 88, 2, 6],
+                               [537, 539, 89, 2, 7], [540, 548, 90, 2, 8],
+                               [549, 559, 91, 2, 9], [560, 564, 92, 2, 10]]},
+        "Arg2": {"CharacterSpanList": [[573, 629]], "RawText": "the agency"
+                 " receives specific congressional authorization",
+                 "TokenList": [[573, 576, 95, 2, 13], [577, 583, 96, 2, 14],
+                               [584, 592, 97, 2, 15], [593, 601, 98, 2, 16],
+                               [602, 615, 99, 2, 17], [616, 629, 100, 2, 18]]},
+        "Connective": {"CharacterSpanList": [[566, 572]], "RawText": "unless",
+                       "TokenList": [[566, 572, 94, 2, 12]]},
+        "Sense": [], "Type": "", "ID": 35709}
+PARSE1 = {"wsj_2200": {
+    SENTENCES: [{}, {},
+                {WORDS: [["The", {"PartOfSpeech": "DT"}],
+                         ["bill", {"PartOfSpeech": "NN"}],
+                         ["intends", {"PartOfSpeech": "VBZ"}],
+                         ["to", {"PartOfSpeech": "TO"}],
+                         ["restrict", {"PartOfSpeech": "VB"}],
+                         ["the", {"PartOfSpeech": "DT"}],
+                         ["RTC", {"PartOfSpeech": "NNP"}],
+                         ["to", {"PartOfSpeech": "TO"}],
+                         ["Treasury", {"PartOfSpeech": "NNP"}],
+                         ["borrowings", {"PartOfSpeech": "NNS"}],
+                         ["only", {"PartOfSpeech": "RB"}],
+                         [",", {"PartOfSpeech": ","}],
+                         ["unless", {"PartOfSpeech": "IN"}],
+                         ["the", {"PartOfSpeech": "DT"}],
+                         ["agency", {"PartOfSpeech": "NN"}],
+                         ["receives", {"PartOfSpeech": "VBZ"}],
+                         ["specific", {"PartOfSpeech": "JJ"}],
+                         ["congressional", {"PartOfSpeech": "JJ"}],
+                         ["authorization", {"PartOfSpeech": "NN"}],
+                         [".", {"PartOfSpeech": "."}]]}]}}
+
 TOK_0 = [(t, None) for t in "you do n't really have"
          " to".split(' ')]
 MOD_0 = [0, 0, 0, 0, 0, 0, 1]
@@ -81,6 +120,21 @@ class TestWangExplict(TestCase):
     @fixture(autouse=True)
     def set_ds(self):
         self.wes = WangExplicitSenser()
+
+    def test_get_conn_txt(self):
+        conn_txt = self.wes._get_conn_txt("wsj_2200",
+                                          REL1, PARSE1)
+        assert conn_txt == "unless"
+
+    def test_get_conn_pos(self):
+        conn_txt = self.wes._get_conn_pos("wsj_2200",
+                                          REL1, PARSE1)
+        assert conn_txt == "IN"
+
+    def test_get_cat(self):
+        t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
+        cat = self.wes._get_cat(t_ids, PARSE_TREE_0)
+        assert cat == "SBAR"
 
     def test_get_sib_left_0(self):
         t_ids = [0]

@@ -9,7 +9,9 @@ from dsenser.constants import ARG1, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
     TOK_LIST, POS, SENTENCES, WORDS
 from dsenser.wang.explicit import DFLT_PRNT, LEFT, RIGHT, \
     WangExplicitSenser
+import dsenser
 
+from mock import patch
 from nltk import Tree
 from pytest import fixture
 from unittest import TestCase
@@ -114,12 +116,85 @@ PARSE_TREE_1 = Tree.fromstring("(S (DT The))")
 PARSE_TREE_2 = Tree.fromstring("(S The)")
 
 
+REL_3 = {"Arg1": {"CharacterSpanList": [[7392, 7429]],
+                  "RawText": "But then it suddenly burst upward 7.5",
+                  "TokenList": [[7392, 7395, 1455, 70, 0],
+                                [7396, 7400, 1456, 70, 1],
+                                [7401, 7403, 1457, 70, 2],
+                                [7404, 7412, 1458, 70, 3],
+                                [7413, 7418, 1459, 70, 4],
+                                [7419, 7425, 1460, 70, 5],
+                                [7426, 7429, 1461, 70, 6]]},
+         "Arg2": {"CharacterSpanList": [[7433, 7500]],
+                  "RawText":
+                  "Goldman, Sachs & Co. stepped in and bought"
+                  " almost every share offer",
+                  "TokenList": [[7433, 7440, 1463, 70, 8],
+                                [7440, 7441, 1464, 70, 9],
+                                [7442, 7447, 1465, 70, 10],
+                                [7448, 7449, 1466, 70, 11],
+                                [7450, 7453, 1467, 70, 12],
+                                [7454, 7461, 1468, 70, 13],
+                                [7462, 7464, 1469, 70, 14],
+                                [7465, 7468, 1470, 70, 15],
+                                [7469, 7475, 1471, 70, 16],
+                                [7476, 7482, 1472, 70, 17],
+                                [7483, 7488, 1473, 70, 18],
+                                [7489, 7494, 1474, 70, 19],
+                                [7495, 7500, 1475, 70, 20]]},
+         "Connective": {"CharacterSpanList": [[7430, 7432]],
+                        "RawText": "as",
+                        "TokenList": [[7430, 7432, 1462, 70, 7]]},
+         "DocID": "wsj_2276", "ID": 37022,
+         "Sense": ["Contingency.Cause.Reason"], "Type": "Explicit"}
+PARSE_TREE_3 = Tree.fromstring(
+    "( (S (S (CC But) (ADVP (RB then)) (NP (PRP it))"
+    " (VP (ADVP (RB suddenly)) (VP (VBP burst) (ADVP"
+    " (RB upward))) (NP (CD 7.5)) (SBAR (IN as) "
+    "(S (NP (NNP Goldman) (, ,) (NNP Sachs) (CC &)"
+    " (NNP Co.)) (VP (VP (VBD stepped) (PP (IN in)))"
+    " (CC and) (VP (VBD bought) (NP (RB almost)"
+    " (DT every) (NN share) (NN offer)))))))) (, ,)"
+    " (NP (NNS traders)) (VP (VBD said)) (. .)) )"
+    )
+TOKS_3 = [["But", {"PartOfSpeech": "CC"}],
+          ["then", {"PartOfSpeech": "RB"}],
+          ["it", {"PartOfSpeech": "PRP"}],
+          ["suddenly", {"PartOfSpeech": "RB"}],
+          ["burst", {"PartOfSpeech": "VBP"}],
+          ["upward", {"PartOfSpeech": "RB"}],
+          ["7.5", {"PartOfSpeech": "CD"}],
+          ["as", {"PartOfSpeech": "IN"}],
+          ["Goldman", {"PartOfSpeech": "NNP"}],
+          [",", {"PartOfSpeech": ","}],
+          ["Sachs", {"PartOfSpeech": "NNP"}],
+          ["&", {"PartOfSpeech": "CC"}],
+          ["Co.", {"PartOfSpeech": "NNP"}],
+          ["stepped", {"PartOfSpeech": "VBD"}],
+          ["in", {"PartOfSpeech": "IN"}],
+          ["and", {"PartOfSpeech": "CC"}],
+          ["bought", {"PartOfSpeech": "VBD"}],
+          ["almost", {"PartOfSpeech": "RB"}],
+          ["every", {"PartOfSpeech": "DT"}],
+          ["share", {"PartOfSpeech": "NN"}],
+          ["offer", {"PartOfSpeech": "NN"}],
+          [",", {"PartOfSpeech": ","}],
+          ["traders", {"PartOfSpeech": "NNS"}],
+          ["said", {"PartOfSpeech": "VBD"}],
+          [".", {"PartOfSpeech": "."}]]
+
+
 ##################################################################
 # Test Classes
 class TestWangExplict(TestCase):
     @fixture(autouse=True)
     def set_ds(self):
         self.wes = WangExplicitSenser()
+
+    def test_train(self):
+        with patch("dsenser.wang.wangbase.WangBaseSenser.train",
+                   autospec=True):
+            self.wes.train([], {})
 
     def test_get_conn_txt(self):
         conn_txt = self.wes._get_conn_txt("wsj_2200",
@@ -135,6 +210,21 @@ class TestWangExplict(TestCase):
         t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
         cat = self.wes._get_cat(t_ids, PARSE_TREE_0)
         assert cat == "SBAR"
+
+    def test_get_prnt_cat_0(self):
+        t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
+        cat = self.wes._get_prnt_cat(t_ids, PARSE_TREE_0)
+        assert cat == "VP"
+
+    def test_get_prnt_cat_1(self):
+        t_ids = [0, 1]
+        cat = self.wes._get_prnt_cat(t_ids, PARSE_TREE_0)
+        assert cat == DFLT_PRNT
+
+    def test_get_prnt_cat_2(self):
+        t_ids = [0]
+        cat = self.wes._get_prnt_cat(t_ids, PARSE_TREE_2)
+        assert cat == DFLT_PRNT
 
     def test_get_sib_left_0(self):
         t_ids = [0]
@@ -163,8 +253,16 @@ class TestWangExplict(TestCase):
 
     def test_get_prev_conn_0(self):
         conn_t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
-        sib = self.wes._get_prev_conn(conn_t_ids[0], PARSE_TREE_0, TOKS_0)
-        assert sib == ([], [])
+        prev_conns = self.wes._get_prev_conn(conn_t_ids[0],
+                                             PARSE_TREE_0, TOKS_0)
+        assert prev_conns == ([], [])
+
+    def test_get_prev_conn_1(self):
+        conn_t_ids = [t[-1] for t in REL_3[CONNECTIVE][TOK_LIST]]
+        prev_conns = self.wes._get_prev_conn(conn_t_ids[0],
+                                             PARSE_TREE_3, TOKS_3)
+        assert prev_conns == ([(("but",),), (("then",),)],
+                              [["CC"], ["RB"]])
 
     def test_get_ctx_nodes_0(self):
         t_ids = [0]

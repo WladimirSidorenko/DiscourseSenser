@@ -230,7 +230,7 @@ class WangExplicitSenser(WangBaseSenser):
 
         Args:
           a_doc_id (str):
-            id of the document containing the connectiv
+            id of the document containing the connective
           a_rel (dict):
             discourse relation to extract features for
           a_parses (dict):
@@ -266,9 +266,10 @@ class WangExplicitSenser(WangBaseSenser):
 
         """
         _, _, _, snt_id, tok_id = a_rel[CONNECTIVE][TOK_LIST][0]
-        if len(a_parses[a_doc_id][SENTENCES][snt_id][WORDS]) >= tok_id:
+        if len(a_parses[a_doc_id][SENTENCES][snt_id][WORDS]) > \
+           (tok_id + 1):
             tok_id += 1
-        elif len(a_parses[a_doc_id][SENTENCES]) >= snt_id:
+        elif len(a_parses[a_doc_id][SENTENCES]) > (snt_id + 1):
             snt_id += 1
             tok_id = 0
         else:

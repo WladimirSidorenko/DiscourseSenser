@@ -5,12 +5,13 @@
 # Imports
 from __future__ import absolute_import
 
-from dsenser.constants import ARG1, CHAR_SPAN, CONNECTIVE, RAW_TEXT, \
-    TOK_LIST, POS, SENTENCES, WORDS
-from dsenser.wang.explicit import DFLT_PRNT, LEFT, RIGHT, \
-    WangExplicitSenser
+from dsenser.constants import ARG1, CHAR_SPAN, CONNECTIVE, PARSE_TREE, \
+    RAW_TEXT, TOK_LIST, POS, SENTENCES, WORDS
+from dsenser.wang.explicit import DFLT_PRNT, LEFT, RIGHT, PREV_NONE, \
+    WHEN, WangExplicitSenser
 import dsenser
 
+from copy import deepcopy
 from mock import patch
 from nltk import Tree
 from pytest import fixture
@@ -21,59 +22,6 @@ import numpy as np
 
 ##################################################################
 # Constants
-TOKS = [[0, 1, 2, 3, 4], [0, 1, 2, 3, 5], [0, 1, 2, 3, 6]]
-REL = {ARG1: {TOK_LIST: TOKS},
-       CONNECTIVE: {CHAR_SPAN: [[566, 572]],
-                    RAW_TEXT: "unless", TOK_LIST: [[566, 572, 94, 2, 12]]}}
-REL1 = {"DocID": "wsj_2200",
-        "Arg1": {"CharacterSpanList": [[517, 564]],
-                 "RawText": "to restrict the RTC to Treasury"
-                 " borrowings only",
-                 "TokenList": [[517, 519, 85, 2, 3], [520, 528, 86, 2, 4],
-                               [529, 532, 87, 2, 5], [533, 536, 88, 2, 6],
-                               [537, 539, 89, 2, 7], [540, 548, 90, 2, 8],
-                               [549, 559, 91, 2, 9], [560, 564, 92, 2, 10]]},
-        "Arg2": {"CharacterSpanList": [[573, 629]], "RawText": "the agency"
-                 " receives specific congressional authorization",
-                 "TokenList": [[573, 576, 95, 2, 13], [577, 583, 96, 2, 14],
-                               [584, 592, 97, 2, 15], [593, 601, 98, 2, 16],
-                               [602, 615, 99, 2, 17], [616, 629, 100, 2, 18]]},
-        "Connective": {"CharacterSpanList": [[566, 572]], "RawText": "unless",
-                       "TokenList": [[566, 572, 94, 2, 12]]},
-        "Sense": [], "Type": "", "ID": 35709}
-PARSE1 = {"wsj_2200": {
-    SENTENCES: [{}, {},
-                {WORDS: [["The", {"PartOfSpeech": "DT"}],
-                         ["bill", {"PartOfSpeech": "NN"}],
-                         ["intends", {"PartOfSpeech": "VBZ"}],
-                         ["to", {"PartOfSpeech": "TO"}],
-                         ["restrict", {"PartOfSpeech": "VB"}],
-                         ["the", {"PartOfSpeech": "DT"}],
-                         ["RTC", {"PartOfSpeech": "NNP"}],
-                         ["to", {"PartOfSpeech": "TO"}],
-                         ["Treasury", {"PartOfSpeech": "NNP"}],
-                         ["borrowings", {"PartOfSpeech": "NNS"}],
-                         ["only", {"PartOfSpeech": "RB"}],
-                         [",", {"PartOfSpeech": ","}],
-                         ["unless", {"PartOfSpeech": "IN"}],
-                         ["the", {"PartOfSpeech": "DT"}],
-                         ["agency", {"PartOfSpeech": "NN"}],
-                         ["receives", {"PartOfSpeech": "VBZ"}],
-                         ["specific", {"PartOfSpeech": "JJ"}],
-                         ["congressional", {"PartOfSpeech": "JJ"}],
-                         ["authorization", {"PartOfSpeech": "NN"}],
-                         [".", {"PartOfSpeech": "."}]]}]}}
-
-TOK_0 = [(t, None) for t in "you do n't really have"
-         " to".split(' ')]
-MOD_0 = [0, 0, 0, 0, 0, 0, 1]
-TOK_1 = [(t, None) for t in "you might or can do"
-         " it".split(' ')]
-MOD_1 = [1, 1, 0, 0, 0, 0, 0]
-NEG_0_KEY = "Neg1-neg"
-NEG_1_KEY = "Neg2-pos"
-NEG_JNT_KEY = "JointNeg-neg|pos"
-
 PARSES = [{}, {}, {}, {WORDS: [("One", {POS: "CC"}),
                                ("Two", {POS: "CC"}),
                                ("THREE", {POS: "CC"}),
@@ -81,16 +29,21 @@ PARSES = [{}, {}, {}, {WORDS: [("One", {POS: "CC"}),
                                ("Five", {POS: "CC"}),
                                ("SiX", {POS: "CC"}),
                                ("SEVEN", {POS: "CC"})]}]
-PARSE_TREE_0 = Tree.fromstring("( (S (NP (DT The) (NN bill)) "
-                               "(VP (VBZ intends) (S (VP (TO to)"
-                               " (VP (VB restrict) (NP (DT the)"
-                               " (NNP RTC)) (PP (TO to) (NP (NNP"
-                               " Treasury) (NNS borrowings))) (ADVP"
-                               " (RB only)) (, ,) (SBAR (IN unless)"
-                               " (S (NP (DT the) (NN agency)) (VP (VBZ"
-                               " receives) (NP (JJ specific) (JJ"
-                               " congressional) (NN authorization)))))))))"
-                               " (. .)) )")
+
+PARSE_TREE_0_STR = "( (S (NP (DT The) (NN bill)) " \
+                   "(VP (VBZ intends) (S (VP (TO to)" \
+                   " (VP (VB restrict) (NP (DT the)" \
+                   " (NNP RTC)) (PP (TO to) (NP (NNP" \
+                   " Treasury) (NNS borrowings))) (ADVP" \
+                   " (RB only)) (, ,) (SBAR (IN unless)" \
+                   " (S (NP (DT the) (NN agency)) (VP (VBZ" \
+                   " receives) (NP (JJ specific) (JJ" \
+                   " congressional) (NN authorization)))))))))" \
+                   " (. .)) )"
+PARSE_TREE_0 = Tree.fromstring(PARSE_TREE_0_STR)
+PARSE_TREE_1 = Tree.fromstring("(S (DT The))")
+PARSE_TREE_2 = Tree.fromstring("(S The)")
+
 TOKS_0 = {"words": [["The", {"PartOfSpeech": "DT"}],
                     ["bill", {"PartOfSpeech": "NN"}],
                     ["intends", {"PartOfSpeech": "VBZ"}],
@@ -112,10 +65,90 @@ TOKS_0 = {"words": [["The", {"PartOfSpeech": "DT"}],
                     ["authorization", {"PartOfSpeech": "NN"}],
                     [".", {"PartOfSpeech": "."}]]}
 
-PARSE_TREE_1 = Tree.fromstring("(S (DT The))")
-PARSE_TREE_2 = Tree.fromstring("(S The)")
+TOK_0 = [(t, None) for t in "you do n't really have"
+         " to".split(' ')]
+MOD_0 = [0, 0, 0, 0, 0, 0, 1]
+TOK_1 = [(t, None) for t in "you might or can do"
+         " it".split(' ')]
+MOD_1 = [1, 1, 0, 0, 0, 0, 0]
+NEG_0_KEY = "Neg1-neg"
+NEG_1_KEY = "Neg2-pos"
+NEG_JNT_KEY = "JointNeg-neg|pos"
 
+TOKS = [[0, 1, 2, 3, 4], [0, 1, 2, 3, 5], [0, 1, 2, 3, 6]]
+REL = {ARG1: {TOK_LIST: TOKS},
+       CONNECTIVE: {CHAR_SPAN: [[566, 572]],
+                    RAW_TEXT: "unless", TOK_LIST: [[566, 572, 94, 2, 12]]}}
+REL1 = {"DocID": "wsj_2200",
+        "Arg1": {"CharacterSpanList": [[517, 564]],
+                 "RawText": "to restrict the RTC to Treasury"
+                 " borrowings only",
+                 "TokenList": [[517, 519, 85, 2, 3], [520, 528, 86, 2, 4],
+                               [529, 532, 87, 2, 5], [533, 536, 88, 2, 6],
+                               [537, 539, 89, 2, 7], [540, 548, 90, 2, 8],
+                               [549, 559, 91, 2, 9], [560, 564, 92, 2, 10]]},
+        "Arg2": {"CharacterSpanList": [[573, 629]], "RawText": "the agency"
+                 " receives specific congressional authorization",
+                 "TokenList": [[573, 576, 95, 2, 13], [577, 583, 96, 2, 14],
+                               [584, 592, 97, 2, 15], [593, 601, 98, 2, 16],
+                               [602, 615, 99, 2, 17], [616, 629, 100, 2, 18]]},
+        "Connective": {"CharacterSpanList": [[566, 572]], "RawText": "unless",
+                       "TokenList": [[566, 572, 94, 2, 12]]},
+        "Sense": [], "Type": "", "ID": 35709}
 
+REL1_1 = deepcopy(REL1)
+REL1_1["Connective"]["TokenList"][0][-2:] = [3, 0]
+
+REL1_2 = deepcopy(REL1)
+REL1_2["Connective"]["TokenList"][0][-2:] = [0, 0]
+
+REL1_3 = deepcopy(REL1)
+REL1_3["Connective"]["TokenList"][0][-2:] = [1, 0]
+
+REL1_4 = deepcopy(REL1)
+REL1_4["Connective"]["TokenList"][0][-2:] = [2, 20]
+
+PARSE1 = {"wsj_2200": {
+    SENTENCES: [{WORDS: []}, {WORDS: []},
+                {WORDS: [["The", {"PartOfSpeech": "DT"}],
+                         ["bill", {"PartOfSpeech": "NN"}],
+                         ["intends", {"PartOfSpeech": "VBZ"}],
+                         ["to", {"PartOfSpeech": "TO"}],
+                         ["restrict", {"PartOfSpeech": "VB"}],
+                         ["the", {"PartOfSpeech": "DT"}],
+                         ["RTC", {"PartOfSpeech": "NNP"}],
+                         ["to", {"PartOfSpeech": "TO"}],
+                         ["Treasury", {"PartOfSpeech": "NNP"}],
+                         ["borrowings", {"PartOfSpeech": "NNS"}],
+                         ["only", {"PartOfSpeech": "RB"}],
+                         [",", {"PartOfSpeech": ","}],
+                         ["unless", {"PartOfSpeech": "IN"}],
+                         ["the", {"PartOfSpeech": "DT"}],
+                         ["agency", {"PartOfSpeech": "NN"}],
+                         ["receives", {"PartOfSpeech": "VBZ"}],
+                         ["specific", {"PartOfSpeech": "JJ"}],
+                         ["congressional", {"PartOfSpeech": "JJ"}],
+                         ["authorization", {"PartOfSpeech": "NN"}],
+                         [".", {"PartOfSpeech": "."}]],
+                 PARSE_TREE: PARSE_TREE_0_STR}]}}
+
+PARSE2 = deepcopy(PARSE1)
+PARSE2["wsj_2200"][SENTENCES][-1][PARSE_TREE] = "()"
+
+PARSE3 = deepcopy(PARSE1)
+PARSE3["wsj_2200"][SENTENCES][-1][WORDS][0][0] = "Unless"
+PARSE3["wsj_2200"][SENTENCES][-1][WORDS][12][0] = WHEN
+PARSE3["wsj_2200"][SENTENCES][-1][PARSE_TREE] = \
+    "( (S (NP (DT Unless) (NN bill)) " \
+    "(VP (VBZ intends) (S (VP (TO to)" \
+    " (VP (VB restrict) (NP (DT the)" \
+    " (NNP RTC)) (PP (TO to) (NP (NNP" \
+    " Treasury) (NNS borrowings))) (ADVP" \
+    " (RB only)) (, ,) (SBAR (IN when)" \
+    " (S (NP (DT the) (NN agency)) (VP (VBZ" \
+    " receives) (NP (JJ specific) (JJ" \
+    " congressional) (NN authorization)))))))))" \
+    " (. .)) )"
 REL_3 = {"Arg1": {"CharacterSpanList": [[7392, 7429]],
                   "RawText": "But then it suddenly burst upward 7.5",
                   "TokenList": [[7392, 7395, 1455, 70, 0],
@@ -183,6 +216,21 @@ TOKS_3 = [["But", {"PartOfSpeech": "CC"}],
           ["said", {"PartOfSpeech": "VBD"}],
           [".", {"PartOfSpeech": "."}]]
 
+PARSE4 = Tree.fromstring("( (S (NP (DT If) (NN bill)) "
+                         "(VP (VBZ intends) (S (VP (IN then)"
+                         " (VP (VB restrict) (NP (DT the)"
+                         " (NNP RTC)) (PP (TO to) (NP (NNP"
+                         " Treasury) (NNS borrowings))) (ADVP"
+                         " (RB only)) (, ,) (SBAR (IN unless)"
+                         " (S (NP (DT the) (NN agency)) (VP (VBZ"
+                         " receives) (NP (JJ specific) (JJ"
+                         " congressional) (NN authorization)))))))))"
+                         " (. .)) )"
+                         )
+TOKS_4 = deepcopy(TOKS_3)
+TOKS_4[0] = ["If", {"PartOfSpeech": "DT"}]
+TOKS_4[3] = ["then", {"PartOfSpeech": "IN"}]
+
 
 ##################################################################
 # Test Classes
@@ -196,15 +244,52 @@ class TestWangExplict(TestCase):
                    autospec=True):
             self.wes.train([], {})
 
-    def test_get_conn_txt(self):
-        conn_txt = self.wes._get_conn_txt("wsj_2200",
-                                          REL1, PARSE1)
-        assert conn_txt == "unless"
+    def test_train(self):
+        with patch("dsenser.wang.wangbase.WangBaseSenser.train",
+                   autospec=True):
+            self.wes.train([], {})
+
+    def test_extract_features_0(self):
+        feats = self.wes._extract_features(REL1, PARSE1)
+        assert "ConStr-unless" in feats and feats["ConStr-unless"] == 1
+
+    def test_extract_features_1(self):
+        feats = self.wes._extract_features(REL1, PARSE2)
+        assert "ConStr-unless" in feats and feats["ConStr-unless"] == 1
+
+    def test_extract_features_2(self):
+        feats = self.wes._extract_features(REL1, PARSE3)
+        assert "when-unless" in feats
+        assert "when-" not in feats
 
     def test_get_conn_pos(self):
         conn_txt = self.wes._get_conn_pos("wsj_2200",
                                           REL1, PARSE1)
         assert conn_txt == "IN"
+
+    def test_get_conn_prev_0(self):
+        assert self.wes._get_conn_prev("wsj_2200", REL1, PARSE1) == \
+            ','
+
+    def test_get_conn_prev_1(self):
+        assert self.wes._get_conn_prev("wsj_2200", REL1_1, PARSE1) == \
+            '.'
+
+    def test_get_conn_prev_2(self):
+        assert self.wes._get_conn_prev("wsj_2200", REL1_2, PARSE1) == \
+            PREV_NONE
+
+    def test_get_conn_succ_0(self):
+        assert self.wes._get_conn_succ("wsj_2200", REL1, PARSE1) == \
+            ("the", "DT")
+
+    def test_get_conn_succ_1(self):
+        assert self.wes._get_conn_succ("wsj_2200", REL1_3, PARSE1) == \
+            ("The", "DT")
+
+    def test_get_conn_succ_2(self):
+        assert self.wes._get_conn_succ("wsj_2200", REL1_4, PARSE1) == \
+            ("succ_none", "succ_tok_none")
 
     def test_get_cat(self):
         t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
@@ -263,6 +348,14 @@ class TestWangExplict(TestCase):
                                              PARSE_TREE_3, TOKS_3)
         assert prev_conns == ([(("but",),), (("then",),)],
                               [["CC"], ["RB"]])
+
+    def test_get_prev_conn_2(self):
+        conn_t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
+        prev_conns = self.wes._get_prev_conn(conn_t_ids[0],
+                                             PARSE4, TOKS_4)
+        assert prev_conns == \
+            ([(("if",), ("then",)), (("if",),), (("then",),)],
+             [["DT", "IN"], ["DT"], ["IN"]])
 
     def test_get_ctx_nodes_0(self):
         t_ids = [0]

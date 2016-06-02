@@ -231,6 +231,54 @@ TOKS_4 = deepcopy(TOKS_3)
 TOKS_4[0] = ["If", {"PartOfSpeech": "DT"}]
 TOKS_4[3] = ["then", {"PartOfSpeech": "IN"}]
 
+PARSE5 = Tree.fromstring("( (S (NP (DT If) (NN bill)) "
+                         "(VP (VBZ intends) (S (VP (TO to)"
+                         " (VP (VB restrict) (NP (DT the)"
+                         " (NNP RTC)) (PP (TO to) (NP (NNP"
+                         " Treasury) (NNS borrowings))) (ADVP"
+                         " (RB only)) (, ,) (SBAR (IN unless)"
+                         " (S (NP (DT the) (NN agency)) (VP (VBZ"
+                         " receives) (NP (JJ specific) (JJ"
+                         " congressional) (NN authorization)))))))))"
+                         " (. .)) )"
+                         )
+TOKS_5 = deepcopy(TOKS_3)
+TOKS_5[0] = ["If", {"PartOfSpeech": "DT"}]
+
+PARSE6 = Tree.fromstring("( (S (NP (IN Then) (NN bill)) "
+                         "(VP (IN if) (S (VP (IN then)"
+                         " (VP (VB restrict) (NP (DT the)"
+                         " (NNP RTC)) (PP (TO to) (NP (NNP"
+                         " Treasury) (NNS borrowings))) (ADVP"
+                         " (RB only)) (, ,) (SBAR (IN unless)"
+                         " (S (NP (DT the) (NN agency)) (VP (VBZ"
+                         " receives) (NP (JJ specific) (JJ"
+                         " congressional) (NN authorization)))))))))"
+                         " (. .)) )"
+                         )
+TOKS_6 = deepcopy(TOKS_3)
+TOKS_6[0] = ["Then", {"PartOfSpeech": "IN"}]
+TOKS_6[2] = ["if", {"PartOfSpeech": "IN"}]
+TOKS_6[3] = ["then", {"PartOfSpeech": "IN"}]
+
+REL7 = deepcopy(REL)
+REL7[CONNECTIVE][TOK_LIST][0][-1] = 19
+PARSE7 = Tree.fromstring("( (S (NP (IN Unless) (NN bill)) "
+                         "(VP (VBZ intends) (S (VP (TO to)"
+                         " (VP (VB restrict) (NP (DT the)"
+                         " (NNP RTC)) (PP (TO to) (NP (NNP"
+                         " Treasury) (NNS borrowings))) (ADVP"
+                         " (RB only)) (, ,) (SBAR (IN as)"
+                         " (S (NP (DT the) (NN agency)) (VP (VBZ"
+                         " receives) (NP (JJ specific) (JJ"
+                         " congressional) (IN if)))))))))"
+                         " (IN unless)) )"
+                         )
+TOKS_7 = deepcopy(PARSE1["wsj_2200"][SENTENCES][2][WORDS])
+TOKS_7[0][1]["PartOfSpeech"] = "IN"
+TOKS_7[-2] = ["if", {"PartOfSpeech": "IN"}]
+TOKS_7[-1] = ["unless", {"PartOfSpeech": "IN"}]
+
 
 ##################################################################
 # Test Classes
@@ -356,6 +404,28 @@ class TestWangExplict(TestCase):
         assert prev_conns == \
             ([(("if",), ("then",)), (("if",),), (("then",),)],
              [["DT", "IN"], ["DT"], ["IN"]])
+
+    def test_get_prev_conn_3(self):
+        conn_t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
+        prev_conns = self.wes._get_prev_conn(conn_t_ids[0],
+                                             PARSE5, TOKS_5)
+        assert prev_conns == ([(("if",),)], [["DT"]])
+
+    def test_get_prev_conn_4(self):
+        conn_t_ids = [t[-1] for t in REL[CONNECTIVE][TOK_LIST]]
+        prev_conns = self.wes._get_prev_conn(conn_t_ids[0],
+                                             PARSE6, TOKS_6)
+        assert prev_conns == \
+            ([((u'then',),), ((u'if',), (u'then',)),
+              ((u'if',),), ((u'then',),)],
+             [['IN'], ['IN', 'IN'], ['IN'], ['IN']])
+
+    def test_get_prev_conn_5(self):
+        conn_t_ids = [t[-1] for t in REL7[CONNECTIVE][TOK_LIST]]
+        prev_conns = self.wes._get_prev_conn(conn_t_ids[0],
+                                             PARSE7, TOKS_7)
+        assert prev_conns == ([(('unless',),), (('as',),), (('if',),)],
+                              [['IN'], ['IN'], ['IN']])
 
     def test_get_ctx_nodes_0(self):
         t_ids = [0]

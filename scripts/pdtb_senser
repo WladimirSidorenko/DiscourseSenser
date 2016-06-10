@@ -43,11 +43,11 @@ def _add_cmn_options(a_parser):
     """Add common options to option subparser
 
     Args:
-    a_parser (argparse.ArgumentParser):
-      option subparser to which new options should be added
+      a_parser (argparse.ArgumentParser):
+        option subparser to which new options should be added
 
     Returns:
-    :void
+      void:
 
     """
     a_parser.add_argument("-m", "--model",
@@ -135,12 +135,11 @@ def _get_tok_pos(a_parses):
     """Convert document token indices to 4-tuples.
 
     Args:
-    a_parses (dict):
-      sentence parses for discourse relations
+      a_parses (dict):
+        sentence parses for discourse relations
 
     Returns:
-    (dict):
-    map document token index to 4-tuple
+      dict: map document token index to 4-tuple
 
     """
     ret = {}
@@ -161,18 +160,18 @@ def _restore_toks(a_rel, a_key, a_doc_id, a_tok2tpl):
     """Convert document token indices to 4-tuples.
 
     Args:
-    a_rel (dict):
-      relation whose token indices should be restored
-    a_key (dict):
-      key of the field whose token indices should be restored
-    a_doc_id (str):
-      id of the document to which given item pertains
-    a_tok2tpl (dict):
-      map document token index to 4-tuple
+      a_rel (dict):
+        relation whose token indices should be restored
+      a_key (dict):
+        key of the field whose token indices should be restored
+      a_doc_id (str):
+        id of the document to which given item pertains
+      a_tok2tpl (dict):
+        map document token index to 4-tuple
 
     Returns:
-    (void):
-      modifies relation in place
+      void:
+        modifies relation in place
 
     """
     tlist = a_rel[a_key].get(TOK_LIST)
@@ -184,13 +183,13 @@ def _restore_rel_fmt(a_rels, a_parses):
     """Restore token index format from integers to 4-tuples.
 
     Args:
-    a_rels (list):
-      input relations whose format should be restored
-    a_parses (dict):
-      sentence parses for discourse relations
+      a_rels (list):
+        input relations whose format should be restored
+      a_parses (dict):
+        sentence parses for discourse relations
 
     Returns:
-    (void)
+      void:
 
     """
     idocid = None
@@ -206,19 +205,19 @@ def _read_dataset(a_dir, a_train=False, a_rel_file=None, a_int_tok=False):
     """Read data from directory.
 
     Args:
-    a_dir (str):
-      path to directory containing input data
-    a_train (bool):
-      flag indicating whether the dataset is used for training
-    a_rel_file (None or str):
-      relation file or None (if located in the input directory as
-      relations-no-senses.json)
-    a_int_tok (bool):
-      token indices are specified as integer lists
+      a_dir (str):
+        path to directory containing input data
+      a_train (bool):
+        flag indicating whether the dataset is used for training
+      a_rel_file (None or str):
+        relation file or None (if located in the input directory as
+        relations-no-senses.json)
+      a_int_tok (bool):
+        token indices are specified as integer lists
 
     Returns:
-    2-tuple(dict, dict):
-      training rel set and parses
+      tuple:
+        training rel set and parses
 
     """
     if not a_dir:
@@ -246,13 +245,11 @@ def _read_dataset(a_dir, a_train=False, a_rel_file=None, a_int_tok=False):
 def main():
     """Main method for doing discourse parsing of CoNLL JSON data.
 
-    Args:
-    (void)
-      sys.argv are parsed in place
+    No arguments are accepted ``sys.argv`` is parsed in place.
 
     Returns:
-    (int)
-      0 on success, non-0 otherwise
+      int:
+        0 on success, non-0 otherwise
 
     """
     # parse arguments

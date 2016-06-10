@@ -1,5 +1,5 @@
 dsenser.wang
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 .. automodule:: dsenser.wang
 

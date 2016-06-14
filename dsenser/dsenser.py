@@ -105,7 +105,7 @@ class DiscourseSenser(object):
             raise RuntimeError("No model type specified.")
         if a_dev_data is None:
             a_dev_data = ([], {})
-        # initialize
+        # initialize models
         if a_type & MJR:
             from dsenser.major import MajorSenser
             self.models.append(MajorSenser())
@@ -134,11 +134,9 @@ class DiscourseSenser(object):
             nn_used = True
         # remember all possible senses
         n_senses = 0
-        isenses = None
         for irel in chain(a_train_data[0], a_dev_data[0]
                           if a_dev_data is not None else []):
-            isenses = irel[SENSE]
-            for isense in isenses:
+            for isense in irel[SENSE]:
                 isense = SHORT2FULL.get(isense, isense)
                 if isense not in self.cls2idx:
                     n_senses = len(self.cls2idx)
@@ -228,7 +226,8 @@ class DiscourseSenser(object):
         self.wbench = np.zeros((len(rels), len(self.cls2idx)))
         # iterate over each trained model and sum up their predictions
         for ipath in self.model_paths:
-            print("ipath =", repr(ipath), file=sys.stderr)
+            print("ipath = {:s}".format(ipath).encode(ENCODING),
+                  file=sys.stderr)
             with open(ipath, "rb") as ifile:
                 imodel = load(ifile)
             imodel.batch_predict(rels, a_data, self.wbench)
@@ -278,14 +277,13 @@ class DiscourseSenser(object):
         """Collect judgments of single classifiers.
 
         Args:
-        a_rel (dict):
-          discourse relation whose sense should be predicted
-        a_data (2-tuple(dict, dict)):
-          list of input JSON data
+          a_rel (dict):
+            discourse relation whose sense should be predicted
+          a_data (2-tuple(dict, dict)):
+            list of input JSON data
 
         Returns:
-        (np.array):
-          modified ``a_ret``
+          np.array: modified ``a_ret``
 
         """
         if self.wbench is None:

@@ -23,7 +23,6 @@ from xgboost import XGBClassifier
 MAX_DEPTH = 3                   # maximim depth of tree
 NTREES = 300                    # number of tree estimators
 ALPHA = 0.05                    # learning rate
-EPS = 0.5
 
 
 ##################################################################
@@ -41,14 +40,15 @@ class XGBoostBaseSenser(object):
             classifier to use or None for default
 
         """
-        self.n_y = self.eps = -1
-        self.one = 1. - EPS
-        classifier = a_clf or XGBClassifier(max_depth=MAX_DEPTH,
-                                            n_estimators=NTREES,
-                                            learning_rate=ALPHA)
+        classifier = a_clf
+        self._clf = None
+        if a_clf is None:
+            classifier = XGBClassifier(max_depth=MAX_DEPTH,
+                                       n_estimators=NTREES,
+                                       learning_rate=ALPHA,
+                                       objective="multi:softprob")
+            self._clf = classifier
         self._model = Pipeline([('vectorizer', DictVectorizer()),
-                                # ('var_filter', SelectKBest(chi2,
-                                #                            k=1500)),
                                 ('classifier', classifier)])
 
     def _predict(self, a_feats, a_ret, a_i):
@@ -69,13 +69,9 @@ class XGBoostBaseSenser(object):
           updates ``a_ret`` in place
 
         """
-        # obtain model's estimates
-        dec = self._model.predict(a_feats)[0]
-        if self.eps < 0:
-            self.eps = EPS / float(self.n_y)
-        # map model's classes to original indices
-        for i in xrange(self.n_y):
-            if i == dec:
-                a_ret[a_i][i] += self.one
-            else:
-                a_ret[a_i][i] += self.eps
+        ret = self._model.predict_proba(a_feats)[0]
+        if self._clf is None:
+            a_ret[a_i] += ret
+        else:
+            for i, j in enumerate(ret):
+                a_ret[a_i][self._clf._le.inverse_transform(i)] += j

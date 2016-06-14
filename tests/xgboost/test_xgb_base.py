@@ -20,6 +20,8 @@ import sklearn
 N_Y = 5
 EPS = 0.499
 TRG_CLS = 1
+IV = np.zeros((1, 5)) + EPS / N_Y
+IV[0, TRG_CLS] = 1. - EPS
 
 
 ##################################################################
@@ -31,15 +33,21 @@ class TestXGBoostBaseSenser(TestCase):
             with patch("sklearn.pipeline.Pipeline"):
                 self.xgb = XGBoostBaseSenser()
 
-    def test_predict(self):
-        iv = np.zeros((1, 5)) + EPS / N_Y
-        iv[0, TRG_CLS] = 1. - EPS
+    def test_predict_0(self):
         with patch.object(self.xgb._model, "predict_proba",
-                          return_value=iv):
+                          return_value=IV):
             with patch.object(self.xgb, "_clf", MagicMock()):
                 with patch.object(self.xgb._clf, "_le", MagicMock()):
                     with patch.object(self.xgb._clf._le, "inverse_transform",
                                       lambda x: x):
                         ov = np.zeros((1, 5))
                         self.xgb._predict({}, ov, 0)
-                        assert np.allclose(iv, ov)
+                        assert np.allclose(IV, ov)
+
+    def test_predict_1(self):
+        with patch.object(self.xgb._model, "predict_proba",
+                          return_value=IV):
+            with patch.object(self.xgb, "_clf", None):
+                ov = np.zeros((1, 5))
+                self.xgb._predict({}, ov, 0)
+                assert np.allclose(IV, ov)

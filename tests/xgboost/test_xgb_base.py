@@ -3,7 +3,7 @@
 
 ##################################################################
 # Imports
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 from dsenser.xgboost.xgboostbase import XGBoostBaseSenser
 
@@ -29,9 +29,17 @@ IV[0, TRG_CLS] = 1. - EPS
 class TestXGBoostBaseSenser(TestCase):
     @fixture(autouse=True)
     def set_ds(self):
-        with patch("xgboost.XGBClassifier"):
-            with patch("sklearn.pipeline.Pipeline"):
-                self.xgb = XGBoostBaseSenser()
+        self.xgb = XGBoostBaseSenser()
+
+    def test_xgb(self):
+        x = [{"feat{:d}".format(x_i): 1.} for x_i in xrange(N_Y)]
+        y = [y_i for y_i in reversed(xrange(N_Y))]
+        wbench = np.zeros((1, N_Y))
+        self.xgb._model.fit(x, y)
+        for (x_i, y_i) in zip(x, y):
+            self.xgb._predict(x_i, wbench, 0)
+            assert wbench[0][y_i] >= np.max(wbench, axis=1)
+            wbench *= 0.
 
     def test_predict_0(self):
         with patch.object(self.xgb._model, "predict_proba",

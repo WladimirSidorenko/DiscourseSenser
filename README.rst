@@ -57,24 +57,35 @@ its submodules by subsequently running the following commands:
 
 .. code-block:: shell
 
+    # initialize the git project
     git clone git@github.com:WladimirSidorenko/DiscourseSenser.git
     cd DiscourseSenser
     git submodule init
     git submodule update
 
-    # download the Skip-gram Neural Word Embeddings from
-    # https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing
-    # and store the unpacked archive at
-    # `dsenser/data/GoogleNews-vectors-negative300.bin`
+    # download the skip-gram word embeddings and store them to `dsenser/data/`
+    wget http://angcl.ling.uni-potsdam.de/data/GoogleNews-vectors-negative300.bin.gz -O \
+    dsenser/data/GoogleNews-vectors-negative300.bin.gz
 
+    gunzip dsenser/data/GoogleNews-vectors-negative300.bin.gz
+
+    # download the pre-trained models and store them to `dsenser/data/models`
+    wget http://angcl.ling.uni-potsdam.de/data/pdtb.models.tgz
+
+    tar -xzf pdtb.models.tgz -C dsenser/data/models
+
+    # Beware, since this package is constantly being improved, the
+    # most recent version might not be fully compatible in terms of
+    # features  with the models we trained for the submission.  In
+    # this case, we recommend you check out our evaluated version
+    # by running the following command:
+    # ``git checkout conll-asterisk-evaluation``
+
+    # finally, install the package in an editable mode (no copying will be
+    # required in this case)
     pip install --user -r requirements.txt -e .
 
-Note that this package does not include any pre-trained models.  Due
-to a big size of the serialized files, we cannot add them all to the
-git project and default source distribution, but feel free to contact
-`the author`_ of this program to obtain the PDTB models from him
-directly.  Some time later, we are going to upload these models
-separately on another location.
+*To ease the installation process, we are currently working on creating a `wheel`_ for this package, but are facing some problems due to the large size of the included word embedding file which requires the ``zip64`` extension.*
 
 Usage
 -----
@@ -107,6 +118,18 @@ testing mode.  Alternatively, you can also specify a different input
 relations file whose senses need to be predicted by using the option
 ``pdtb_senser test --rel-file=REL_FILE INPUT_DIR OUTPUT_DIR``.
 
+Reproducibility
+---------------
+
+In order to reproduce our `*`asterisk results from the CoNLL Shared
+Task submission, you need to repeat the steps described in Section
+[Installation](#Installation), but additionally run the checkout
+command to obtain exactly the version that we were using for the
+evaluation:
+
+```shell
+git checkout conll-asterisk-evaluation
+```
 
 Acknowledgment
 --------------
@@ -118,5 +141,5 @@ We gratefuly acknowledge the contribution of
 .. _`the author`: mailto:sidarenk@uni-potsdam.de
 .. _`Wang et al.`: https://github.com/lanmanok/conll2015_discourse
 .. _`Yarin Gal, 2016`: http://arxiv.org/abs/1512.05287
-.. _`Skip-gram Neural Word Embeddings`: https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing
+.. _`wheel`: https://pypi.python.org/pypi/wheel
 .. _`Tatjana Scheffler`: http://www.ling.uni-potsdam.de/~scheffler/

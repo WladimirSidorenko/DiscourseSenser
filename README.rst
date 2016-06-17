@@ -125,13 +125,12 @@ Reproducibility
 
 In order to reproduce our `*`asterisk results from the CoNLL Shared
 Task submission, you need to repeat the steps described in Section
-[Installation](#Installation), but additionally run the checkout
-command to obtain exactly the version that we were using for the
-evaluation:
+`Installation`_, but additionally run the checkout command to obtain
+exactly the version that we were using for the evaluation:
 
-```shell
-git checkout conll-asterisk-evaluation
-```
+.. code-block:: shell
+
+    git checkout conll-asterisk-evaluation
 
 Acknowledgment
 --------------

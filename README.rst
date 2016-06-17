@@ -26,7 +26,7 @@ explicit and implicit discourse connectives for PDTB-like discourse
 parsing.  It has been created for the CoNLL-2016 shared task.
 
 The main package **dsenser** currently comprises the following
-classifiers which can be trained either separately or bundled into
+classifiers which can be trained either individually or bundled into
 ensembles:
 
 **dsenser.major.MajorSenser**

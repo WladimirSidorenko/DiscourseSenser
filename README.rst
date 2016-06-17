@@ -84,7 +84,10 @@ its submodules by subsequently running the following commands:
     # required in this case)
     pip install --user -r requirements.txt -e .
 
-*To ease the installation process, we are currently working on creating a `wheel`_ for this package, but are facing some problems due to the large size of the included word embedding file which requires the ``zip64`` extension.*
+To ease the installation process, we are currently working on creating
+a `wheel`_ for this package, but are facing some problems due to the
+large size of the included word embedding file which requires the
+``zip64`` extension.
 
 Usage
 -----

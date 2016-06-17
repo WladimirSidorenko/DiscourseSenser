@@ -123,8 +123,8 @@ relations file whose senses need to be predicted by using the option
 Reproducibility
 ---------------
 
-In order to reproduce our `*`asterisk results from the CoNLL Shared
-Task submission, you need to repeat the steps described in Section
+In order to reproduce our *asterisk results from the CoNLL Shared Task
+submission, you need to repeat the steps described in Section
 `Installation`_, but additionally run the checkout command to obtain
 exactly the version that we were using for the evaluation:
 

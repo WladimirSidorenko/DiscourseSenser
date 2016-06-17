@@ -47,7 +47,7 @@ ensembles:
 
 **dsenser.lstm.LSTMSenser**
  a neural network classifier which uses an LSTM recurrence with
- Bayesian dropout (cf. `Yarin Gal, 2016`_);
+ Bayesian dropout (cf. `Yarin Gal, 2016`_).
 
 Installation
 ------------

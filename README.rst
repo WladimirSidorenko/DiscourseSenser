@@ -2,7 +2,6 @@ Discourse Senser
 ================
 .. image:: https://travis-ci.org/WladimirSidorenko/DiscourseSenser.svg?branch=master
    :alt: Build Status
-   :cache-control: no-cache
    :target: https://travis-ci.org/WladimirSidorenko/DiscourseSenser
 
 .. image:: https://codecov.io/gh/WladimirSidorenko/DiscourseSenser/branch/master/graph/badge.svg

@@ -1,6 +1,5 @@
 Discourse Senser
 ================
-
 .. image:: https://travis-ci.org/WladimirSidorenko/DiscourseSenser.svg?branch=master
    :alt: Build Status
    :target: https://travis-ci.org/WladimirSidorenko/DiscourseSenser
@@ -26,7 +25,7 @@ explicit and implicit discourse connectives for PDTB-like discourse
 parsing.  It has been created for the CoNLL-2016 shared task.
 
 The main package **dsenser** currently comprises the following
-classifiers which can be trained either separately or bundled into
+classifiers which can be trained either individually or bundled into
 ensembles:
 
 **dsenser.major.MajorSenser**
@@ -47,7 +46,7 @@ ensembles:
 
 **dsenser.lstm.LSTMSenser**
  a neural network classifier which uses an LSTM recurrence with
- Bayesian dropout (cf. `Yarin Gal, 2016`_);
+ Bayesian dropout (cf. `Yarin Gal, 2016`_).
 
 Installation
 ------------

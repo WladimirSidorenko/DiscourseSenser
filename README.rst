@@ -22,15 +22,15 @@ Description
 
 This package provides core functionality for sense disambiguation of
 explicit and implicit discourse connectives for PDTB-like discourse
-parsing.  It has been created for the CoNLL-2016 shared task.
+parsing.  It was created for the CoNLL-2016 shared task.
 
 The main package **dsenser** currently comprises the following
 classifiers which can be trained either individually or bundled into
 ensembles:
 
 **dsenser.major.MajorSenser**
-  a simplistic classifier which returns the conditional probabilities
-  of senses given the connective;
+  a simplistic classifier which returns conditional probabilities
+  of senses given a connective;
 
 **dsenser.wang.WangSenser**
  an optimized reimplementation of `Wang et al.`_'s sense classification

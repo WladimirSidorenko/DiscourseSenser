@@ -34,7 +34,7 @@ GOLD_FNAME = "relations.json"
 PARSE_FNAME = "parses.json"
 OUT_FNAME = "output.json"
 RAW_DIR = "raw"
-WSJ_GLOB="wsj_*"
+WSJ_GLOB = "wsj_*"
 
 
 ##################################################################
@@ -51,8 +51,8 @@ def _add_cmn_options(a_parser):
 
     """
     a_parser.add_argument("-m", "--model",
-                          help="path to the main model (if different from default)",
-                          type=str, default=DFLT_MODEL_PATH)
+                          help="path to the main model (if different from"
+                          " default)", type=str, default=DFLT_MODEL_PATH)
 
 
 def _read_json(a_dir, a_fname, a_enc=ENCODING):
@@ -131,6 +131,7 @@ def _read_raw(a_dir, a_enc=ENCODING):
         print("done", file=sys.stderr)
     return ret
 
+
 def _get_tok_pos(a_parses):
     """Convert document token indices to 4-tuples.
 
@@ -155,6 +156,7 @@ def _get_tok_pos(a_parses):
                     (w_attrs[COB], w_attrs[COE], doc_w_i, s_cnt, w_cnt)
                 doc_w_i += 1
     return ret
+
 
 def _restore_toks(a_rel, a_key, a_doc_id, a_tok2tpl):
     """Convert document token indices to 4-tuples.
@@ -269,31 +271,37 @@ def main():
     parser_train.add_argument("--lstsq", help="use least squares method",
                               action="store_true")
     parser_train.add_argument("--type", help=("type of the model to train"
-                                              "({:d} - SVD, {:d} - LSTM, {:d} - majority,"
-                                              " {:d} - Wang, {:d} - XGBOOST), ".format(
-                                                  SVD, LSTM, MJR, WANG, XGBOOST) +
-                                              "default = {:d}".format(DFLT_MODEL_TYPE)),
-                              type=int, action="append", choices=(SVD, LSTM, MJR,
-                                                                  WANG, XGBOOST))
+                                              "({:d} - SVD, {:d} - LSTM, {:d}"
+                                              " - majority, {:d} - Wang, {:d}"
+                                              " - XGBOOST), ".format(SVD, LSTM,
+                                                                     MJR, WANG,
+                                                                     XGBOOST) +
+                                              "default = {:d}".format(
+                                                  DFLT_MODEL_TYPE)),
+                              type=int, action="append", choices=(SVD, LSTM,
+                                                                  MJR, WANG,
+                                                                  XGBOOST))
     _add_cmn_options(parser_train)
-    parser_train.add_argument("input_dir", help="directories containing input data",
-                              type=str, nargs="+")
+    parser_train.add_argument("input_dir", help="directories containing input"
+                              " data", type=str, nargs="+")
 
     # testing parser
     parser_test = subparsers.add_parser(M_TEST, help="""determine senses
     using pre-trained models""")
     _add_cmn_options(parser_test)
-    parser_test.add_argument("--int-tok", help="tokens are specified as lists of integers",
-                             action="store_true")
-    parser_test.add_argument("--rel-file", help="file containing input relations "
-                             "without senses (if different from default)", type=str)
-    parser_test.add_argument("input_dir", help="directories containing input data",
-                              type=str)
+    parser_test.add_argument("--int-tok", help="tokens are specified as lists"
+                             " of integers", action="store_true")
+    parser_test.add_argument("--rel-file", help="file containing input"
+                             " relations without senses (if different from"
+                             " default)", type=str)
+    parser_test.add_argument("input_dir", help="directories containing input"
+                             " data", type=str)
     parser_test.add_argument("output_dir", help=
-                              "directory for storing output files", type=str)
+                             "directory for storing output files",
+                             type=str)
     args = argparser.parse_args()
     if hasattr(args, "type") and not args.type:
-        args.type=[DFLT_MODEL_TYPE]
+        args.type = [DFLT_MODEL_TYPE]
 
     # instantiate objects required for processing
     dsenser = None
@@ -314,18 +322,18 @@ def main():
         for itype in args.type:
             mtype |= itype
         # initialize and train the model
-        dsenser =  DiscourseSenser(None)
+        dsenser = DiscourseSenser(None)
         dsenser.train(train_set, mtype, args.model, dev_set,
                       a_w2v=args.w2v, a_lstsq=args.lstsq)
     else:
         if not os.path.exists(args.output_dir):
             os.makedirs(args.output_dir)
-        elif not os.path.isdir(args.output_dir) or not \
-             os.access(args.output_dir, os.W_OK):
+        elif not os.path.isdir(args.output_dir) or \
+                not os.access(args.output_dir, os.W_OK):
                 raise RuntimeError("Cannot write to directory '{:s}'.".format(
                     args.output_dir))
         # read test data
-        dsenser =  DiscourseSenser(args.model)
+        dsenser = DiscourseSenser(args.model)
         test_set = _read_dataset(args.input_dir,
                                  a_rel_file=args.rel_file,
                                  a_int_tok=args.int_tok)

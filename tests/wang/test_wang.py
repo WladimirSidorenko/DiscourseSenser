@@ -19,4 +19,3 @@ class TestWangSenser(TestCase):
         wang = WangSenser()
         assert wang.implicit is not None
         assert wang.explicit is not None
-        assert wang.n_y < 0

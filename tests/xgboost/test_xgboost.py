@@ -19,4 +19,3 @@ class TestXGBoostSenser(TestCase):
         xgb = XGBoostSenser()
         assert xgb.implicit is not None
         assert xgb.explicit is not None
-        assert xgb.n_y < 0

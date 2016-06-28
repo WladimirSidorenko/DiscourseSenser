@@ -26,16 +26,12 @@ from dsenser.wang.wangbase import WangBaseSenser
 from collections import Counter, defaultdict
 from nltk import Tree
 from nltk.grammar import is_nonterminal
-from sklearn.feature_extraction import DictVectorizer
-from sklearn.pipeline import Pipeline
-from sklearn.svm import LinearSVC
 import re
 import sys
 
 ##################################################################
 # Variables and Constants
 DASH_RE = re.compile("-+")
-DFLT_C = 0.3
 LARROW = "<--"
 MODALITY = {"can": 0, "may": 1, "must": 2, "need": 3, "shall": 4,
             "will": 5, "could": 0, "would": 5, "might": 1,
@@ -58,23 +54,23 @@ class WangImplicitSenser(WangBaseSenser):
 
     """
 
-    def __init__(self, a_clf=None):
+    # private members (used for feature extraction)
+    _bc1 = set()
+    _bc2 = set()
+
+    def __init__(self, a_clf=None, a_grid_search=False):
         """Class constructor.
 
         Args:
           a_clf (classifier or None):
             classifier to use or None for default
+          a_grid_search (bool): use grid search for estimating hyper-parameters
 
         """
+        super(WangImplicitSenser, self).__init__(a_clf,
+                                                 a_grid_search)
         self.n_y = -1
         self.ctype = "implicit"
-        classifier = a_clf or LinearSVC(C=DFLT_C,
-                                        loss="hinge",
-                                        penalty="l1",
-                                        dual=True,
-                                        multi_class="crammer_singer")
-        self._model = Pipeline([('vectorizer', DictVectorizer()),
-                                ('classifier', classifier)])
 
     @timeit("Training implicit Wang classifier...")
     def train(self, *args, **kwargs):

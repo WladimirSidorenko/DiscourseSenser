@@ -24,6 +24,8 @@ class XGBoostExplicitSenser(XGBoostBaseSenser, WangExplicitSenser):
     """Subclass of explicit WangSenser using XGBoost.
 
     """
+    PARAM_GRID = {"clf__max_depth": [2**i for i in xrange(1, 6)],
+                  "clf__n_estimators": [50**i for i in xrange(1, 7)]}
 
     @timeit("Training explicit XGBoost classifier...")
     def train(self, *args, **kwargs):

@@ -80,7 +80,7 @@ class DiscourseSenser(object):
 
     def train(self, a_train_data, a_type=DFLT_MODEL_TYPE,
               a_path=DFLT_MODEL_PATH, a_dev_data=None,
-              a_w2v=False, a_lstsq=False):
+              a_grid_search=False, a_w2v=False, a_lstsq=False):
         """Train specified model(s) on the provided data.
 
         Args:
@@ -92,6 +92,9 @@ class DiscourseSenser(object):
             type of the model to be trained
           a_dev_data (list or None):
             development set
+          a_grid_search (bool):
+            use grid search in order to determine hyper-paramaters of
+            the model
           a_w2v (bool):
             use word2vec embeddings
           a_lstsq (bool):
@@ -111,10 +114,10 @@ class DiscourseSenser(object):
             self.models.append(MajorSenser())
         if a_type & WANG:
             from dsenser.wang import WangSenser
-            self.models.append(WangSenser())
+            self.models.append(WangSenser(a_grid_search=a_grid_search))
         if a_type & XGBOOST:
             from dsenser.xgboost import XGBoostSenser
-            self.models.append(XGBoostSenser())
+            self.models.append(XGBoostSenser(a_grid_search=a_grid_search))
         # NN models have to go last, since we are pruning the parses for them
         # to free some memory
         nn_used = False

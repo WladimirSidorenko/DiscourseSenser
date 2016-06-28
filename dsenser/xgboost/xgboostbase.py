@@ -14,6 +14,8 @@ Attributes:
 from __future__ import absolute_import, print_function
 
 from sklearn.feature_extraction import DictVectorizer
+from sklearn.grid_search import GridSearchCV
+from sklearn.metrics import f1_score, make_scorer
 from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 
@@ -23,6 +25,8 @@ from xgboost import XGBClassifier
 MAX_DEPTH = 3                   # maximim depth of tree
 NTREES = 300                    # number of tree estimators
 ALPHA = 0.05                    # learning rate
+PARAM_GRID = {"max_depth": [3 * i for i in xrange(1, 10)],
+              "n_estimators": [100 * i for i in xrange(1, 10)]}
 
 
 ##################################################################
@@ -32,24 +36,26 @@ class XGBoostBaseSenser(object):
 
     """
 
-    def __init__(self, a_clf=None):
+    def __init__(self, a_clf=None, a_grid_search=False):
         """Class constructor.
 
         Args:
           a_clf (classifier or None):
             classifier to use or None for default
+          a_grid_search (bool): use grid search for estimating
+            hyper-parameters
 
         """
         classifier = a_clf
-        self._clf = None
+        self._gs = a_grid_search
         if a_clf is None:
             classifier = XGBClassifier(max_depth=MAX_DEPTH,
                                        n_estimators=NTREES,
                                        learning_rate=ALPHA,
                                        objective="multi:softprob")
             self._clf = classifier
-        self._model = Pipeline([('vectorizer', DictVectorizer()),
-                                ('classifier', classifier)])
+        self._model = Pipeline([("vect", DictVectorizer()),
+                                ("clf", classifier)])
 
     def _predict(self, a_feats, a_ret, a_i):
         """Method for predicting sense of single relation.

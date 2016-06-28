@@ -17,6 +17,9 @@ from dsenser.base import BaseSenser
 from dsenser.utils import is_explicit
 from dsenser.wang.explicit import WangExplicitSenser
 from dsenser.wang.implicit import WangImplicitSenser
+from dsenser.wang.wangbase import DFLT_PARAMS, DFLT_EXP_C, DFLT_IMP_C
+
+from sklearn.svm import LinearSVC
 
 ##################################################################
 # Variables and Constants
@@ -36,10 +39,14 @@ class WangSenser(BaseSenser):
 
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Class constructor.
 
+        Args:
+          kwargs (dict): keyword arguments to be forwarded
+
         """
-        self.explicit = WangExplicitSenser()
-        self.implicit = WangImplicitSenser()
-        self.n_y = -1
+        explicit_clf = LinearSVC(C=DFLT_EXP_C, **DFLT_PARAMS)
+        self.explicit = WangExplicitSenser(a_clf=explicit_clf, **kwargs)
+        implicit_clf = LinearSVC(C=DFLT_IMP_C, **DFLT_PARAMS)
+        self.implicit = WangImplicitSenser(a_clf=implicit_clf, **kwargs)

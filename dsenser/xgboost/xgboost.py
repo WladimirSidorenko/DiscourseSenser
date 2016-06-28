@@ -36,10 +36,12 @@ class XGBoostSenser(WangSenser):
 
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Class constructor.
 
+        Args:
+          kwargs (dict): keyword arguments to be forwarded
+
         """
-        self.explicit = XGBoostExplicitSenser()
-        self.implicit = XGBoostImplicitSenser()
-        self.n_y = -1
+        self.explicit = XGBoostExplicitSenser(**kwargs)
+        self.implicit = XGBoostImplicitSenser(**kwargs)

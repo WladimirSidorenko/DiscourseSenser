@@ -266,10 +266,15 @@ def main():
     parser_train.add_argument("-d", "--dev", help=
                               "development directory with JSON data",
                               type=str)
+    parser_train.add_argument("-g", "--grid-search",
+                              help="use grid search for determining the"
+                              " hyper-parameters of SVC and XGBoost",
+                              action="store_true")
     parser_train.add_argument("--w2v", help="use word2vec embeddings",
                               action="store_true")
-    parser_train.add_argument("--lstsq", help="use least squares method",
-                              action="store_true")
+    parser_train.add_argument("--lstsq", help="use the least squares method"
+                              " to convert generic embeddings to task-specific"
+                              " ones", action="store_true")
     parser_train.add_argument("--type", help=("type of the model to train"
                                               "({:d} - SVD, {:d} - LSTM, {:d}"
                                               " - majority, {:d} - Wang, {:d}"
@@ -286,8 +291,8 @@ def main():
                               " data", type=str, nargs="+")
 
     # testing parser
-    parser_test = subparsers.add_parser(M_TEST, help="""determine senses
-    using pre-trained models""")
+    parser_test = subparsers.add_parser(M_TEST, help="determine senses"
+                                        " using pre-trained models")
     _add_cmn_options(parser_test)
     parser_test.add_argument("--int-tok", help="tokens are specified as lists"
                              " of integers", action="store_true")
@@ -324,6 +329,7 @@ def main():
         # initialize and train the model
         dsenser = DiscourseSenser(None)
         dsenser.train(train_set, mtype, args.model, dev_set,
+                      a_grid_search=args.grid_search,
                       a_w2v=args.w2v, a_lstsq=args.lstsq)
     else:
         if not os.path.exists(args.output_dir):

@@ -22,9 +22,6 @@ from dsenser.utils import timeit
 
 from collections import defaultdict
 from nltk import Tree
-from sklearn.feature_extraction import DictVectorizer
-from sklearn.pipeline import Pipeline
-from sklearn.svm import LinearSVC
 
 import re
 import sys
@@ -41,7 +38,6 @@ RIGHT = 2
 DFLT_PRNT = "SBAR"
 AS = "as"
 WHEN = "when"
-DFLT_C = 0.3
 NEGATION = ("not", "n't")
 MODALITY = {"can": 0, "may": 1, "must": 2, "need": 3, "shall": 4,
             "will": 5, "could": 0, "would": 5, "might": 1,
@@ -57,26 +53,23 @@ class WangExplicitSenser(WangBaseSenser):
 
     Attributes:
       n_y (int): number of distinct classes
+      a_grid_search (bool): use grid search for estimating hyper-parameters
 
     """
 
-    def __init__(self, a_clf=None):
+    def __init__(self, a_clf=None, a_grid_search=False):
         """Class constructor.
 
         Args:
           a_clf (classifier or None):
             classifier to use or None for default
+          a_grid_search (bool): use grid search for estimating hyper-parameters
 
         """
+        super(WangExplicitSenser, self).__init__(a_clf,
+                                                 a_grid_search)
         self.n_y = -1
         self.ctype = "explicit"
-        classifier = a_clf or LinearSVC(C=DFLT_C,
-                                        loss="hinge",
-                                        penalty="l1",
-                                        dual=False,
-                                        multi_class="crammer_singer")
-        self._model = Pipeline([('vectorizer', DictVectorizer()),
-                                ('classifier', classifier)])
 
     @timeit("Training explicit Wang classifier...")
     def train(self, *args, **kwargs):

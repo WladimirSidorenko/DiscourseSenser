@@ -42,6 +42,7 @@ VB_TAG2POS = {"MD": 0, "VB": 1, "VBD": 2, "VBG": 3, "VBN": 4, "VBP": 5,
               "VBZ": 6}
 VB_TAGS = set(VB_TAG2POS.iterkeys())
 BOTH = "both"
+POSITIVE = "positive"
 
 
 ##################################################################
@@ -340,7 +341,7 @@ class WangImplicitSenser(WangBaseSenser):
         return ret
 
     def _get_vb_class(self, a_feats, a_toks1, a_toks2):
-        """Obtain verb classes of the given relation.
+        """Obtain verb classes for the given relation.
 
         Args:
           a_feats (dict):
@@ -389,7 +390,7 @@ class WangImplicitSenser(WangBaseSenser):
         ret = [0] * 7
         for _, p in a_toks:
             if p in VB_TAG2POS:
-                ret[VB_TAG2POS[p]] = 1.
+                ret[VB_TAG2POS[p]] = 1
         return ''.join(str(t) for t in ret)
 
     def _get_brown_clusters(self, a_feats, a_toks1, a_toks2):
@@ -462,8 +463,7 @@ class WangImplicitSenser(WangBaseSenser):
         """Obtain General Inquirer scores for the given relation.
 
         Args:
-          a_toks (list):
-            list of tokens from the 1-st argument
+          a_toks (list): list of tokens from the first argument
 
         Returns:
           list:
@@ -532,9 +532,9 @@ class WangImplicitSenser(WangBaseSenser):
                 ipol = entry[POL_IDX]
                 if ipol == BOTH:
                     continue
-                elif ipol == POS:
+                elif ipol == POSITIVE:
                     j = max(0, i - 3)
-                    if any(el[0] in NEGATIONS for el in a_toks[j:i]):
+                    if any(el[0].lower() in NEGATIONS for el in a_toks[j:i]):
                         ipol = "negatedpos"
                 ret[ipol + '|' + entry[INTENS_IDX]] = 1.
         return ret

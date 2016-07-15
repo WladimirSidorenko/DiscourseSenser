@@ -22,8 +22,8 @@ from xgboost import XGBClassifier
 
 ##################################################################
 # Constants
-MAX_DEPTH = 3                   # maximim depth of tree
-NTREES = 300                    # number of tree estimators
+MAX_DEPTH = 9                   # maximim depth of tree
+NTREES = 600                    # number of tree estimators
 ALPHA = 0.05                    # learning rate
 BASE_PARAM_GRID = {"clf__max_depth": [3 * i for i in xrange(1, 10)],
                    "clf__n_estimators": [100 * i for i in xrange(1, 10)]}

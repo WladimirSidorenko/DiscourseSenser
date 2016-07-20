@@ -25,8 +25,10 @@ from xgboost import XGBClassifier
 MAX_DEPTH = 9                   # maximim depth of tree
 NTREES = 600                    # number of tree estimators
 ALPHA = 0.05                    # learning rate
-BASE_PARAM_GRID = {"clf__max_depth": [3 * i for i in xrange(1, 10)],
-                   "clf__n_estimators": [100 * i for i in xrange(1, 10)]}
+BASE_PARAM_GRID = {"clf__max_depth": [3 * i for i in xrange(1, 3)],
+                   "clf__n_estimators": [100 * i for i in xrange(1, 2)]}
+BASE_N_JOBS = 1                 # xgboost does not support grid parallelization
+                                # as it relies on openmp
 
 
 ##################################################################

@@ -16,7 +16,7 @@ from __future__ import absolute_import, print_function
 from dsenser.utils import timeit
 from dsenser.wang.explicit import WangExplicitSenser
 from dsenser.xgboost.xgboostbase import XGBoostBaseSenser, \
-    BASE_PARAM_GRID
+    BASE_N_JOBS, BASE_PARAM_GRID
 
 
 ##################################################################
@@ -26,6 +26,7 @@ class XGBoostExplicitSenser(XGBoostBaseSenser, WangExplicitSenser):
 
     """
     PARAM_GRID = BASE_PARAM_GRID
+    N_JOBS = BASE_N_JOBS
 
     @timeit("Training explicit XGBoost classifier...")
     def train(self, *args, **kwargs):

@@ -50,7 +50,8 @@ class WangBaseSenser(BaseSenser):
     __metaclass__ = abc.ABCMeta
 
     # private members
-    PARAM_GRID = {"clf__C": [float(i)/100. for i in xrange(1, 11)]}
+    PARAM_GRID = {"clf__C": [float(i)/100. for i in xrange(1, 3)]}
+    N_JOBS = -1
 
     def __init__(self, a_clf=None, a_grid_search=False):
         """Class constructor.
@@ -108,7 +109,7 @@ class WangBaseSenser(BaseSenser):
             scorer = make_scorer(f1_score, average="macro")
             self._model = GridSearchCV(self._model, self.PARAM_GRID,
                                        scoring=scorer,
-                                       cv=cv, n_jobs=-1, verbose=1)
+                                       cv=cv, n_jobs=self.N_JOBS, verbose=1)
         self._model.fit([el[-1] for el in x_train], y_train)
         # output best hyper-parameters
         if self._gs:

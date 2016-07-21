@@ -3,14 +3,17 @@
 
 ##################################################################
 # Imports
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
-from dsenser.wang.wangbase import WangBaseSenser
+from dsenser.wang.wangbase import WangBaseSenser, NFOLDS
 import dsenser
 
 from mock import patch, MagicMock, DEFAULT as MOCK_DEFAULT
 from pytest import fixture
 from unittest import TestCase
+
+import numpy as np
+import sys
 
 
 ##################################################################
@@ -46,6 +49,16 @@ class TestWangBase(TestCase):
                                 _generate_ts=lambda *x: (self.TRAIN_X, Y),
                                 _model=MOCK_DEFAULT):
                 self.wb_gs.train(([], []), None)
+
+    def test_devset_cv(self):
+        y = Y * NFOLDS
+        train_N = len(y)
+        dev_N = len(Y)
+        folds = self.wb_gs._devset_cv(y, dev_N, NFOLDS)
+        assert len(folds) == NFOLDS
+        dev_idcs = [train_N + i for i in xrange(dev_N)]
+        assert np.allclose(folds[0][-1][-dev_N:], dev_idcs)
+        assert np.allclose(folds[-1][-1][-dev_N:], dev_idcs)
 
     def set_free(self):
         self.wb._free()

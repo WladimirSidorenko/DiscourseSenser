@@ -19,7 +19,7 @@ import numpy as np
 # Constants
 DOC_ID = "wsj_2200"
 ARG1 = "Arg1"
-REL1 = {"DocID": "wsj_2200",
+REL1 = {"DocID": DOC_ID,
         ARG1: {"CharacterSpanList": [[517, 564]],
                "RawText": "to restrict the RTC to Treasury"
                " borrowings only",

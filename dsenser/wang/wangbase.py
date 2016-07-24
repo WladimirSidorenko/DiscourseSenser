@@ -104,8 +104,8 @@ class WangBaseSenser(BaseSenser):
                 cv = StratifiedKFold(y_train, n_folds=NFOLDS, shuffle=True)
             else:
                 cv = self._devset_cv(y_train, len(y_dev), NFOLDS)
-                x_train += x_dev
-                y_train += y_dev
+                x_train = x_train + x_dev
+                y_train = y_train + y_dev
             scorer = make_scorer(f1_score, average="macro")
             self._model = GridSearchCV(self._model, self.PARAM_GRID,
                                        scoring=scorer,
@@ -117,6 +117,8 @@ class WangBaseSenser(BaseSenser):
                   file=sys.stderr)
         if a_i >= 0:
             if a_train_out is not None:
+                if self._gs and a_dev_data and a_dev_data[0]:
+                    x_train = x_train[:-len(x_dev)]
                 for i, x_i in x_train:
                     self._predict(x_i, a_train_out[i], a_i)
             if a_dev_out is not None:
@@ -183,7 +185,8 @@ class WangBaseSenser(BaseSenser):
         if len(dec.shape) > 1:
             dec = np.mean(dec, axis=0)
         # normalize using softmax
-        exp_ret = np.exp(sum(dec)) or 1e10
+        dec = np.exp(dec)
+        exp_ret = np.sum(dec) or 1e10
         dec /= exp_ret
         # map model's classes to original indices
         for i, ival in enumerate(dec):

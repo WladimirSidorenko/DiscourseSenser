@@ -97,6 +97,7 @@ MOD_2 = [0, 0, 0, 0, 0, 0, 1]
 TOK_3 = [("have", "VBP")]
 TOK_4 = [("must", "MD")]
 TOK_5 = [("table", "NN")]
+TOK_6 = [("stack", "NN")]
 
 
 ##################################################################
@@ -148,7 +149,11 @@ class TestWangImplict(TestCase):
         feats = {}
         self.wis._get_vb_class(feats, TOK_4 + TOK_4, TOK_3)
         self.wis._get_vb_class(feats, TOK_5 + TOK_5, TOK_3)
+        self.wis._get_vb_class(feats, TOK_6, TOK_3)
+        self.wis._get_vb_class(feats, TOK_3, TOK_6)
         assert "LCSI-47.8.c" not in feats
+        assert "LCSI-9.7.a" not in feats
+        assert "LCSI-9.7.d" not in feats
 
     def test_get_arg_inquirer_0(self):
         assert not any(self.wis._get_arg_inquirer(TOK_4))

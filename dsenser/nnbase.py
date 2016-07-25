@@ -44,7 +44,7 @@ DIG_RE = re.compile(r"^[\d.]*\d[\d.]*$")
 ##################################################################
 # Methods
 def _norm_vec(a_x):
-    """Normali length of the inout vector.
+    """Normalize length of the input vector.
 
     Args:
       a_x (np.array):

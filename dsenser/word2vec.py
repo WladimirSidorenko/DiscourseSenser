@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; mode: python; -*-
 
-"""Module providing class for task-specific word embeddings.
+"""Module providing class for generic word embeddings.
 
 Attributes:
-WEMB (class):
-  class for fast retrieval and adjustment of the Google word embeddings
+  WEMB (class):
+    class for fast retrieval and adjustment of the Google word embeddings
 
 """
 

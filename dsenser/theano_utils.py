@@ -26,38 +26,36 @@ def floatX(a_data, a_dtype=config.floatX):
     """Return numpy array populated with the given data.
 
     Args:
-    data (np.array):
-      input tensor
-    dtype (class):
-      digit type
+      data (np.array):
+        input tensor
+      dtype (class):
+        digit type
 
     Returns:
-    (np.array):
-     array populated with the given data
+      np.array:
+        array populated with the given data
 
     """
     return np.asarray(a_data, dtype=a_dtype)
 
 
 def rmsprop(tparams, grads, x, y, cost):
-    """
-    A variant of  SGD that scales the step size by running average of the
-    recent step norms.
+    """A variant of SGD that automatically scales the step size.
 
-    Parameters:
-    tpramas (Theano SharedVariable):
-        Model parameters
-    grads (Theano variable):
-        Gradients of cost w.r.t to parameres
-    x (list):
-        Model inputs
-    y (Theano variable):
-        Targets
-    cost (Theano variable):
-        Objective fucntion to minimize
+    Args:
+      tpramas (Theano SharedVariable):
+          Model parameters
+      grads (Theano variable):
+          Gradients of cost w.r.t to parameres
+      x (list):
+          Model inputs
+      y (Theano variable):
+          Targets
+      cost (Theano variable):
+          Objective fucntion to minimize
 
     Notes:
-    For more information, see [Hint2014]_.
+      For more information, see [Hint2014]_.
 
     .. [Hint2014] Geoff Hinton, *Neural Networks for Machine Learning*,
        lecture 6a,

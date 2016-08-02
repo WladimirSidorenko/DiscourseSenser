@@ -492,7 +492,7 @@ class NNBaseSenser(BaseSenser):
         self.w2emb, res, rank, _ = np.linalg.lstsq(w2v_emb,
                                                    task_emb)
         self.w2emb = floatX(self.w2emb)
-        print(" done (residuals: {:f}, w2v rank: {:d})".format(sum(res), rank),
+        print(" done (w2v rank: {:d}, residuals: {:f})".format(rank, sum(res)),
               file=sys.stderr)
 
     def _get_train_w_emb_i(self, a_word):

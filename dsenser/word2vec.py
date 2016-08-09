@@ -31,8 +31,8 @@ class Word2Vec(object):
         """Class cosntructor.
 
         Args:
-        a_w2v (gensim.Word2Vec):
-        dictionary with original word embeddings
+          a_w2v (gensim.Word2Vec):
+            dictionary with original word embeddings
 
         """
         self._w2v = a_w2v

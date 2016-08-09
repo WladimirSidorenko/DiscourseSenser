@@ -20,6 +20,7 @@ import numpy as np
 
 ##################################################################
 # Variables and Constants
+MIN_DIM = 50
 
 
 ##################################################################
@@ -36,7 +37,7 @@ class SVDBaseSenser(NNBaseSenser):
         """Initialize neural network.
 
         """
-        self.intm_dim = max(100, self.ndim - (self.ndim - self.n_y) / 2)
+        self.intm_dim = max(MIN_DIM, self.ndim - (self.ndim - self.n_y) / 2)
         # indices of word embeddings
         self.W_INDICES_ARG1 = TT.ivector(name="W_INDICES_ARG1")
         self.W_INDICES_ARG2 = TT.ivector(name="W_INDICES_ARG2")

@@ -32,7 +32,8 @@ class TestXGBoostBaseSenser(TestCase):
         self.xgb = XGBoostBaseSenser()
 
     def test_xgb(self):
-        x = [{"feat{:d}".format(x_i): 1.} for x_i in xrange(N_Y)]
+        x = [{"feat{:d}".format(x_i): 1}
+             for x_i in xrange(N_Y)]
         y = [y_i for y_i in reversed(xrange(N_Y))]
         wbench = np.zeros((1, N_Y))
         self.xgb._model.fit(x, y)

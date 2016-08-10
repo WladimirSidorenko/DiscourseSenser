@@ -34,7 +34,7 @@ BASE_N_JOBS = 1                 # xgboost does not support grid parallelization
 ##################################################################
 # Class
 class XGBoostBaseSenser(object):
-    """Subclass of explicit WangSenser using XGBoost
+    """Base sense classifier using XGBoost.
 
     """
 
@@ -56,6 +56,7 @@ class XGBoostBaseSenser(object):
                                        learning_rate=ALPHA,
                                        objective="multi:softprob")
             self._clf = classifier
+        # latest version of XGBoost cannot deal with non-sparse feature vectors
         self._model = Pipeline([("vect", DictVectorizer()),
                                 ("clf", classifier)])
 

@@ -1,0 +1,5 @@
+[run]
+omit=dsenser/scorer/*
+
+[report]
+omit=dsenser/scorer/*

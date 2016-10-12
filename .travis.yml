@@ -31,7 +31,7 @@ before_install:
 # Install packages
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION anaconda-client atlas numpy scipy
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION scikit-learn
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION scikit-learn=0.17.1
   # - conda install --yes python=$TRAVIS_PYTHON_VERSION --file=requirements.txt
   # Coverage packages are on my binstar channel
   - conda install --yes -c dan_blanchard python-coveralls nose-cov

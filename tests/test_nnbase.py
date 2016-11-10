@@ -5,12 +5,13 @@
 # Imports
 from __future__ import absolute_import
 
-from dsenser.nnbase import _norm_vec, _norm_word, NNBaseSenser
+from dsenser.nnbase import _norm_vec, _norm_word, NNBaseSenser, DFLT_VDIM
 from dsenser.constants import CONNECTIVE, WORDS, SENTENCES, RAW_TEXT
 import dsenser
+import dsenser.nnbase
 
 from pytest import fixture
-from mock import patch, MagicMock
+from mock import patch, MagicMock, Mock
 from unittest import TestCase
 import numpy as np
 import pytest
@@ -76,6 +77,15 @@ def test_norm_word():
 ##################################################################
 # Test Classes
 class NNBase(NNBaseSenser):
+    EMB_ARG1 = Mock()
+    W_INDICES_ARG1 = Mock()
+    EMB_ARG2 = Mock()
+    W_INDICES_ARG2 = Mock()
+    CONN_INDEX = Mock()
+    Y_gold = Mock()
+    Y_pred = Mock()
+    _predict_func_emb = None
+
     def _init_nn(self):
         """Initialize neural network.
 
@@ -139,3 +149,59 @@ class TestNNBaseSenser(TestCase):
         with patch.multiple(self.nnbs, _params=[], ndim=3):
             self.nnbs._init_w_emb()
             assert len(self.nnbs._params) == 1
+
+    def test_init_wemb_funcs_0(self):
+        word2vec = Mock()
+        word2vec.load = MagicMock()
+        word2vec.ndim = 2
+        fmock = MagicMock()
+        with patch.multiple(self.nnbs, _plain_w2v=True, ndim=8,
+                            w2v=word2vec, _trained=True,
+                            _predict_func_emb=fmock):
+            self.nnbs._init_wemb_funcs()
+            assert word2vec.load.called
+            assert self.nnbs.ndim == word2vec.ndim
+            assert self.nnbs.get_train_w_emb_i == \
+                self.nnbs._get_train_w2v_emb_i
+            assert self.nnbs.get_test_w_emb_i == \
+                self.nnbs._get_test_w2v_emb_i
+            assert self.nnbs._predict_func == fmock
+
+    def test_init_wemb_funcs_1(self):
+        word2vec = Mock()
+        with patch.multiple(self.nnbs, _plain_w2v=True, w2v=None,
+                            _trained=False):
+            with patch.object(dsenser.nnbase, "Word2Vec", word2vec):
+                self.nnbs._init_wemb_funcs()
+                assert self.nnbs.get_test_w_emb_i == \
+                    self.nnbs._get_train_w2v_emb_i
+
+    def test_init_wemb_funcs_2(self):
+        word2vec = Mock()
+        word2vec.load = MagicMock()
+        word2vec.ndim = 2
+        fmock = MagicMock()
+        with patch.multiple(self.nnbs, _plain_w2v=False, lstsq=True,
+                            ndim=8, w2v=None, _trained=True,
+                            _predict_func_emb=fmock):
+            with patch.object(dsenser.nnbase, "Word2Vec", word2vec):
+                self.nnbs._init_wemb_funcs()
+                assert self.nnbs.ndim == DFLT_VDIM
+                assert word2vec.load.called
+                assert self.nnbs.get_train_w_emb_i == \
+                    self.nnbs._get_train_w2v_emb_i
+                assert self.nnbs.get_test_w_emb_i == \
+                    self.nnbs._get_test_w2v_lstsq_emb_i
+
+    def test_compute_w_stat(self):
+        with patch.object(self.nnbs, "_w_stat"):
+            self.nnbs._compute_w_stat(PARSE1)
+
+    def test_init_funcs_0(self):
+        rmsmock = MagicMock(return_value=(1, 2, 3))
+        theano_mock = Mock()
+        theano_mock.function = MagicMock()
+        with patch.multiple(dsenser.nnbase, rmsprop=rmsmock,
+                            theano=theano_mock):
+                self.nnbs._init_funcs(True)
+                assert rmsmock.called

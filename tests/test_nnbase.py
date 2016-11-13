@@ -15,6 +15,7 @@ from mock import patch, MagicMock, Mock
 from unittest import TestCase
 import numpy as np
 import pytest
+import theano
 
 
 ##################################################################
@@ -119,6 +120,32 @@ class TestNNBaseSenser(TestCase):
             self.nnbs.predict(None, (None, None), ret, 0)
             assert ret[0] == 0
 
+    def test_predict_1(self):
+        x = np.array([[0, 1, 2, 3, 4], [[0, 1, 2, 3, 4]]])
+        y = np.array([0, 0, 0, 0])
+
+        def _predict_func_mock(*args, **kwargs):
+            return np.array([[0, 0, 1, 0],
+                             [0, 0, 0, 1],
+                             [0, 0, 1, 0],
+                             [1, 0, 0, 0],
+                             ])
+
+        with patch.multiple(self.nnbs,
+                            _predict_func=_predict_func_mock,
+                            get_test_w_emb_i=None,
+                            _init_wemb_funcs=MagicMock(),
+                            _rel2x=MagicMock(return_value=x)):
+            ret = np.array([[0] * 4])
+            self.nnbs.predict(None, (None, None), ret, 0)
+            assert np.allclose(ret[0], y)
+
+    def test_cleanup(self):
+        a = theano.shared(np.ones((10, 30)).astype(theano.config.floatX))
+        assert np.allclose(a.get_value(), 1)
+        self.nnbs._cleanup([[a]])
+        assert np.allclose(a.get_value(), 0)
+
     def test_rel2x_0(self):
         with patch.object(self.nnbs,
                           "_arg2emb_idx", MagicMock(return_value=None)):
@@ -144,6 +171,43 @@ class TestNNBaseSenser(TestCase):
         assert self.nnbs.n_y < 0
         assert self.nnbs._w_stat is None
         assert len(self.nnbs._params) == 0
+
+    def test_get_train_c_emb_i_0(self):
+        i = 2
+        conn2emb = {"when": i}
+        with patch.object(self.nnbs,
+                          "c2emb_i", conn2emb):
+            ret = self.nnbs.get_train_c_emb_i("USUALLY WHEN")
+            assert ret == i
+
+    def test_get_train_c_emb_i_1(self):
+        emb = np.array([0, 0, 0, 1, 0])
+        conn2emb = {}
+        CONN = "USUALLY WHEN"
+        with patch.multiple(self.nnbs,
+                            c_i=2,
+                            c2emb_i=conn2emb):
+            ret = self.nnbs.get_train_c_emb_i(CONN)
+            assert ret == 2
+            assert self.nnbs.c_i == 3
+
+    def test_get_test_c_emb_i_0(self):
+        i = 3
+        conn2emb = {"when": i}
+        with patch.object(self.nnbs,
+                          "c2emb_i", conn2emb):
+            ret = self.nnbs.get_test_c_emb_i("USUALLY WHEN")
+            assert ret == i
+
+    def test_get_test_c_emb_i_1(self):
+        i = 0
+        conn2emb = {}
+        with patch.multiple(self.nnbs,
+                            c2emb_i=conn2emb,
+                            unk_c_i=i,
+                            ):
+            ret = self.nnbs.get_test_c_emb_i("USUALLY")
+            assert ret == i
 
     def test_init_w_emb(self):
         with patch.multiple(self.nnbs, _params=[], ndim=3):

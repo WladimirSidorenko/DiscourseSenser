@@ -620,9 +620,8 @@ class NNBaseSenser(BaseSenser):
         if a_conn in self.c2emb_i:
             ret = self.c2emb_i[a_conn]
         else:
-            i = self.c2emb_i[a_conn] = self.c_i
+            ret = self.c2emb_i[a_conn] = self.c_i
             self.c_i += 1
-            ret = i
         return np.asarray(ret, dtype="int32")
 
     def get_test_c_emb_i(self, a_conn):

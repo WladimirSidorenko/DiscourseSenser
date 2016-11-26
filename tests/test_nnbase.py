@@ -61,6 +61,11 @@ REL1 = {"DocID": "wsj_2200",
                      "TokenList": [[566, 572, 94, 2, 12]]},
         "Sense": [], "Type": "", "ID": 35709}
 
+VEC0 = np.array([0, 0, 0, 0])
+VEC1 = np.array([0, 1, 2, 3])
+VEC2 = np.array([4, 5, 6, 7])
+VEC3 = np.array([8, 9, 10, 11])
+
 
 ##################################################################
 # Test Methods
@@ -171,6 +176,48 @@ class TestNNBaseSenser(TestCase):
         assert self.nnbs.n_y < 0
         assert self.nnbs._w_stat is None
         assert len(self.nnbs._params) == 0
+
+    def test_get_train_w_emb_i(self):
+        with patch.multiple(self.nnbs,
+                            w2emb_i={'1': 1, "hello": 2},
+                            _w_stat={"world": 1, "z": 3},
+                            w_i=3):
+            with patch("dsenser.nnbase.UNK_PROB", MagicMock(return_value=True)):
+                assert self.nnbs._get_train_w_emb_i("1024") == 1
+                assert self.nnbs._get_train_w_emb_i("HELLO") == 2
+                assert self.nnbs._get_train_w_emb_i("world") == \
+                    self.nnbs.unk_w_i
+                assert self.nnbs._get_train_w_emb_i("Z") == 3
+                assert self.nnbs.w_i == 4
+
+    def test_get_test_w_emb_i(self):
+        with patch.object(self.nnbs,
+                          "w2emb_i", {'1': 1, "hello": 2}):
+            assert self.nnbs._get_test_w_emb_i("1024") == 1
+            assert self.nnbs._get_test_w_emb_i("HELLO") == 2
+            assert self.nnbs._get_test_w_emb_i("ZZZ") == self.nnbs.unk_w_i
+
+    def test_get_train_w2v_emb_i(self):
+        with patch.multiple(self.nnbs,
+                            w2emb_i={'1': 1, "hello": 2},
+                            w2v={"world": None},
+                            w_i=3):
+            assert self.nnbs._get_train_w2v_emb_i("1024") == 1
+            assert self.nnbs._get_train_w2v_emb_i("HELLO") == 2
+            assert self.nnbs._get_train_w2v_emb_i("world") == 3
+            assert self.nnbs._get_train_w2v_emb_i("Z") == self.nnbs.unk_w_i
+            assert self.nnbs.w_i == 4
+
+    def test_get_test_w2v_emb_i(self):
+        with patch.multiple(self.nnbs,
+                            w2emb_i={'1': 1, "hello": 2},
+                            w2v={"world": VEC3},
+                            W_EMB=np.vstack([VEC0, VEC1, VEC2])):
+            assert np.allclose(self.nnbs._get_test_w2v_emb_i("Z"), VEC0)
+            assert np.allclose(self.nnbs._get_test_w2v_emb_i("256"), VEC1)
+            assert np.allclose(self.nnbs._get_test_w2v_emb_i("HELLO"), VEC2)
+            assert np.allclose(self.nnbs._get_test_w2v_emb_i("world"), VEC3)
+
 
     def test_get_train_c_emb_i_0(self):
         i = 2

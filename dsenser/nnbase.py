@@ -236,7 +236,7 @@ class NNBaseSenser(BaseSenser):
             for p, val in zip(self._params, best_params):
                 p.set_value(val)
         else:
-            raise RuntimeErrorx("Network could not be trained.")
+            raise RuntimeError("Network could not be trained.")
         # make predictions for the judge
         if a_i >= 0:
             # deactivate dropout once again

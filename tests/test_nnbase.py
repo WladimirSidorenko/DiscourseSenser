@@ -182,7 +182,8 @@ class TestNNBaseSenser(TestCase):
                             w2emb_i={'1': 1, "hello": 2},
                             _w_stat={"world": 1, "z": 3},
                             w_i=3):
-            with patch("dsenser.nnbase.UNK_PROB", MagicMock(return_value=True)):
+            with patch("dsenser.nnbase.UNK_PROB",
+                       MagicMock(return_value=True)):
                 assert self.nnbs._get_train_w_emb_i("1024") == 1
                 assert self.nnbs._get_train_w_emb_i("HELLO") == 2
                 assert self.nnbs._get_train_w_emb_i("world") == \
@@ -218,7 +219,6 @@ class TestNNBaseSenser(TestCase):
             assert np.allclose(self.nnbs._get_test_w2v_emb_i("HELLO"), VEC2)
             assert np.allclose(self.nnbs._get_test_w2v_emb_i("world"), VEC3)
 
-
     def test_get_train_c_emb_i_0(self):
         i = 2
         conn2emb = {"when": i}
@@ -228,7 +228,6 @@ class TestNNBaseSenser(TestCase):
             assert ret == i
 
     def test_get_train_c_emb_i_1(self):
-        emb = np.array([0, 0, 0, 1, 0])
         conn2emb = {}
         CONN = "USUALLY WHEN"
         with patch.multiple(self.nnbs,

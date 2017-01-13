@@ -100,7 +100,7 @@ After installation, you can import the module in your python scripts, e.g.:
 
     ...
 
-    senser = DiscoureSenser(None)
+    senser = DiscourseSenser(None)
     senser.train(train_set, dsenser.WANG | dsenser.XGBOOST | dsenser.LSTM,
                  path_to_model, dev_set)
 

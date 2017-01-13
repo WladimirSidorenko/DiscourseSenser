@@ -96,7 +96,7 @@ After installation, you can import the module in your python scripts, e.g.:
 
 .. code-block:: python
 
-    from dsenser import DiscoureSenser
+    from dsenser import DiscourseSenser
 
     ...
 
